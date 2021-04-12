@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.23">
-<info created="D:20210409124712" modified="D:20210409125845"/>
+<info created="D:20210409124712" modified="D:20210412091826"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -310,12 +310,10 @@ h
 <tiling name="rising" angle="30" step="4" width="1"/>
 </ipestyle>
 <page>
-<layer name="alpha"/>
-<layer name="beta"/>
 <layer name="EDIT-GROUP*" data="active=beta;primary=beta;locked="/>
 <layer name="EDIT-GROUP" data="active=beta;primary=beta;locked="/>
 <view layers="EDIT-GROUP* EDIT-GROUP" active="EDIT-GROUP"/>
-<path layer="EDIT-GROUP" matrix="1 0 0 1 209.441 0" fill="green">
+<path layer="EDIT-GROUP" matrix="1 0 0 1 209.441 0" stroke="0" fill="green" pen="fat">
 96 592 m
 96 512 l
 304 512 l
@@ -323,17 +321,17 @@ h
 h
 </path>
 <text matrix="1 0 0 1 239.901 -18.3845" transformations="translations" pos="112 560" stroke="black" type="label" width="116.101" height="17.213" depth="0" valign="baseline" size="Huge">Affordances</text>
-<path fill="turquoise">
+<path stroke="black" fill="turquoise" pen="fat">
 416.006 593.169 m
-416.366 663.768 l
-191.961 663.768 l
+416 672 l
+192 672 l
 191.961 593.169 l
 h
 </path>
-<text matrix="1 0 0 1 -27.0151 -21.2519" transformations="translations" pos="221.858 643.237" stroke="black" type="label" width="218.673" height="16.936" depth="4.82" valign="baseline" size="Huge">Interactive Perception</text>
+<text matrix="1 0 0 1 -27.0151 -17.2519" transformations="translations" pos="221.858 643.237" stroke="black" type="label" width="218.673" height="16.936" depth="4.82" valign="baseline" size="Huge">Interactive Perception</text>
 <text matrix="1 0 0 1 -2.95718 -7.92442" transformations="translations" pos="111.996 498.796" stroke="black" type="label" width="178.432" height="14.348" depth="4.02" valign="baseline" size="huge">Physics-aware control</text>
 <text matrix="1 0 0 1 -15.4886 -10.4458" transformations="translations" pos="321.994 502.398" stroke="black" type="label" width="207.94" height="14.348" depth="4.02" valign="baseline" size="huge">Physics-aware perception</text>
-<path layer="EDIT-GROUP*" fill="yellow">
+<path layer="EDIT-GROUP*" stroke="black" fill="yellow" pen="fat">
 96 592 m
 96 512 l
 304 512 l
@@ -341,5 +339,12 @@ h
 h
 </path>
 <text matrix="1 0 0 1 -4 -16" transformations="translations" pos="112 560" stroke="black" type="label" width="182.277" height="17.213" depth="0" valign="baseline" size="Huge">Predictive Control</text>
+<path layer="EDIT-GROUP" fill="gray">
+32 656 m
+32 656 l
+32 656 l
+32 656 l
+h
+</path>
 </page>
 </ipe>
