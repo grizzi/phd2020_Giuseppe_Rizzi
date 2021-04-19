@@ -1,27 +1,25 @@
 \section{Approach}
 \label{sec:Approach}
 
-TODO Giuseppe : this paragraph should go restructured here as it is more the approach then the related work
-
-Solving a complex manipulation task (e.g. tidying up a kitchen) requires a comprehensive understanding of the scene. This task can be further decomposed into a set of sub-tasks of increasing granularity. We restrict our view to the atomic manipulation of a single object.
-
-A solution to robust manipulation of articulated objects consists of perception and control algorithms designed to work together. The elements of the proposed approach build upon the following core components:
+In this research, we try to tackle the challenges in the context of autonomous manipulation of articulated objects. This section presents the proposed contribution with the goal to fill the gaps in the current research and advance state of the art in this fascinating field. In the previous section, we highlighted the importance of a tight perception and planning framework that can work in close loop. A solution to robust manipulation of articulated objects consists of perception and control algorithms designed to work together. In fact, providing the planner with a more flexible scene representation could help it to come up with better plan. As an example, consider planning in free space. Representing the scene as a signed distance field helps to find collision-free trajectories using the gradient information as opposite to a raw point cloud~\cite{oleynikova2017voxblox}. We want to take the same approach and look at the manipulation problem as the problem of optimizing perception, modeling and planning and their interfaces as a whole, in order to achieve better performance. We envision that the next generation manipulation robot should require little supervision and be robust under different scenario. We hypothesize that the overall framework should contain the following components:
 \begin{itemize}
-\item closed-loop physics-aware control
-\item affordance-based perception
-\item active model estimation and uncertainty reduction
+\item closed-loop planning: planning in closed loop has the advantage to incorporate current (improving) knowledge about the surrounding environment.
+\item physics-aware planning: reasoning about all contacts and interactions with the object of interest is of fundamental importance as it does not restrict the motion to high level actions such as push, pull and the grasp to a rigid model.
+\item expressive scene representation: the perceptive system should provide interaction-centric information as this facilitates planning and state estimation.
+\item active uncertainty reduction: the system can use all its sensing modalities and interaction to better estimate the object model and its parameters. 
 \end{itemize}
-In the rest of this section, an overview of the methodology, underlying assumptions and a description of each subgoal are provided. 
+The development, improvement and implementation of these components is the challenge faced in this thesis. 
 
-\paragraph{Methodology} Each proposed solution is first evaluated in simulation and then on the real hardware consisting of the RoyalPanda mobile manipulator platform. The robot consists of a 7-DoF Franka Emika arm mounted on the holonomic Clearpath Ridgeback base. 
-
-\paragraph{Assumptions} In this research, the following assumptions are made:
+\paragraph{Assumptions} While we would keep the approach as general as possible, we make a set of assumptions to ammeliorate the complexity of the problem:  
 \begin{itemize}
-\item the object category is recognized prior to manipulation
-\item manipulation can be solved in a non-prehensile manner: grasping is not required
+\item access to the object prior: we assume that a perception pipeline is already available which provide a reasonable prior about the articulated object. For instance, the algorithm already provides a rough estimate of the joint location and type. 
+\item manipulation can be solved in a non-prehensile manner: grasp planning is a big research field which has focused preminantly on fixed grasps. We make the observation that articulated object do not necessitate a fixed grasp, especially if the gripper facilitates non-prehesile manipulation as in figure \ref{fig:hook_gripper} 
 \item sensing modalities are RGB-D images, point clouds, proprioceptive data and wrist-mounted wrench measurements 
 \item articulated objects are restricted to the class of open loop kinematic chains consisting of a combination of revolute and/or prismatic joints
 \end{itemize} 
+Note that these are not in contrast with the goal of improving the coordination between perception and planning.
+
+\paragraph{Validation} Each proposed solution is first evaluated in simulation and then on the real hardware consisting of the RoyalPanda mobile manipulator platform. The robot consists of a 7-DoF Franka Emika arm mounted on the holonomic Clearpath Ridgeback base. 
 
 \paragraph{Leveraging simulation} We believe that the potential of simulation engines (both for physical interaction and rendering) has not been fully exploited in the current research. Contemporary simulators are fast and accurate enough to replace analytical models while rendering engines afford photorealistic results. Recent behavioral and computation studies of human physical scene understanding push forward an account that people's judgement are best explained as probabilistic simulations of a realistic, albeit noisy, physics engine~\cite{wu2015galileo}.
 They can not only be used for offline synthesis and validation but also to generate manipulation behaviors and robust perception in real-time. Real-time perception offers the following advantages:
