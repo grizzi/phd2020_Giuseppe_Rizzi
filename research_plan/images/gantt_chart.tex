@@ -1,6 +1,6 @@
 % http://www.ctan.org/pkg/pgfgantt
 
-\begin{figure}[]
+\begin{figure}[h!]
 \begin{center}
 \hspace*{-2cm}
 \begin{ganttchart}[
@@ -33,52 +33,58 @@ milestone label anchor/.style={below left=-1.7ex and 0.2ex}
 \gantttitlelist{1,...,12}{2} \\
 
 % Group 1
-\ganttgroup{Stochastic Control}{1}{8} \\
+\ganttgroup{Stochastic Control}{1}{7} \\
 \ganttbar{Literature review}{1}{2} \\
 \ganttbar{Implementation}{3}{5} \\
-\ganttbar{Validation}{5}{8} \\
-\ganttbar{Hardware tests}{7}{8} \\
-\ganttmilestone{Publication 1}{8} \\
+\ganttbar{Simulation tests}{5}{5} \\
+\ganttbar{Hardware tests}{6}{7} \\
+\ganttbar{Paper writing}{7}{7} \\
+\ganttmilestone{Journal Publication}{7} \\
 
 
 % Group 2
 \ganttnewline
-\ganttgroup{Affordances for Control}{8}{12} \\
-\ganttbar{Literature review}{8}{8} \\
-\ganttbar{Simulation setup}{8}{9} \\
-\ganttbar{Implementation}{9}{12} \\
-\ganttbar{Simulated experiments}{10}{12} \\
-\ganttbar{Hardware tests}{11}{12} \\
-\ganttmilestone{Publication 2}{12} \\
+\ganttgroup{Affordances for Control}{7}{12} \\
+\ganttbar{Literature review}{7}{8} \\
+\ganttbar{Problem formulation}{8}{8} \\
+\ganttbar{Simulation setup}{8}{8} \\
+\ganttbar{Affordances cost map}{9}{10} \\
+\ganttbar{Controller integration}{10}{10} \\
+\ganttbar{Validation}{11}{12} \\
+\ganttbar{Paper writing}{12}{12} \\
+\ganttmilestone{Conference Publication}{12} \\
 
 % Group 3
 \ganttnewline
-\ganttgroup{Interactive Affordances}{12}{16} \\
-\ganttbar{Literature review}{12}{12} \\
-\ganttbar{Problem formulation}{12}{12} \\
-\ganttbar{Simulation setup}{13}{14} \\
-\ganttbar{Data collection}{13}{14} \\
-\ganttbar{Training and Validation}{15}{16} \\
-\ganttbar{Real world tests}{15}{17} \\
-\ganttmilestone{Publication 3}{17} \\
+\ganttgroup{Interactive Affordances}{13}{18} \\
+\ganttbar{Literature review}{13}{14} \\
+\ganttbar{Problem formulation}{14}{14} \\
+\ganttbar{Interaction scheme}{15}{16} \\
+\ganttbar{Interaction-Aware affordance map}{16}{16} \\
+\ganttbar{Controller Integration}{17}{17} \\
+\ganttbar{Validation}{17}{18} \\
+\ganttbar{Paper writing}{18}{18} \\
+\ganttmilestone{Conference Publication}{18} \\
 
 % Group 4
 \ganttnewline
 \ganttgroup{Interactive Perception}{18}{24} \\
-\ganttbar{Literature review}{18}{18} \\
-\ganttbar{Problem formulation}{18}{18} \\
-\ganttbar{Methods selection}{18}{20} \\ % select promising articulation model estimation methods
-\ganttbar{Methods evaluation}{18}{20} \\
-\ganttbar{Simulation Integration}{21}{21}\\
-\ganttbar{Implmentation}{22}{23} \\
-\ganttbar{Simulated experiments}{22}{24} \\
-\ganttbar{Hardware tests}{23}{24} \\
-\ganttmilestone{Publication 4}{24} \\
+\ganttbar{Literature review}{18}{19} \\
+\ganttbar{Problem formulation}{19}{19} \\
+
+\ganttbar{Methods for model estimation}{20}{21} \\ 
+\ganttbar{Methods evaluation}{21}{21} \\
+
+\ganttbar{Online estimation}{22}{23} \\
+\ganttbar{Informative planning}{22}{23} \\
+\ganttbar{Validation}{24}{24} \\
+\ganttbar{Paper writing}{24}{24} \\
+\ganttmilestone{Journal Publication}{24} \\
 
 
 % Relations
-\ganttlink{elem13}{elem21}
-\ganttlink{elem8}{elem13}
+% \ganttlink{elem13}{elem21}
+% \ganttlink{elem8}{elem13}
 
 \end{ganttchart}
 \end{center}
