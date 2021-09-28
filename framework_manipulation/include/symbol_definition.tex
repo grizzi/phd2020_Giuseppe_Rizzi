@@ -1,0 +1,136 @@
+% ---------- Standard Commands -------------
+%\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+% utilities
+\newcommand{\add}[1]{\textcolor{blue}{#1}}
+% comments
+\newcommand{\MT}[1]{\red{(MT: #1)}}
+
+% ---------- new commands ------------------
+\newcommand{\vect}[1]{\bm{#1}}		% vectors
+\newcommand{\matr}[1]{\bm{#1}}		% matrices
+\newcommand{\nR}[1]{\mathbb{R}^{#1}}		% real number
+\newcommand{\nT}[1]{\mathbb{T}^{#1}}		% real number
+\newcommand{\nN}[1]{\mathbb{N}^{#1}}		% real number
+\newcommand{\define}{:=}			% define symbol
+\newcommand{\modulus}[1]{\left| #1 \right|}	% abs
+\newcommand{\matrice}[1]{\begin{bmatrix} #1 \end{bmatrix}}	% matrix
+\newcommand{\smallmatrice}[1]{\left[\begin{smallmatrix} #1 \end{smallmatrix}\right]}	% matrix
+\newcommand{\cosp}[1]{\cos \left( #1 \right)}	% cos with brace
+\newcommand{\sinp}[1]{\sin \left( #1 \right)}	% sin with brace
+\newcommand{\determinant}[1]{\text{det}\left(#1\right)} 	% determinant
+\newcommand{\sgn}[1]{\text{sgn}\left( #1 \right)}			% signum
+\newcommand{\atanTwo}[1]{{\rm atan2}\left( #1\right)}		% atan2
+\newcommand{\acotTwo}[1]{{\rm acot2}\left( #1\right)}		% acot2
+\newcommand{\upperRomannumeral}[1]{\uppercase\expandafter{\romannumeral#1}}	% roman numbers
+\newcommand{\lowerromannumeral}[1]{\romannumeral#1\relax}
+\newcommand{\vSpace}{\;\,}
+
+%-----------Functions------------------------
+\newcommand{\minEig}[1]{\lambda_{\text{min}}[#1]}
+\newcommand{\maxEig}[1]{\lambda_{\text{max}}[#1]}
+\newcommand{\transpose}{\top}
+
+
+% --------- References ----------------------
+\newcommand{\fig}{Fig.~}	% figure ref
+\newcommand{\eqn}{Eq.~}	% equation ref
+\newcommand{\tab}{Tab.~}	% table ref
+\newcommand{\cha}{Chap.~}	% chapter ref
+\newcommand{\sect}{Sec.~}	% section ref
+\newcommand{\algo}{Algo.~}
+
+% --------- Variables -----------------------
+
+% General
+\renewcommand{\frame}{\mathcal{F}}		% frame
+\newcommand{\origin}{O}						% origin
+\newcommand{\vX}{\vect{x}}					% x-axis
+\newcommand{\vY}{\vect{y}}					% y-axis
+\newcommand{\vZ}{\vect{z}}					% z-axis
+\newcommand{\pos}{\vect{p}}				% position vector
+\newcommand{\dpos}{\vect{v}}				% velocity vector
+\newcommand{\rotMat}{\matr{R}}				% rotation matrix
+\newcommand{\rotMatVectAngle}[2]{\rotMat_{#1}(#2)}	% rotation matrix representing the rotation about a vector of a certain angle
+\newcommand{\vZero}{\vect{0}}				% vect/matr of zeros
+\newcommand{\eye}[1]{\matr{I}_{#1}}
+\newcommand{\zeros}[1]{\matr{0}_{#1}}
+
+% World frame
+\newcommand{\frameW}{\frame_W}			% world frame
+\newcommand{\originW}{\origin_W}		% origin world frame
+\newcommand{\xW}{\vX_W}				% x-axis world frame
+\newcommand{\yW}{\vY_W}				% y-axis world frame
+\newcommand{\zW}{\vZ_W}				% z-axis world frame
+
+% Robot
+\newcommand{\configRobot}{\vect{q}} % Robot configuration
+\newcommand{\dconfigRobot}{\dot{\vect{q}}} % Robot configuration
+\newcommand{\ddconfigRobot}{\ddot{\vect{q}}} % Robot configuration
+\newcommand{\robotDoF}{n_q} % Robot dof
+\newcommand{\massMatrix}{M(\configRobot)}
+\newcommand{\coriolis}{C(\configRobot, \dconfigRobot)}
+\newcommand{\error}[1]{\tilde{#1}}
+\newcommand{\desired}[1]{#1^*}
+\newcommand{\configRobotError}{\error{\vect{q}}} % Robot configuration
+\newcommand{\dconfigRobotError}{\dot{\error{\vect{q}}}} % Robot configuration
+\newcommand{\ddconfigRobotError}{\ddot{\error{\vect{q}}}} % Robot configuration
+\newcommand{\configRobotDesired}{\desired{\configRobot}} % Robot configuration
+\newcommand{\dconfigRobotDesired}{\desired{\dconfigRobot}} % Robot configuration
+\newcommand{\ddconfigRobotDesired}{\desired{\ddconfigRobot}} % Robot configuration
+
+
+% Object
+\newcommand{\configObject}{\vect{o}} % Robot configuration
+\newcommand{\dconfigObject}{\dot{\vect{o}}} % Robot configuration
+\newcommand{\contact}{\gamma}
+\newcommand{\objectDoF}{n_o} % Robot dof
+
+% system
+\newcommand{\state}{\vect{x}} % state
+\newcommand{\dstate}{\dot{\vect{x}}} % state
+\newcommand{\command}{\vect{u}} % state
+\newcommand{\pose}{\vect{p}} % state
+\newcommand{\robotState}{\state_{rob}}
+\newcommand{\objectState}{\state_{obj}}
+\newcommand{\drobotState}{\dot{\state}_{rob}}
+\newcommand{\dobjectState}{\dot{\state}_{obj}}
+\newcommand{\robotCoriolis}{\vect{b}_{r}(\configRobot, \dconfigRobot)}
+\newcommand{\objectCoriolis}{\vect{b}_{o}(\configObject, \dconfigObject)}
+\newcommand{\upperLimits}{\configRobot_{\text{upper}}}
+\newcommand{\lowerLimits}{\configRobot_{\text{lower}}}
+\newcommand{\weightScalar}[1]{w_{#1}}
+\newcommand{\weightMatrix}[1]{\matr{W}_{#1}}
+\newcommand{\commandTorque}{\boldsymbol{\tau}_{cmd}}
+\newcommand{\externalTorque}{\boldsymbol{\tau}_{ext}}
+
+
+% control theory
+\newcommand{\inputSequence}{U}
+\newcommand{\stateSequence}{X}
+\newcommand{\trajectory}{\vect{\tau}}
+\newcommand{\noise}{\vect{\epsilon}}
+\newcommand{\variance}{\matr{\Sigma}}
+\newcommand{\successState}{\mathcal{O}}
+\newcommand{\successStateTraj}{\successState_{\trajectory}}
+\newcommand{\gradientInput}{\nabla_{\inputSequence}}
+\newcommand{\expectation}[1]{\mathbb{E}_{#1}}
+\newcommand{\utility}{\exp( -\lambda J)}
+
+% Sampling control
+\newcommand{\traj}{X, U}
+\newcommand{\success}{\mathcal{O}}
+\newcommand{\policyParams}{\boldsymbol{\theta}}
+\newcommand{\policy}{\pi_{\policyParams}}
+\newcommand{\expPolicy}[1]{\mathbb{E}_{\policy} \left [#1\right]}
+\newcommand{\succCondProb}{p(\success | \traj)}
+\newcommand{\succProb}{p(\success = 1)}
+\newcommand{\meanVector}{\boldsymbol{\mu}}
+
+% barrier function
+\newcommand{\safeSet}{\mathcal{C}}
+\newcommand{\boundary}[1]{\partial #1}
+\newcommand{\interior}[1]{\text{Int}(#1)}
+\newcommand{\zbf}{h(x)}
+
+

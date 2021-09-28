@@ -1,0 +1,14 @@
+\section{Derivation of policy gradient}
+We aim to maximize the log-likelihood of the success variable $\success$. Recall that the optimization variables are the parameters of the current policy, namely the mean vector of the normally distributed control sequence $\policyParams$. 
+\begin{align*}
+    \nabla_{\policyParams} \log \succProb &= \nabla_{\policyParams} \log \expPolicy{\succCondProb} \\
+    &= \frac{\nabla_{\policyParams} \expPolicy{\succCondProb}}{\expPolicy{\succCondProb}}
+\end{align*}
+we further analyze the numerator of the previous expression and assume a deterministic dynamics:
+\begin{align*}
+    \nabla_{\policyParams} \int \succCondProb \policy dU &= \int \succCondProb \nabla_{\policyParams} \policy dU \\
+    &= \int \succCondProb \policy \nabla_{\policyParams} \log \policy dU \\
+    &= \expPolicy{\succCondProb \nabla_{\policyParams} \log \policy}
+\end{align*}
+leading to the expected result. 
+

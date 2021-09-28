@@ -1,0 +1,8 @@
+The accompanying video illustrates different experimental results both in simulation and on a real mobile manipulator robot.
+The video shows 5 different scenarios:
+1. Experiments in simulation
+2. Manipulation of a cabinet door with a fixed manipulator
+3. Whole-body control of a 10 DoF mobile manipulator robot
+4. Whole-body control of a reactive collision avoidance task
+5. Whole-body control with external disturbances
+

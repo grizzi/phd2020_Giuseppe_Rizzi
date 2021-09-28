@@ -1,0 +1,106 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
+
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out if you need a4paper
+
+%\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4 paper
+
+\IEEEoverridecommandlockouts                              % This command is only needed if 
+                                                          % you want to use the \thanks command
+\newcommand{\red}[1]{{\color{red} #1}}
+\overrideIEEEmargins                                      % Needed to meet printer requirements.
+
+%In case you encounter the following error:
+%Error 1010 The PDF file may be corrupt (unable to open PDF file) OR
+%Error 1000 An error occurred while parsing a contents stream. Unable to analyze the PDF file.
+%This is a known problem with pdfLaTeX conversion filter. The file cannot be opened with acrobat reader
+%Please use one of the alternatives below to circumvent this error by uncommenting one or the other
+%\pdfobjcompresslevel=0
+%\pdfminorversion=4
+
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+
+\input{include/packages}
+
+\title{\LARGE \bf
+A framework for Interaction Control of Mobile Manipulators
+}
+
+
+\author{Giuseppe Rizzi, Jen Jen Chung, Abel Gawel, Marco Tognon, Lionel Ott and Roland Siegwart% <-this % stops a space
+\thanks{This work was supported by the European Union H2020 program under project PILOTING No H2020-ICT-2019-2 871542.}
+\thanks{The authors are with the Autonomous Systems Lab, ETH Z\"urich, Z\"urich 8092, Switzerland. {\tt\small\{grizzi; chungj; gawela; mtognon; lioott; rsiegwart\}@ethz.ch}}%
+}
+
+
+\begin{document}
+
+
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+
+In this work we investigate and deploy stochastic control techniques for the challenging task of mobile manipulation. By their nature manipulation tasks necessitate environment interactions which require handling of non-differentiable switching contact dynamics. These dynamics represent a strong limitation for traditional gradient-based optimization methods such as MPC and DDP. \emph{Sampling-based} techniques alleviate these constraints but have been mainly applied in simulation or for low-dimensional dynamical systems. In this letter, we adopt sampling methods for solving object manipulation tasks with a mobile manipulator and propose a novel framework leveraging \emph{Control Barrier Functions} and \emph{Passivity Theory} to enhance the safety and robustness of the method. The proposed controller enables robust real-time deployment of stochastic control. We evaluate the method on whole-body coordination and manipulation tasks. The method achieves real-time control of a 10-DOF mobile manipulator robot on a conventional CPU. A video of the experiments can be found at \url{new-url-here}.
+  
+\end{abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{include/sections/introduction}
+
+\input{include/sections/problem_formulation}
+
+\input{include/sections/preliminaries}
+
+\input{include/sections/control_method}
+
+\input{include/sections/practical_aspects}
+
+\input{include/sections/experiments}
+
+\input{include/sections/conclusions}
+
+
+% \addtolength{\textheight}{-13.5cm}   % This command serves to balance the column lengths
+                                  % on the last page of the document manually. It shortens
+                                  % the textheight of the last page by a suitable amount.
+                                  % This command does not take effect until the next page
+                                  % so it should come on the page before the last. Make
+                                  % sure that you do not shorten the textheight too much.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section*{ACKNOWLEDGMENT}
+
+% This work was supported in part by ABB Corporate Research, the Luxembourg National Research Fund (FNR) 12571953 and the ETH Foundation with an unrestricted gift from Huawei Technologies.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{IEEEtran}
+% argument is your BibTeX string definitions and bibliography database(s)
+\bibliography{references}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{include/sections/appendix}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% References are important to the reader; therefore, each citation must be complete and correct. If at all possible, references should be commonly available publications.
+
+
+
+
+
+
+
+
+\end{document}
