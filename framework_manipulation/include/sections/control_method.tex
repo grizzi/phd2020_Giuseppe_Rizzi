@@ -1,6 +1,6 @@
 \section{Control Method} \label{sec:control_method}
 
-In this section we combine sampling, barrier functions and energy tank into a unique model-based method for robust and safe interaction control. First the sampling method is presented with a brief explanation of the cost components. Afterwards, the Control Barrier Functions are formulated for the manipulation task. Ultimately, a passivity analysis of the system allows the integration of an energy tank to ensure overall autonomous passivity. 
+In this section we combine sampling, barrier functions and energy tank into a model-based method for robust and safe interaction control. First the sampling method is presented with a brief explanation of each cost components. Afterwards, the CBFs are formulated for the manipulation task. Ultimately, a passivity analysis of the system allows the integration of an energy tank to ensure autonomous passivity. 
 
 \subsection{Sampling-based control}
 The sampling-based framework offers the freedom to directly plan in torque space or use position/velocity control and defer tracking to a low-level controller. In fact, directly planning in the joint space allows to account for objectives which are not in the operational control space such as joint limits and self-collision avoidance. The internal model used to sample trajectory rollouts has the same form as in \eqn \ref{eq:eom}. Joint velocity commands are sampled and then translated to motor torques:
@@ -181,3 +181,9 @@ $n \gets 0$\;
   $n = n + 1$
 }
 \end{algorithm}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\columnwidth]{figures/schemes/stochastic_controller.pdf}
+\caption{The sampling scheme is refined using the Sequential QP. The newly filtered trajectory is shifted in time and used to warm start the next sampling round.} \label{fig:sampling_scheme}
+\end{figure}

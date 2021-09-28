@@ -18,7 +18,7 @@ The simulation experiments are conducted on a dynamic manipulator model as descr
   
 \begin{figure}[t]
 \centering
-  \includegraphics[width=\columnwidth]{figures/articulated_objects_sim.pdf}
+  \includegraphics[width=\columnwidth]{framework_manipulation/figures/mosaics/articulated_objects_sim.pdf}
   \caption{The four articulated objects used in our simulation evaluations. From left to right: shelf, dishwasher, microwave, drawer.} \label{fig:object_manipulation}
 \end{figure}
 
@@ -96,13 +96,8 @@ In \fig\ref{fig:mobile_manipulation_hardware} the magnitudes of the base and end
 \begin{figure}[t]
 \centering
 \begin{subfigure}{\columnwidth}
-    \includegraphics[width=\linewidth]{figures/mobile_robot_montage-compressed.pdf}
+    \includegraphics[width=\linewidth]{figures/robot_experiments/mobile_robot_montage-compressed.pdf}
     \caption{Extract of the manipulation sequence. In A the robot reaches an estimated target region near the handle. In B the door is opened. In C the end-effector moves back to the starting pose.}
 \end{subfigure}%
-\hfill
-\begin{subfigure}{\columnwidth}
-    \includegraphics[trim={0 10 0 50},clip,width=\linewidth]{figures/velocity_norm_annotated.pdf}
-    \caption{Velocity contributions of the base and of the end-effector with respect to the base frame. These results show that whole-body coordination occurs at all the times of the manipulation task.}
-\end{subfigure}%}
 \caption{Whole-body door opening with a mobile manipulator.} \label{fig:mobile_manipulation_hardware}
 \end{figure}

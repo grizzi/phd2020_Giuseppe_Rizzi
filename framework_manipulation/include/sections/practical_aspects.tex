@@ -32,51 +32,39 @@ A large proportion of simulation time is spent on collision detection. We reduce
 \centering
 \hfill
 \begin{subfigure}{0.3\columnwidth}
-    \includegraphics[width=\linewidth]{figures/hardware/m mesh_cropped.pdf}
-    \caption{}
+    \includegraphics[width=\linewidth]{framework_manipulation/figures/hardware/mesh_cropped.pdf}
+    \caption{Original mesh}
 \end{subfigure}%
 \hfill
 \begin{subfigure}{0.3\columnwidth}
-    \includegraphics[width=\linewidth]{figures/doulbe_simple_cropped.pdf}
-    \caption{}
+    \includegraphics[width=\linewidth]{framework_manipulation/figures/hardware/doulbe_simple_cropped.pdf}
+    \caption{Two fingers}
 \end{subfigure}%
 \hfill
 \begin{subfigure}{0.3\columnwidth}
-    \includegraphics[width=\linewidth]{figures/single_hook_cropped.pdf}
-    \caption{}
+    \includegraphics[width=\linewidth]{framework_manipulation/figures/hardware/single_hook_cropped.pdf}
+    \caption{Hook finger}
 \end{subfigure}
-\hfill
-\caption{This figure shows three different collision shapes for the robot end-effector: (a) original mesh, (b) simplified collision shape, (c) modified hook design. Original collision meshes are often approximated by convex hulls which are inaccurate and more complex representations.}\label{fig:1}
-\end{figure}
-
-
-\begin{table}[h!]
-    \centering
-    \begin{tabular}{c|c|c|c}
-             &  Min Rate [Hz] & Max Rate [Hz]& Average Rate[Hz]\\
+\subfloat{%
+    \begin{tabularx}{\columnwidth}{c|c|c|c}
+             &  (a) & (b) & (c) \\ 
                        \hline
-         Original mesh & 10 & 306 & 145 \\
-         Two fingers & \textbf{49} & 321 & 161 \\
-         Hook finger & 44 & \textbf{327} & \textbf{177} \\
-    \end{tabular}
-    \caption{Control rate statistics when using different collision shapes for the door opening task.TODO: update with new values}
-    \label{tab:rate_stat}
-\end{table}
+         Average Rate & 0.98 KHz & 2.13 KHz & 2.94 KHz\\
+    \end{tabularx}
+    \label{subtbl:the-table}
+  }
+
+\caption{Original collision meshes are often approximated by convex hulls which are inaccurate and more complex representations. Simplified mesh bring more accuracy and a performance gain.}\label{fig:1}
+
+\end{figure}
 
  
 \subsection{Cascaded control architecture}
 The expensive rollouts sampling procedure often limits the rate of the controller. Instead, the QP can be efficiently solved at almost the same rate as the low level controller. We propose a \emph{cascaded control} architecture composed of a low rate sampling and policy verification block and a high rate low level control loop. The latter reuses the QP previously defined to find the best input according to the latest received measurements. 
 \begin{figure}[t!]
 \centering
-\hspace*{-1.0cm}
+\hspace*{-0.7cm}
 \includegraphics[width=1.1\columnwidth]{figures/schemes/high_level_architecture.pdf}
-\caption{Put caption cascaded control architecture} \label{fig:cascaded_architecture}
-\end{figure}
-
-\begin{figure}[t!]
-\centering
-\hspace*{-1.0cm}
-\includegraphics[width=0.8\columnwidth]{figures/schemes/stochastic_controller.pdf}
-\caption{Put caption cascaded control architecture} \label{fig:cascaded_architecture}
+\caption{Cascaded control architecture: the stochastic controller computes a velocity trajectory $\bar{U}$. At a higher rates the input vector is queried and interpolated (represented by the tick line) and filtered using the newer odometry update.} \label{fig:cascaded_architecture}
 \end{figure}
 
