@@ -1,24 +1,26 @@
 \section{Time Schedule and Planned Publications}
 \label{sec:time_schedule}
 
-\marginpar{
-\begin{itemize}
-   \item \emph{How can each topic be subdivided into meaningful tasks?}
-	\item \emph{What is the time schedule?}
-	\item \emph{Which publications are planned (list of planned publications)?}
-\end{itemize}
-}
+% \marginpar{
+% \begin{itemize}
+%   \item \emph{How can each topic be subdivided into meaningful tasks?}
+% 	\item \emph{What is the time schedule?}
+% 	\item \emph{Which publications are planned (list of planned publications)?}
+% \end{itemize}
+% }
 
 \subsection{Planned Publications}
-\paragraph{Stochastic Control for Reactive Whole-Body Manipulation} We demonstrate the applicability of our sampling-based method to whole-body coordination for the task of opening a cabinet door. We provide an optimized open-source algorithm which can be used to solve a general set of robotic tasks. We introduce system and algorithmic adaptations that enable us to successfully transfer the algorithm for reactive control on the real robot.
+\paragraph{Stochastic Control for Reactive Whole-Body Manipulation} We demonstrate the applicability of our sampling-based method to whole-body coordination for tasks that require multiple contacts and contact-switching at the end effector interface. We provide an multi-threaded open-source implementation which can be used to solve a general set of robotic tasks. We introduce system and algorithmic adaptations that enable us to successfully demonstrate the approach for a cabinet door opening task on the real robot.
 
-\paragraph{Affordance-based Control} We investigate how to use affordances for control. Following the research thread about dense affordance predictions, we use these to create a cost map to be used by the sampling-based controller to drive the manipulator towards interaction hotspots, thus removing the need for highly engineered cost functions and interaction priors. We evaluate the approach in simulation and on the real system. 
+\paragraph{Affordance-based Control} We investigate how to use affordances for control. Following the research thread about dense affordance predictions, we use these to create a cost map to be used by the sampling-based controller to drive the manipulator towards interaction hotspots, thus removing the need for highly engineered cost functions and interaction priors. We use time to completion and success rate under different starting conditions and task complexities (e.g complex handle types, occlusions) as metrics to evaluate the approach in simulation and on the real system. 
 
-\paragraph{Interactive Affordances} We enrich pure geometrical affordances with wrench information. We will develop a wrench interaction scheme to provide supervision to a learning agent about successful interaction points, orientations and wrenches. The method will be evaluated on a simulated dataset and on real data of various articulated objects such as cabinet doors, drawers, switches, and handwheel valves. Data sources consists of RGB-D images and point clouds. 
+\paragraph{Interactive Affordances} We enrich pure geometrical affordances with wrench information. We will develop an interaction scheme that extracts affordances from objects, namely identifies where on the object the robot can successfully interact and the orientation/wrench to engage interaction. The data can be generated per object model, before interaction through abstraction in simulation. The affordance map can then be used leveraging the previous work on affordance-based control. The method will be evaluated on a data-set of various objects. 
 
+\paragraph{Interactive Perception} Building on our previous work in integrated perception and interaction planning we will integrate off-the-shelf methods to get an initial coarse estimate of the articulated model and its parameters. A multi-scenario approach will be used to plan under uncertainty and solve the dual problem of estimating the model parameters while achieving the manipulation objective.  
 
-\paragraph{Interactive Perception} We investigate how to leverage the previous work to perform robust manipulation under modeling uncertainty. We rely on off-the-shelf methods to get a initial coarse estimate of the articulated model and its parameters. This initial estimate is fed to the estimation and control pipeline as a prior which is then refined in real time through interaction while performing the task. 
-
-The detailed time plan is shown in the Gantt chart in \cref{fig:Gantt Chart}.
+\medskip
+The detailed time plan is shown in the Gantt chart in figure \ref{fig:Gantt Chart}.
 
 \input{images/gantt_chart}
+
+\FloatBarrier
