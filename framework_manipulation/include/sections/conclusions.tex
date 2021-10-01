@@ -1,9 +1,2 @@
 \section{Conclusions} \label{sec:conclusions}
-To the best of the authors' knowledge, this is the first time that the path integral framework has been successfully applied on a 10-DOF mobile manipulator. We have shown that the algorithm can be applied to control a complex dynamical system for contact-based tasks. Real-time control is achieved without the need for massive parallel computation but rather our method exploits fast, readily-available CPU simulators and several algorithmic adaptations that let us successfully transfer the method onto a real platform. We introduce and evaluate \textit{momentum update} to improve convergence and stability of the optimized input sequence. Lastly, we provide some practical observations and a open source \textit{robot-agnostic} implementation. 
-
-\begin{itemize}
-    \item Make more efficient
-    \item Parametric policies
-    \item Close the loop where the perception 
-    \item Robustness to model mismatches
-\end{itemize}
+We have presented a novel control framework for interaction control. We have shown its applicability to the real platform and enhanced its robustness adding a safety layer which deploys ZBFs and passivity. Nevertheless there are still some interesting research directions that we aim to address in the near future. As any model-based control method, this is brittle to model mismatches. While stability is guaranteed through passivity, one could exploit interaction to find a better model estimate, closing the loop between perception and control. To this end, the haptic information readily available throughout the simulated rollouts could be actively used to drive an exploratory behavior. Another interesting idea is the use of a different policy parametrization than a multivariate gaussian such that sampling could be done more efficiently in a lower dimensional space. The proposed method is flexible enough to be applied to other system than mobile manipulators. We hope that the released library will help in this process and development of future applications. 
