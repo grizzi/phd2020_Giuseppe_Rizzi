@@ -13,27 +13,23 @@ The time evolution of the state is described by the following equation of motion
     \dstate = f(\state, \command) =  
     \begin{bmatrix}
       \dconfigRobot \\
-      \matr{M}_r^{-1}(\matr{J}_{r}^\transpose \vect{f}_{ext} - \robotCoriolis + \vect{\tau}_{ctrl}(\command)) \\
+      \matr{M}_r^{-1}(\matr{J}_{r}^\transpose \vect{f}_{ext} - \robotCoriolis + \vect{\tau}_{cmd}(\command)) \\
       \dconfigObject \\
       \matr{M}_o^{-1}(-\matr{J}_{o}^\transpose \vect{f}_{ext} - \objectCoriolis)
     \end{bmatrix},
 \end{equation}
 where $\matr{M}_r \in \nR{\robotDoF \times \robotDoF}$ and $\matr{M}_o \in \nR{\objectDoF \times \objectDoF}$ represent the inertia matrices while $\matr{J}_r(\configRobot) \in \nR{\robotDoF \times 3}$ and $\matr{J}_o(\configObject) \in \nR{\objectDoF \times 3}$ are the Jacobians at the robot and object contact point\footnote{Without loss of generality we consider single contacts to simplify the notation. Nevertheless, extension to the multi-contact case is straightforward.}, respectively.
 $\matr{J}_r$ and $\matr{J}_o$ map the interaction force $\vect{f}_{ext} \in \nR{3}$ at the contact point into the efforts at the object and robot joints. Coriolis and gravity terms are denoted as $\robotCoriolis$ and $\objectCoriolis$. 
-The joint torques, denoted by $\vect{\tau}_{ctrl}$, are computed by a velocity low-level controller as a function of the velocity references $\command$. We define with  $\mathcal{X} \subseteq \nR{2(\robotDoF + \objectDoF)}$ and $\mathcal{U} \subseteq \nR{\robotDoF}$ the spaces of admissible states and inputs, respectively. The control objective is to minimize the distance from an initial to final desired configuration through a feedback policy $\policy(\vect{x}_t)$ where $\boldsymbol{\theta}$ are the policy parameters and $T$ is the length of the receding time horizon. The \textit{distance} to the goal configuration must be defined for the specific problem and can be computed in a space different to $\mathcal{X}$ via an opportune mapping $h : \mathcal{X} \rightarrow \mathcal{H}$: 
+The joint torques, denoted by $\vect{\tau}_{cmd}$, are computed by a velocity low-level controller as a function of the velocity references $\command$. We define with  $\mathcal{X} \subseteq \nR{2(\robotDoF + \objectDoF)}$ and $\mathcal{U} \subseteq \nR{\robotDoF}$ the spaces of admissible states and inputs, respectively. The control objective is to minimize the distance from an initial to final desired configuration through a stochastic feedback policy $\policy(\vect{x}_t)$ where $\boldsymbol{\theta}$ are the policy parameters and $T$ is the length of the receding time horizon. The \textit{distance} to the goal configuration must be defined for the specific problem and can be computed in a space different to $\mathcal{X}$ via an opportune mapping $h : \mathcal{X} \rightarrow \mathcal{H}$: 
 
-\begin{equation} \label{eq:objective}
-\begin{aligned}
-\underset{\policy}{\arg \min}&  \lim_{t \rightarrow \infty} || h(\state^*) - h(\state(t)) ||\\
-\text{subject to: } & \dstate_t=f(\state_t, \command_t) \quad \forall \ t\\
-                    & \state_t  \in \mathcal{X}         \quad \forall \ t \\
-                    & \command_t \in \mathcal{U}        \quad \forall \ t
-\end{aligned}
-\end{equation}
+\begin{mini}|s| 
+{\policy}{\lim_{t \rightarrow \infty} || h(\state^*) - h(\state(t)) ||}{}{\label{eq:objective}}
+\addConstraint{\dstate_t=f(\state_t, \command_t) \quad \forall \ t}{}{}
+\addConstraint{\state_t  \in \mathcal{X}         \quad \forall \ t}{}{}
+\addConstraint{\command_t \in \mathcal{U}        \quad \forall \ t}{}{}
+\end{mini}
 
 As an example, the manipulation task that we analyse consists of moving an articulated object to a desired configuration. In this case the objective in \eqref{eq:objective} can be defined by:
-
-
 \begin{equation}
    || h(\state^*) - h(\state(t)) || = || \configObject^* - \configObject ||_2,
 \end{equation}
