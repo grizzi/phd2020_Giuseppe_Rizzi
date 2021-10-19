@@ -1,9 +1,9 @@
 \section{Practical Aspects}
 
-We address here some issues that arise when implementing the described algorithm on a resource-constrained platform. Furthermore, many practical expedients allow to deal with limited sampling budget, slow control rates and finally with sim-to-real transfer.  
+We address here some issues that arise when implementing the described algorithm on a resource-constrained platform. Furthermore, we introduce many practical expedients that deal with limited sampling budget, slow control rates and finally with sim-to-real transfer.  
 
 \subsection{Gradient Clipping} 
-The policy update rule in \eqn \ref{eq:update_rule} consists is a receding horizon \emph{mini-batch} SGD. As a consequence, the gradient variance can greatly vary between successive iteration of the algorithm. To prevent this phenomenon, especially evident with small sampling budget, we clip the gradients to a user-defined threshold.  
+The policy update rule in \eqn \ref{eq:update_rule} consists of a receding horizon \emph{mini-batch} SGD. As a consequence, the gradient variance can vary greatly between successive iterations of the algorithm. To prevent this phenomenon, which is especially evident with a small sampling budget, we clip the gradients to a user-defined threshold.  
 
 \subsection{Receding Horizon Control} 
 Model-based predictive control rarely achieves the rate of common low-level controllers because of the time consuming rollouts sampling. Nevertheless, the generated input sequence can be used in open loop by a cascaded joint velocity trajectory tracking controller. 
@@ -18,48 +18,48 @@ Especially in regions of high cost, trajectories that are equivalently good can 
     \exp (-\lambda J ) = \exp \left( -h \frac{J - J_{\min}}{J_{\max} - J_{\min}} \right).
 \end{equation}
 
-\subsection{Simulator Tuning}
-Crucial to the overall performance is the accuracy of the simulation environment (implementing \eqn \ref{eq:eom}). Unfortunately the discrepancy between the simulator and the real physical model known as \emph{sim-to-real} gap is always present. A typical failure case consists in a over-estimation of objects friction. We have often observe a ``scratching" emerging behavior where the robot would rely on friction to move the object. In practice friction is hard to measure and depends on the contact patch between surfaces. On the other hand, kinematic constraints between contact points depends on the system geometry which can be accurately measured (e.g from CAD models). Therefore solutions that exploit the latter are more likely to succeed on the real platform. One can bias the controller towards these solutions by setting, for example, a very low friction coefficient between contact bodies.
+\subsection{Simulator tuning}
+Crucial to the overall performance is the accuracy of the simulation environment (implementing \eqn \ref{eq:eom}). Unfortunately the discrepancy between the simulator and the real physical model known as the \emph{sim-to-real} gap is always present. A typical failure case consists of an over-estimation of an object's friction. In such cases, we have often observed a ``scratching" emergent behavior where the robot would rely on friction to move the object. In practice friction is hard to measure and depends on the contact patch between surfaces. On the other hand, kinematic constraints between contact points depends on the system geometry which can be accurately measured (e.g from CAD models). Therefore solutions that exploit the latter are more likely to succeed on the real platform. One can bias the controller towards these solutions by setting, for example, a very low friction coefficient between contact bodies.
 
-\subsection{Contact-meshes simplification}
-A large proportion of simulation time is spent on collision detection. We reduce the component meshes to the relevant ones and simplify to primitive shapes, as shown in \fig\ref{fig:1}. We are especially interested in the collision objects belonging to the robot end-effector and the object. This adaptation tremendously reduces computation especially during the contact phase. 
+\subsection{Contact-mesh simplification}
+A large proportion of simulation time is spent on collision detection. We reduce the component meshes to the relevant ones and simplify to primitive shapes, as shown in \fig\ref{fig:1}. We are especially interested in the collision objects belonging to the robot end-effector and the object. This adaptation tremendously reduces computation especially during the contact phase. In our following evaluations we observed that using the original mesh shown in \fig\ref{fig:original_mesh} results in a mean simulation rate of 0.98kHz. In contrast, the two finger mesh and hook finger mesh in \fig\ref{fig:two_fingers}-\ref{fig:hook_finger} allow mean simulation rates of 2.13kHz and 2.94kHz, respectively.
 
 \begin{figure}[t]
 \centering
 \begin{subfigure}{0.3\columnwidth}
     \includegraphics[width=\linewidth]{framework_manipulation/figures/hardware/mesh_cropped.pdf}
-    \caption{Original mesh}
+    \caption{Original mesh}\label{fig:original_mesh}
 \end{subfigure}%
 \hfill
 \begin{subfigure}{0.3\columnwidth}
     \includegraphics[width=\linewidth]{framework_manipulation/figures/hardware/doulbe_simple_cropped.pdf}
-    \caption{Two fingers}
+    \caption{Two fingers}\label{fig:two_fingers}
 \end{subfigure}%
 \hfill
 \begin{subfigure}{0.3\columnwidth}
     \includegraphics[width=\linewidth]{framework_manipulation/figures/hardware/single_hook_cropped.pdf}
-    \caption{Hook finger}
+    \caption{Hook finger}\label{fig:hook_finger}
 \end{subfigure}
-\subfloat{%
-    \begin{tabularx}{\columnwidth}{c|c|c|c}
-             &  (a) & (b) & (c) \\ 
-                       \hline
-         Mean sim rate & 0.98 KHz & 2.13 KHz & 2.94 KHz\\
-    \end{tabularx}
-    \label{subtbl:the-table}
-  }
+% \subfloat{%
+%     \begin{tabular}{c|c|c|c}
+%              &  (a) & (b) & (c) \\ 
+%                       \hline
+%          Mean sim rate & 0.98 KHz & 2.13 KHz & 2.94 KHz\\
+%     \end{tabular}
+%     \label{subtbl:the-table}
+%   }
 
-\caption{Original collision meshes are often approximated by convex hulls which are inaccurate and more complex representations. Simplified mesh bring more accuracy and a performance gain.}\label{fig:1}
+\caption{Original collision meshes are often approximated by convex hulls which are inaccurate while also more complex representations. In contrast, a simplified mesh can bring more accuracy as well as a computational performance gain in terms of simulation rate.}\label{fig:1}
 
 \end{figure}
 
  
 \subsection{Cascaded control architecture}
-The expensive rollouts sampling procedure often limits the rate of the controller. Instead, the QP can be efficiently solved at almost the same rate as the low level controller. We propose a \emph{cascaded control} architecture composed of a low rate policy update block and a high rate low level control loop. The latter solves the FILTER-QP \ref{eq:cbf-qp} point-wise to find the best input according to the latest received measurements. 
+The expensive rollout sampling procedure often limits the rate of the controller. Instead, the QP can be efficiently solved at almost the same rate as the low-level controller. We propose a \emph{cascaded control} architecture composed of a low-rate policy update block and a high-rate low-level control loop. The latter solves the FILTER-QP in \eqn \eqref{eq:cbf-qp} point-wise to find the best input according to the latest received measurements. 
 \begin{figure}[t!]
 \centering
 \hspace*{-0.7cm}
 \includegraphics[width=1.1\columnwidth]{figures/schemes/high_level_architecture.pdf}
-\caption{Cascaded control architecture: the stochastic controller computes a velocity trajectory $\bar{U}$. At a higher rates the input vector is queried and interpolated (tick line) and filtered using the newer odometry.} \label{fig:cascaded_architecture}
+\caption{Cascaded control architecture: the stochastic controller computes a velocity trajectory $\bar{U}$ at approximately 100Hz. The input vector is queried and interpolated at a higher rate of approximately 1000Hz (tick line) and is filtered using the latest odometry.} \label{fig:cascaded_architecture}
 \end{figure}
 

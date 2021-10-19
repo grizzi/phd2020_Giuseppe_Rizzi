@@ -25,7 +25,7 @@
 \input{include/packages}
 
 \title{\LARGE \bf
-A framework for Interaction Control of Mobile Manipulators
+A Framework for Interaction Control of Mobile Manipulators
 }
 
 
@@ -47,7 +47,7 @@ A framework for Interaction Control of Mobile Manipulators
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
 
-In this work we investigate and deploy stochastic control techniques for the challenging task of mobile manipulation. By their nature manipulation tasks necessitate environment interactions which require handling of non-differentiable switching contact dynamics. These dynamics represent a strong limitation for traditional gradient-based optimization methods such as MPC and DDP. \emph{Sampling-based} techniques alleviate these constraints. In this letter, we adopt sampling methods for solving object manipulation tasks with a mobile manipulator and propose a novel framework leveraging \emph{Control Barrier Functions} and \emph{Passivity Theory} to enhance the safety and robustness of the method. The proposed controller enables robust real-time deployment of stochastic control. The method achieves real-time control of a 10-DOF mobile manipulator robot on a conventional CPU. A video of the experiments can be found at \url{new-url-here}.
+In this work we investigate and deploy stochastic control techniques for the challenging task of mobile manipulation. By their nature manipulation tasks necessitate environment interactions which require handling of non-differentiable switching contact dynamics. These dynamics represent a strong limitation for traditional gradient-based optimization methods such as Model Predictive Control (MPC) and Differential Dynamic Programming (DDP). \emph{Sampling-based} techniques alleviate these constraints. In this work, we adopt sampling methods for solving object manipulation tasks with a mobile manipulator and propose a novel framework leveraging \emph{Control Barrier Functions} and \emph{Passivity Theory} to enhance the safety and robustness of the method. The proposed controller enables robust real-time deployment of stochastic control. We deploy the algorithm on a 10-DOF mobile manipulator robot and a conventional CPU. A video of the experiments can be found at \url{new-url-here}.
   
 \end{abstract}
 
@@ -89,6 +89,7 @@ In this work we investigate and deploy stochastic control techniques for the cha
 \bibliography{references}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendices
 \input{include/sections/appendix}
 
 
