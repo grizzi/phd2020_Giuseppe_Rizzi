@@ -87,15 +87,23 @@ We aim to show that the tank is effective in limiting the dissipated power and t
 \begin{figure}[t]
 \centering
 \hspace*{-0.0cm} 
-\begin{subfigure}{1.0\columnwidth}
+\begin{subfigure}{0.8\columnwidth}
     \includegraphics[width=\linewidth]{figures/fix_experiment/wrench_with_without_tank.pdf}
+    \caption{Wrench norm during task execution in simulation. The red shaded area shows the time interval when the object is fixed. Note that this might vary for each experiment as the object reaches the prescribed position at different time points.}
 \end{subfigure}
 \hspace*{-0.0cm} 
-\begin{subfigure}{1.0\columnwidth}
+\begin{subfigure}{0.8\columnwidth}
     \includegraphics[width=\linewidth]{figures/fix_experiment/energy_with_without_tank.pdf}
+    \caption{Energy in the tank during task execution in simulation. While the energy is always below zero when using the filter, it drastically drops in the other case. The plotted energy is computed integrated the dissipated power during interaction.}
 \end{subfigure}
 \hfill
-\caption{The figure shows the interaction wrench and energy in the tank during the task execution. The shaded area is the interval of time during which the articulated object is fixed.  }\label{fig:tank_comparison}
+\caption{The figure shows the exerted wrench and energy during the task. As we can see from the second plot, the filter regulates the dissipated power when energy is low in the tank, resulting in a reduced wrench when the object is "stuck". Statistics are extracted from 20 simulation experiments for each case (\emph{with filter} / \emph{without filter}) of interaction with the \textit{shelf} object}\label{fig:tank_comparison}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\columnwidth]{figures/fix_experiment/}
+\caption{}\label{fig:tank_as_zbf}
 \end{figure}
 
 \subsection{Real world experiments}
