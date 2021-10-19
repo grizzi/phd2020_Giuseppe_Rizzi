@@ -66,7 +66,14 @@ The results of the experiments are summarized in \fig \ref{fig:methods_compariso
 \end{figure}
 
 \subsection{Robust interaction}
-We aim to show that the tank is effective in limiting the dissipated power and thus generating a stable and robust interaction behavior. In this experiment, the articulated object becomes stuck while the robot is interacting with it. We fix the object position for $5s$. After this time the object is released and is free to move within its limits. From the results in \fig\ref{fig:tank_comparison}, we can note that when the FILTER-QP is turned off and therefore no passivity is ensured, the negative power flow is not bounded, leading to high interaction wrenches. On the other hand, when the energy tank is used, only a maximal amount of energy, namely that stored in the tank, can be used, regulating the overall interaction wrench.    
+We aim to show that the tank is effective in limiting the dissipated power and thus generating a stable and robust interaction behavior. In this experiment, the articulated object becomes stuck while the robot is interacting with it. We fix the object position for $5s$. After this time the object is released and is free to move within its limits. From the results in \fig\ref{fig:tank_comparison}, we can note that when the FILTER-QP is turned off and therefore no passivity is ensured, the negative power flow is not bounded, leading to high interaction wrenches. On the other hand, when the energy tank is used, only a maximal amount of energy, namely that stored in the tank, can be used, regulating the overall interaction wrench.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\columnwidth]{figures/fix_experiment/passivity_as_zbf.pdf}
+\caption{In this figure we show the chattering effect happening when the constraints is enforced with $\alpha = 1/dt = 1000$. Instead a lower $\alpha$ greatly alleviates this effect.  }\label{fig:tank_as_zbf}
+\end{figure}
+
 
 %\begin{figure}[t]
 %\centering
@@ -89,22 +96,17 @@ We aim to show that the tank is effective in limiting the dissipated power and t
 \hspace*{-0.0cm} 
 \begin{subfigure}{0.8\columnwidth}
     \includegraphics[width=\linewidth]{figures/fix_experiment/wrench_with_without_tank.pdf}
-    \caption{Wrench norm during task execution in simulation. The red shaded area shows the time interval when the object is fixed. Note that this might vary for each experiment as the object reaches the prescribed position at different time points.}
+    \caption{The red shaded area shows the time interval when the object is fixed. Note that this might vary for each experiment as the object reaches the prescribed position at different time points.}
 \end{subfigure}
 \hspace*{-0.0cm} 
 \begin{subfigure}{0.8\columnwidth}
     \includegraphics[width=\linewidth]{figures/fix_experiment/energy_with_without_tank.pdf}
-    \caption{Energy in the tank during task execution in simulation. While the energy is always below zero when using the filter, it drastically drops in the other case. The plotted energy is computed integrated the dissipated power during interaction.}
+    \caption{While the energy is always below zero when using the filter, it drastically drops in the other case. The plotted energy is computed integrated the dissipated power during interaction.}
 \end{subfigure}
 \hfill
-\caption{The figure shows the exerted wrench and energy during the task. As we can see from the second plot, the filter regulates the dissipated power when energy is low in the tank, resulting in a reduced wrench when the object is "stuck". Statistics are extracted from 20 simulation experiments for each case (\emph{with filter} / \emph{without filter}) of interaction with the \textit{shelf} object}\label{fig:tank_comparison}
+\caption{The figure shows the exerted wrench and the tank energy during the task. The filter regulates the dissipated power when energy is low in the tank, resulting in a reduced wrench when the object is "stuck". Statistics are extracted from 20 simulation experiments for each case (\emph{with filter} / \emph{without filter}) of interaction with the \textit{shelf} object}\label{fig:tank_comparison}
 \end{figure}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.8\columnwidth]{figures/fix_experiment/}
-\caption{}\label{fig:tank_as_zbf}
-\end{figure}
 
 \subsection{Real world experiments}
 Our RoyalPanda test platform consists of a holonomic mobile base equipped with a 7-DOF manipulator. The robot's wrist mounts a custom set of fingers as shown in \fig\ref{fig:custom_fingers}. This hardware adaptation simplifies the problem without limiting the capabilities of the platform. We run the presented algorithm on a Intel Core i7-8550U quad-core processor (1.8 GHz, up to 4.0 GHz) and use 8 threads for parallel forward sampling of rollouts. All control parameters are summarized in \tab \add{add table of parameters}. The target velocity commands are tracked by a PI controller which converts these into motor torques. The omnidirectional base is controlled by sending velocity commands to the mecanum wheel controller. The arm's low-level controller runs at 1KHz while the base mecanum controller runs at 50Hz. The FILTER-QP is solved efficiently using the \texttt{osqp} C++ library \cite{osqp}. We measure an average solving time of $\approx 0.1$ ms.  

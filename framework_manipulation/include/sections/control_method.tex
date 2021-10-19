@@ -141,22 +141,7 @@ showing the system's passivity. The increase of the robot's energy is compensate
 \begin{equation}
     \int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \command \ dt \geq \epsilon,
 \end{equation}
-where $\epsilon$ is a positive minimum residual energy to avoid a singularity condition. We can discretize the previous equation to obtain a constraint which is affine in the input $\command$
-\begin{equation*}
-    \int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \command \ dt \approx \underbrace{\boldsymbol{\tau}_{ext}(t + dt)^T \command(t+dt) dt}_{P_{diss}} + S(x_t(t)) \geq \epsilon
-\end{equation*}
-which is equivalent to 
-\begin{equation}
-    P_{diss} \leq \alpha E_{res}
-\end{equation}
-
-where we defined the residual energy $S(x_t(t))-\epsilon$ as $E_{res}$. The above inequality has the drawback that when the euler integration is performed with small time intervals, then a dangerously high power can be dissipated at any time, until very close to the lower energy limit. It is therefore better to use a value of $\alpha > 1/dt$. One can easily verify that defining a passivity ZBF as $h_{pass} = S(x_t) - \epsilon$ we obtain the same formulation. The ZBF constraint reads as: 
-\begin{align}
-    \dot{h}_{pass} &= \dot{S}(x_t) \\
-     &\geq -\alpha h_{pass} \\
-     &=\alpha (\epsilon - S(x_t)))
-\end{align}
-The passivity can therefore seen as a ZBF and consequently inherits its properties.
+where $\epsilon$ is a positive minimum residual energy to avoid a singularity condition.
 
 \subsection{Closing the loop}
 As described in \sect \ref{sec:theory}, we can formulate a quadratic program to find the command which is closest to the sampled one while also satisfying ZBF and passivity constraints previously introduced:
