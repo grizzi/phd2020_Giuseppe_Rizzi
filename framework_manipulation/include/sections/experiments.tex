@@ -68,17 +68,31 @@ The results of the experiments are summarized in \fig \ref{fig:methods_compariso
 \subsection{Robust interaction}
 We aim to show that the tank is effective in limiting the dissipated power and thus generating a stable and robust interaction behavior. In this experiment, the articulated object becomes stuck while the robot is interacting with it. We fix the object position for $5s$. After this time the object is released and is free to move within its limits. From the results in \fig\ref{fig:tank_comparison}, we can note that when the FILTER-QP is turned off and therefore no passivity is ensured, the negative power flow is not bounded, leading to high interaction wrenches. On the other hand, when the energy tank is used, only a maximal amount of energy, namely that stored in the tank, can be used, regulating the overall interaction wrench.    
 
+%\begin{figure}[t]
+%\centering
+%\hspace*{-0.0cm} 
+%\begin{subfigure}{1.0\columnwidth}
+%    \includegraphics[trim=250 0 250 0, clip,width=\linewidth]{figures/fix_experiment/wrench_tank_without_tank.pdf}
+%    \caption{without tank}
+%\end{subfigure}
+%\hspace*{-0.0cm} 
+%\begin{subfigure}{1.0\columnwidth}
+%    \includegraphics[trim=250 0 250 0, clip,width=\linewidth]{figures/fix_experiment/wrench_tank_with_tank.pdf}
+%    \caption{with tank}
+%\end{subfigure}
+%\hfill
+%\caption{The figure shows the interaction wrench and energy in the tank during the task execution. The shaded area is the interval of time during which the articulated object is fixed.  }\label{fig:tank_comparison}
+%\end{figure}
+
 \begin{figure}[t]
 \centering
 \hspace*{-0.0cm} 
 \begin{subfigure}{1.0\columnwidth}
-    \includegraphics[trim=250 0 250 0, clip,width=\linewidth]{figures/fix_experiment/wrench_tank_without_tank.pdf}
-    \caption{without tank}
+    \includegraphics[width=\linewidth]{figures/fix_experiment/wrench_with_without_tank.pdf}
 \end{subfigure}
 \hspace*{-0.0cm} 
 \begin{subfigure}{1.0\columnwidth}
-    \includegraphics[trim=250 0 250 0, clip,width=\linewidth]{figures/fix_experiment/wrench_tank_with_tank.pdf}
-    \caption{with tank}
+    \includegraphics[width=\linewidth]{figures/fix_experiment/energy_with_without_tank.pdf}
 \end{subfigure}
 \hfill
 \caption{The figure shows the interaction wrench and energy in the tank during the task execution. The shaded area is the interval of time during which the articulated object is fixed.  }\label{fig:tank_comparison}
