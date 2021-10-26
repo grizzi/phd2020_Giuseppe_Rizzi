@@ -115,8 +115,17 @@ Our RoyalPanda test platform consists of a holonomic mobile base equipped with a
 \add{ (just to not forget but needs better reformulation) In this experiment we highlight the synergy with the ZBF formulation of constraints. We find that when the system is in a safe set, sampling is oftentime sufficient to avoid constraints violation. The SEQUENTIAL-QP problem then is often filtering trajectories which are already safe and therefore is impact is minimal. Therefore it makes more sense to analyze the controller behavior when constraints are hardly violated, as it can happen because of strong disturbances or innacurate perception systems. To this end, the second experiment shows how the system reacts when the end effector is in a prohibited spherical area $\in \nR{}$ (e.g obstacles, safety human-robot collaboration). Sampling alone is not sufficient to escape this trap as the sampling is driven by a pletora of cost components that counteract each other, especially tracking and collision avoidance cost. Instead, the safety mechanism provided by the SEQUENTIAL-QP immediately recovers a control sequence to evade the prohibited area. This is shown in figure (add figure). All in all the optimization problem can be also seen as a method that simplify the tuning of the cost factors which trade-off performance with safety. The safety filter thas adds a robust behavior outside of the constraint boundaries.}
 
 \begin{figure}[t]
-    \centering
-    \includegraphics[width=\columnwidth]{example-image-a}
+\centering
+\hspace*{-0.0cm} 
+\begin{subfigure}{\columnwidth}
+    \includegraphics[width=\linewidth]{figures/hardware_experiments/tank_energy.pdf}
+    \caption{Caption here}
+\end{subfigure}
+\hspace*{-0.0cm} 
+\begin{subfigure}{\columnwidth}
+    \includegraphics[width=\linewidth]{figures/hardware_experiments/wrench_norm.pdf}
+    \caption{Caption here.}
+\end{subfigure}
     \caption{Caption}
     \label{fig:constraint_experiment}
 \end{figure}
