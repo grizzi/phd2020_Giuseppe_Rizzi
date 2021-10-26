@@ -21,7 +21,7 @@ Especially in regions of high cost, trajectories that are equivalently good can 
 \subsection{Chattering}
 We observed that a naive implementation of the passivity constraint leads to a chattering behavior at the constraint boundary. We start discretizing the constraint inequality to obtain a constraint which is affine in the input $\command$:
 \begin{equation*}
-    \int_{0}^{t + dt} \boldsymbol{\tau}_{ext}^T \command \ dt \approx \underbrace{\boldsymbol{\tau}_{ext}(t)^T \command(t) dt}_{P_{diss}} + S(x_t(t)) \geq \epsilon
+    \int_{0}^{t + dt} \boldsymbol{\tau}_{ext}^T \command \ dt \approx \underbrace{\boldsymbol{\tau}_{ext}(t)^T \command(t) dt}_{-P_{diss}} + S(x_t(t)) \geq \epsilon
 \end{equation*}
 which is equivalent to 
 \begin{equation}
@@ -34,6 +34,9 @@ where we defined the residual energy $S(x_t(t))-\epsilon$ as $E_{res}$. The abov
      =\alpha (\epsilon - S(x_t)))
 \end{equation*}
 The passivity can therefore seen as a ZBF and consequently inherits its properties. A smaller value for $\alpha$ makes the constraint more conservative and improves its performance an the boundary. This effect is shown in \fig \ref{fig:tank_as_zbf} in the experiment section.
+
+\subsection{Sampling strategy}
+\add{Briefly Describe some heuristics here such as sampling the zero velocity and the zero noise trajectory}
 
 \subsection{Simulator tuning}
 Crucial to the overall performance is the accuracy of the simulation environment (implementing \eqn \ref{eq:eom}). Unfortunately the discrepancy between the simulator and the real physical model known as the \emph{sim-to-real} gap is always present. A typical failure case consists of an over-estimation of an object's friction. In such cases, we have often observed a ``scratching" emergent behavior where the robot would rely on friction to move the object. In practice friction is hard to measure and depends on the contact patch between surfaces. On the other hand, kinematic constraints between contact points depends on the system geometry which can be accurately measured (e.g from CAD models). Therefore solutions that exploit the latter are more likely to succeed on the real platform. One can bias the controller towards these solutions by setting, for example, a very low friction coefficient between contact bodies.

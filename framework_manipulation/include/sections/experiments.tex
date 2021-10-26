@@ -112,4 +112,20 @@ We aim to show that the tank is effective in limiting the dissipated power and t
 Our RoyalPanda test platform consists of a holonomic mobile base equipped with a 7-DOF manipulator. The robot's wrist mounts a custom set of fingers as shown in \fig\ref{fig:custom_fingers}. This hardware adaptation simplifies the problem without limiting the capabilities of the platform. We run the presented algorithm on a Intel Core i7-8550U quad-core processor (1.8 GHz, up to 4.0 GHz) and use 8 threads for parallel forward sampling of rollouts. All control parameters are summarized in \tab \add{add table of parameters}. The target velocity commands are tracked by a PI controller which converts these into motor torques. The omnidirectional base is controlled by sending velocity commands to the mecanum wheel controller. The arm's low-level controller runs at 1KHz while the base mecanum controller runs at 50Hz. The FILTER-QP is solved efficiently using the \texttt{osqp} C++ library \cite{osqp}. We measure an average solving time of $\approx 0.1$ ms.  
 
 
-The goal of the experiment is to demonstrate that the algorithm can be deployed on a real platform at high control rates. For this purpose, we perform a door opening experiment. The door and the robot base are tracked via a VICON system, eliminating the need for precise state estimation. We plan to remove this limitation in future work. In order to qualitatively evaluate the algorithm's replanning capabilities, we disturb the manipulator during the opening phase, releasing the contact between the handle and the finger. As we can see in the accompanying video, the controller is able to re-plan a feasible trajectory to the handle and successfully perform the task.
+\add{ (just to not forget but needs better reformulation) In this experiment we highlight the synergy with the ZBF formulation of constraints. We find that when the system is in a safe set, sampling is oftentime sufficient to avoid constraints violation. The SEQUENTIAL-QP problem then is often filtering trajectories which are already safe and therefore is impact is minimal. Therefore it makes more sense to analyze the controller behavior when constraints are hardly violated, as it can happen because of strong disturbances or innacurate perception systems. To this end, the second experiment shows how the system reacts when the end effector is in a prohibited spherical area $\in \nR{}$ (e.g obstacles, safety human-robot collaboration). Sampling alone is not sufficient to escape this trap as the sampling is driven by a pletora of cost components that counteract each other, especially tracking and collision avoidance cost. Instead, the safety mechanism provided by the SEQUENTIAL-QP immediately recovers a control sequence to evade the prohibited area. This is shown in figure (add figure). All in all the optimization problem can be also seen as a method that simplify the tuning of the cost factors which trade-off performance with safety. The safety filter thas adds a robust behavior outside of the constraint boundaries.}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{example-image-a}
+    \caption{Caption}
+    \label{fig:constraint_experiment}
+\end{figure}
+
+The goal of the following experiment is to demonstrate that the algorithm can be deployed on a real platform at high control rates. For this purpose, we perform a door opening experiment. The door and the robot base are tracked via a VICON system, eliminating the need for precise state estimation. We plan to remove this limitation in future work. In order to qualitatively evaluate the algorithm's replanning capabilities, we disturb the manipulator during the opening phase, releasing the contact between the handle and the finger. As we can see in the accompanying video, the controller is able to re-plan a feasible trajectory to the handle and successfully perform the task. 
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{example-image-a}
+    \caption{Caption}
+    \label{fig:tank_experiment}
+\end{figure}
