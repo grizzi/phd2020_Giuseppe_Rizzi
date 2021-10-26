@@ -51,7 +51,7 @@ When this inequality is fulfilled by the control input, the system will be made 
 As the constraint is affine in the control input, it can be solved via a quadratic optimization problem (QP). The advantage of a QP is that it allows trading-off performance and safety through ZBF. When a feed-forward control is available from a nominal controller a minimum perturbation on the feedforward command vector $\vect{u}_{ff}$ can be found through the following QP \cite{ames2019control}:
 \begin{argmini}|s| 
 {\vect{u} \in \nR{n}}{\frac{1}{2} ||\vect{u} - \vect{u}_{ff}||}{}{\label{eq:cbf-const}}
-\addConstraint{\dot{h}(x) \geq \zbf}{}{}.
+\addConstraint{\dot{h}(x) \geq \gamma \zbf}{}{}.
 \end{argmini}
 
 
