@@ -1,7 +1,7 @@
 \section{Preliminaries} \label{sec:theory}
 
 \subsection{Sampling-based control}
-In contrast to deterministic policy optimization we look at the optimal control problem from a Bayesian perspective. This approach has many similarities with policy gradient methods used in reinforcement learning \cite{williams1992simple}. The key difference is that the method is used \emph{online} to iteratively update a parametric policy. While there are several avenues to derive the update equations, for example \emph{Variational Inference} \cite{lambert_stein_2020} or \emph{free energy} \cite{williams_information_2017}, here we will use Stochastic Control (SC) and follow a Bayesian approach similar to \cite{levine2018reinforcement}. 
+In contrast to deterministic policy optimization, we look at the optimal control problem \eqref{eq:objective} from a Bayesian perspective. This approach has many similarities with policy gradient methods used in reinforcement learning \cite{williams1992simple}. The key difference is that the method is used \emph{online} to iteratively update a parametric policy. While there are several avenues to derive the update equations, for example \emph{Variational Inference} \cite{lambert_stein_2020} or \emph{free energy} \cite{williams_information_2017}, here we will use Stochastic Control (SC) and follow a Bayesian approach similar to \cite{levine2018reinforcement}. 
 
 The control problem is represented through a graphical model populated by state, input and an additional binary random variable $\successState$ whose value is $1$ when a trajectory is optimal, and $\successState = 0$ when it is not. Each trajectory is assigned a likelihood which depends on its cumulative cost. Any monotonically decreasing function can be used to map costs to a \textit{pseudo success likelihood}:
 \begin{equation}
@@ -33,17 +33,18 @@ where $L$ is the number of sampled rollouts.
 We finally choose the input sequence as the \emph{Maximum-Likelihood-Estimator} of the policy, which is trivially given by the mean: $U_t = \bar{\meanVector}$.
 
 \subsection{Control Barrier Functions}
-It is desirable to design a controller that mediates performance and safety. \emph{Control Barrier Functions} have been recently introduced as a means to unify these objectives. This theory is based on the concept of \emph{forward invariance} of a safe set $\safeSet $, which is where safety conditions are met. A set $\mathcal{S}$ is called \emph{forward invariant} if for every $x_0 \in \mathcal{S},\ x(t) \in \mathcal{S}$. A differentiable function $\zbf$  characterizes the safe set, such that:
+It is desirable to design a controller that mediates performance and safety. \emph{Control Barrier Functions} have been recently introduced as a means to unify these objectives. This theory is based on the concept of \emph{forward invariance} of a safe set $\safeSet $, which is where safety conditions are met. A set $\mathcal{S}$ is called \emph{forward invariant} if for every $x_0 \in \mathcal{S},\ x(t) \in \mathcal{S}$ for every $t$. A differentiable function $\zbf$  characterizes the safe set, such that:
 \begin{align*}
     \safeSet &= \{ x \in \nR{n} : \zbf \geq 0 \}, \\
     \boundary{\safeSet} &= \{ x \in \nR{n} : \zbf = 0 \}, \\
     \interior{\safeSet} &= \{ x \in \nR{n} : \zbf > 0 \}.
 \end{align*}
-The function $\zbf$ is a \emph{zeroing barrier function} (ZBF) for the set $ \safeSet $ if there exist a $\gamma > 0$ and a set $\mathcal{D}$ with $\safeSet \subseteq \mathcal{D} \subset \nR{n}$ such that, $\forall \  x \  \in \mathcal{D}$, 
+\red{where $\boundary{\safeSet}$ and $\interior{\safeSet}$ denote ...., respectively.}
+The function $\zbf$ is a \emph{Zeroing Barrier Function} (ZBF) for the set $ \safeSet $ if there exist a $\gamma > 0$ and a set $\mathcal{D}$ with $\safeSet \subseteq \mathcal{D} \subset \nR{n}$ such that, $\forall \  x \  \in \mathcal{D}$, 
 \begin{equation} \label{eq:zbf_constraint}
     \dot{h}(x) \geq -\gamma \zbf.
 \end{equation}
-The existence of a ZBF implies the forward invariance of $\safeSet$ \cite{ames2016control}. Furthermore, defining the ZBF on a larger set than $\safeSet$ allows the system to be more robust to model perturbations \footnote{As shown in \cite{ames2016control}, CBFs induce an asymptotically stable behavior towards the safe set $\safeSet$. This property is particularly useful when disturbances bring the system outside the constraints.}. The condition in \eqn \ref{eq:zbf_constraint} can be rewritten for a controlled affine system as,
+The existence of a ZBF implies the forward invariance of $\safeSet$ \cite{ames2016control}. Furthermore, defining the ZBF on a larger set than $\safeSet$ allows the system to be more robust to model perturbations\footnote{As shown in \cite{ames2016control}, CBFs induce an asymptotically stable behavior towards the safe set $\safeSet$. This property is particularly useful when disturbances bring the system outside the constraints.}. The condition in \eqref{eq:zbf_constraint} can be rewritten for a controlled affine system as,
 \begin{equation}
     \sup_{u \in U} \left[ \frac{\partial h }{\partial x} (f(x) + g(x)u) + \gamma \zbf \right] \geq 0, \forall x \in \mathcal{D}.
 \end{equation}
@@ -86,4 +87,5 @@ where $A(t) \in \nR{m}$ is defined as
 \begin{equation} \label{eq:tank_modulation}
     A(t) = \frac{\gamma(t)}{x_t(t)},
 \end{equation}
-and $\gamma(t) \in \nR{m}$ is the desired value for the controlled system. With the above equations one can easily show that $\dot{S} = u_t^T y_t = \vect{u}^T \vect{y}$ and that therefore power is either injected into or extracted from the tank. As visible in \eqn \ref{eq:tank_modulation} there is a singularity when the tank is empty and the desired behavior can no longer be implemented. Therefore it is necessary to ensure that $S(x(t)) \geq \epsilon > 0, \ \forall t$.
+and $\gamma(t) \in \nR{m}$ is the desired value for the controlled system. With the above equations one can easily show that $\dot{S} = u_t^T y_t = \vect{u}^T \vect{y}$ and that therefore power is either injected into or extracted from the tank. As visible in \eqref{eq:tank_modulation} there is a singularity when the tank is empty and the desired behavior can no longer be implemented. 
+Therefore it is necessary to ensure that $S(x(t)) \geq \epsilon > 0, \ \forall t$.

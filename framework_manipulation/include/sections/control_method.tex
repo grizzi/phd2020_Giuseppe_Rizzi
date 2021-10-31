@@ -3,7 +3,7 @@
 In this section we combine sampling, barrier functions and energy tank into a novel model-based controller for robust and safe interaction control. First the sampling method is presented with a brief explanation of each cost components. Afterwards, the ZBFs are formulated for the manipulation task. Ultimately, a passivity analysis of the system allows the integration of an energy tank to ensure autonomous passivity. 
 
 \subsection{Sampling-based control}
-The sampling-based framework offers the freedom to directly plan in torque space or use position/velocity control and defer tracking to a low-level controller. In fact, directly planning in the joint space allows us to account for objectives which are not in the operational control space such as joint limits and self-collision avoidance. The internal model used to sample trajectory rollouts has the same form as in \eqn \ref{eq:eom}. Joint velocity commands are sampled and then translated to motor torques:
+The sampling-based framework offers the freedom to directly plan in torque space or use position/velocity control and defer tracking to a low-level controller. In fact, directly planning in the joint space allows us to account for objectives which are not in the operational control space such as joint limits and self-collision avoidance. The internal model used to sample trajectory rollouts has the same form as in \eqref{eq:eom}. Joint velocity commands are sampled and then translated to motor torques:
 \begin{equation}
     \vect{\tau}_{cmd} = \matr{K}_{D} (\command - \dconfigRobot) + \robotCoriolis,
 \end{equation}
@@ -21,7 +21,7 @@ We denote by $\mathds{1}[\cdot]$ the \textit{indicator function} such that,
 \end{equation}
 In the following we drop from the notation the dependence from the current state. We use $\weightMatrix{}$ to denote positive semidefinite weight matrices and $\weightScalar{}$ for non negative scalar parameters. 
 
-\paragraph{Target reaching} in the target reaching task, the goal is to bring a frame attached to the robot (generally the end-effector frame) to a desired pose. We define with $\matr{T}$ and $\matr{T}^*$ the current framen and desired target pose respectively. The \textit{tracking cost} is computed as a weighted distancein the tangent space to $SE(3)$ using the logarithmic mapping~\cite{blanco2010tutorial}:
+\paragraph{Target reaching} in the target reaching task, the goal is to bring a frame attached to the robot (generally the end-effector frame) to a desired pose. We define with $\matr{T}$ and $\matr{T}^*$ the current and desired target frame pose, respectively. The \textit{tracking cost} is computed as a weighted distance in the tangent space to $SE(3)$ using the logarithmic mapping~\cite{blanco2010tutorial}:
 \begin{equation} \label{eq:tracking_cost}
      c_{t} = || \log(\matr{T} - \matr{T}^{*}) ||^2_{\weightMatrix{t}},
  \end{equation}
@@ -30,17 +30,17 @@ In the following we drop from the notation the dependence from the current state
  $\contact$ is used to avoid collisions during contact-free motions of the end-effector. 
  The \textit{contact cost} is defined as,
  \begin{equation}
-     c_{\contact}= \weightScalar{\contact} \contact(\state), 
+     c_{\contact}= \weightScalar{\contact} \contact(\state).
  \end{equation}
 
  \paragraph{Joint position limits} the manipulator is subject to physical joint limits. These can be addressed by introducing a cost component that penalizes violation of the constraints. We define the \textit{joint limits cost} with:
  \begin{align}
-     &c_{j} = \mathds{1}[\configRobot > \upperLimits](\weightScalar{j} + ||\upperLimits - \configRobot)||^2_{\weightMatrix{js}}) + \nonumber\\ 
+     &c_{j} = \mathds{1}[\configRobot > \upperLimits](\weightScalar{j} + ||\upperLimits - \configRobot||^2_{\weightMatrix{js}}) + \nonumber\\ 
      &\qquad\mathds{1}[\configRobot < \lowerLimits](\weightScalar{j} +  || \configRobot - \lowerLimits||^2_{\weightMatrix{js}}), 
  \end{align}
  where the scalar $\weightScalar{j}$ is a constant cost added when the limit is violated. The matrix $\weightMatrix{js}$ adds a quadratic term in the limit violation. This was shown in~\cite{williams_information-theoretic_2018} to help the controller find its way back if poor sampling brings the system outside of the joint position limits.
  
- \paragraph{Arm reach} we introduce an additional term that penalizes configurations where the arm's end-effector moves far from the base. This helps to bias solutions where base motion is preferred over stretching the arm which can lead to singular configurations. The translation vector from the end-effector frame $E$ to the arm base frame $B$ is defined with the vector $\vect{p}_{BE}$. The current reach is then $r_{\text{curr}} = || \vect{p}_{BE} ||_2$. Given a maximum reach $r_{\text{max}} \in \nR{}_{\geq 0}$, the \textit{reach cost} is then defined by:
+ \paragraph{Arm reach} we introduce an additional term that penalizes configurations where the arm's end-effector moves excessively far from the base. This helps to bias solutions where base motion is preferred over stretching the arm which can lead to singular configurations. The translation vector from the end-effector frame $E$ to the arm base frame $B$ is defined with the vector $\vect{p}_{BE} \in \nR{3}$. The current reach is then $r_{\text{curr}} = || \vect{p}_{BE} ||^2$. Given a maximum reach $r_{\text{max}} \in \nR{}_{\geq 0}$, the \textit{reach cost} is then defined by:
  \begin{equation}
    c_r = \mathds{1}[r_{\text{curr}} > r_{\text{max}}] (\weightScalar{r} + \weightScalar{rs}(r_{\text{curr}} - r_{\text{max}})^2),    
  \end{equation}
@@ -54,7 +54,7 @@ In the following we drop from the notation the dependence from the current state
 \begin{equation}
     c_o(\configObject; \weightMatrix{o}) = || \configObject - \configObject^{*}||^2_{\weightMatrix{o}}.
 \end{equation}
-\paragraph{Power minimization} we propose a new cost component that, by taking into account the power dissipated to perform the task. We leverage the fact that as rollouts are performed in simulation, the joint torque generated through interaction can be easily computed by summing the contribution of each force $\vect{f}_c$ at each contact point $c$:
+\paragraph{Power minimization} we propose a new cost component that takes into account the power dissipated to perform the task. We leverage the fact that as rollouts are performed in simulation, the joint torque generated through interaction can be easily computed by summing the contribution of each force $\vect{f}_c \in \nR{3}$ at each contact point $c$:
 \begin{equation}
 \boldsymbol{\tau}_{ext} = \sum\limits_{c} \matr{J}_c \vect{f}_c,    
 \end{equation}
@@ -68,7 +68,7 @@ As we will later see, this is the power that is drained from the tank and theref
 \add{Add regularization cost}
 
 \subsection{Cost scheduling}
-The manipulation task consists of two phases. In a first phase the manipulator reaches a estimated contact point, allowing for a fast and successful exploration in the following interaction phase. In the second phase, the goal is to bring the object to the desired state while keeping the end-effector close to the initial guess. This switch is enabled by turning on the object manipulation cost $c_o$. Reducing the end-effector position penalty during the manipulation phase allows the controller to choose a trajectory that fully exploits the contact dynamics by changing the hand pose. 
+The manipulation task consists of two phases. In a first phase the manipulator reaches an estimated contact point, allowing for a fast and successful exploration in the following interaction phase. In the second phase, the goal is to bring the object to the desired state while keeping the end-effector close to the initial guess. This switch is enabled by turning on the object manipulation cost $c_o$. Reducing the end-effector position penalty during the manipulation phase allows the controller to choose a trajectory that fully exploits the contact dynamics by changing the hand pose. 
 
 %This approach is in contrast with previous works where manipulation generally follows a prescribed grasping state~\cite{abraham_model-based_2020}. Grasping introduces a kinematic constraint that, while reducing the optimal control search space, does not allow for more flexible, contact-based behaviors to emerge such as pulling, pushing or sliding. 
 
@@ -77,7 +77,7 @@ In the previous subsection a combination of cost components were introduced in o
 \begin{equation}
     \dot{\state} = \matr{J} \dconfigRobot\;.
 \end{equation}
-As described in \cite{benzi2021optimization}, a simple ZBF can be derived for each joint to keep it between its lower and upper bounds $q_i^-$ and $q_i^+$ respectively:
+As described in \cite{benzi2021optimization}, a simple ZBF can be derived for each joint to keep it between its lower and upper bounds, $q_i^-$ and $q_i^+$, respectively:
 \begin{equation}
 h_{ql}^i = \epsilon_{ql} \frac{(q_i^+ - q)(q - q_i^-)}{(q_i^+ - q_i^-)}\;.
 \end{equation}
@@ -90,10 +90,10 @@ associated with the $i$\textsuperscript{th}  and $j$\textsuperscript{th} collisi
 \begin{equation}
     h_{ar} = \frac{1}{2}(D_r^2 - (\vect{p}_{ee} - \vect{p}_{base})^T P (\vect{p}_{ee} - \vect{p}_{base}) ).
 \end{equation}
-The projection matrix $P = \text{diag}(1, 1, 0) \in \nR{3 \times 3}$ makes sure that the reach is only computed in the 2D plane. Each of these CBFs translates to a constraint of the form in \eqn \ref{eq:cbf-const} which is affine in the command. 
+The projection matrix $P = \text{diag}(1, 1, 0) \in \nR{3 \times 3}$ makes sure that the reach is only computed in the 2D plane. Each of these CBFs translates to a constraint of the form in \eqref{eq:cbf-const} which is affine in the commands. 
 
 \subsection{Energy Tank}
-As described in \sect \ref{sec:theory}, energy tanks can be used to \emph{pacify} the system, stabilizing it. Inspired by the work in \cite{benzi2021optimization} and \cite{shahriari2018valve}, this adaptation naturally fits the control method so far developed. The system model is first augmented with a virtual tank. 
+As described in \sect \ref{sec:theory}, energy tanks can be used to \emph{passify} the system, ensuring always stability. Inspired by the work in \cite{benzi2021optimization} and \cite{shahriari2018valve}, this adaptation naturally fits the control method so far developed. The system model is first augmented with a virtual tank. 
 
 %As a consequence, the forward simulation of each rollout also contains the time evolution of the tank's energy and this can be used to ensure passivity in a \emph{predictive} manner. 
 
@@ -106,7 +106,7 @@ with the auxiliary error variable $\configRobotError =  \configRobot - \configRo
 \begin{equation}
     S_{robot} = \frac{1}{2} \dconfigRobotError^T \massMatrix \dconfigRobotError + \frac{1}{2} \configRobotError^T \matr{K}_P \configRobotError.
 \end{equation}
-The energy dynamics can be obtained by computing the time derivative of the previous expression. Plugging in \eqn \eqref{eq:eom} and exploiting the fact that $\massMatrix - 2 \coriolis$ is skew symmetric we get:
+The energy dynamics can be obtained by computing the time derivative of the previous expression. Plugging in \eqref{eq:eom} and exploiting the fact that $\massMatrix - 2 \coriolis$ is skew symmetric we get:
 \begin{equation*}
 \begin{aligned}
     \dot{S}_{robot} &= \dconfigRobotError^T \massMatrix \ddconfigRobotError + \frac{1}{2} \dconfigRobotError^T \dot{\massMatrix} \dconfigRobotError + \dconfigRobotError^T \matr{K}_P \configRobotError \\
@@ -172,7 +172,7 @@ $n \gets 0$\;
 }
 \end{algorithm}
 
-\begin{figure}[h!]
+\begin{figure}[t]
 \centering
 \includegraphics[width=0.8\columnwidth]{figures/schemes/stochastic_controller.pdf}
 \caption{The sampling scheme is refined using Sequential QP. The newly filtered trajectory is shifted in time and used to warm start the next sampling round.} \label{fig:sampling_scheme}
