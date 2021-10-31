@@ -35,10 +35,10 @@ In this experiment we look at the effect of the power term in the task execution
 \subsection{Comparison of methods}
 We evaluate the control framework for a challenging interaction scenario. In all experiments, the robot starts in a configuration that is close to the arm's joint limits and self-collision. The base of the robot is at $(-3.0, -3.0)$, outside of the prescribed position limits of $[(2.0, 2.0), (-2.0, -2.0)]$. We perform 10 experiments for each articulated object and we compare four control adaptations:
 \begin{itemize}
-    \item \textit{no\textunderscore filter}: only sampling is used to generate velocity commands,
-    \item \textit{filter\textunderscore out}: before sending the velocity command to the low-level controller, it is filtered using the high rate FILTER-QP,
-    \item \textit{filter\textunderscore in}: the Sequential FILTER-QP is used in the low-rate block. The full input sequence is passed through the FILTER-QP before being sent to the low-level controller as described in \algo \ref{algo:sequential_qp}.
-    \item \textit{filter\textunderscore in\textunderscore out}: the full cascaded architecture (see \fig \ref{fig:cascaded_architecture}) is deployed, combining the previous two methods.
+    \item $\Pi_{N}$ \textit{no\textunderscore filter}: only sampling is used to generate velocity commands,
+    \item $\Pi_{O}$ \textit{filter\textunderscore out}: before sending the velocity command to the low-level controller, it is filtered using the high rate FILTER-QP,
+    \item $\Pi_{I}$ \textit{filter\textunderscore in}: the Sequential FILTER-QP is used in the low-rate block. The full input sequence is passed through the FILTER-QP before being sent to the low-level controller as described in \algo \ref{algo:sequential_qp}.
+    \item $\Pi_{IO}$ \textit{filter\textunderscore in\textunderscore out}: the full cascaded architecture (see \fig \ref{fig:cascaded_architecture}) is deployed, combining the previous two methods.
 \end{itemize}
 The results of the experiments are summarized in \fig \ref{fig:methods_comparison}. In all cases, filtering the velocity commands has a beneficial effect. The drastic reduction of cumulative joint limit violations shows that closing the loop between the filter and the sampling allows the controller to quickly generate trajectories that recover from constraint violations. We can also observe a reduction in self-collision and reach constraint violations, but in this case the improvement of  \textit{filter\textunderscore in\textunderscore out} with respect to \textit{filter\textunderscore in} is not as prominent. We think that this is due to a low chance of getting into self-collision given the task and robot shape. The robustness provided by the energy tank is particularly useful when something unexpected happens. In the following we design a challenging scenario which, without the tank, could lead to dangerous behaviors. 
 \begin{figure}[t]
@@ -134,7 +134,7 @@ The goal of the following experiment is to demonstrate that the algorithm can be
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{example-image-a}
+    \includegraphics[width=\columnwidth]{figures/obstacle_avoidance_test.pdf}
     \caption{Caption}
     \label{fig:tank_experiment}
 \end{figure}
