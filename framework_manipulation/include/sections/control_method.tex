@@ -144,7 +144,7 @@ showing the system's passivity. The increase of the robot's energy is compensate
 where $\epsilon$ is a positive minimum residual energy to avoid a singularity condition.
 
 \subsection{Closing the loop}
-As described in \sect \ref{sec:theory}, we can formulate a quadratic program to find the command which is closest to the sampled one while also satisfying ZBF and passivity constraints previously introduced:
+As described in \sect \ref{sec:theory}, we can formulate a quadratic program to find the command which is the closest to the sampled one while also satisfying ZBF and passivity constraints previously introduced:
 \begin{mini}|s| 
 {\tilde{\vect{u}}_t, \boldsymbol{\delta}}{||\tilde{\vect{u}}_t - \command_t||^2 + \boldsymbol{\delta}^T \matr{P} \boldsymbol{\delta}\quad \text{(FILTER-QP)}}{}{\label{eq:cbf-qp}}
 \addConstraint{\dot{h}^i_{ql} \geq -{h}_{ql} + \delta^i_{ql} \quad \forall \ i \in [1,  m] }{}{\quad \text{(Joint Limits)}}
