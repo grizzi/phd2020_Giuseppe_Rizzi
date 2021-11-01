@@ -43,26 +43,37 @@ We evaluate the control framework for a challenging interaction scenario. In all
 The results of the experiments are summarized in \fig \ref{fig:methods_comparison}. In all cases, filtering the velocity commands has a beneficial effect. The drastic reduction of cumulative joint limit violations shows that closing the loop between the filter and the sampling allows the controller to quickly generate trajectories that recover from constraint violations. We can also observe a reduction in self-collision and reach constraint violations, but in this case the improvement of  \textit{filter\textunderscore in\textunderscore out} with respect to \textit{filter\textunderscore in} is not as prominent. We think that this is due to a low chance of getting into self-collision given the task and robot shape. The robustness provided by the energy tank is particularly useful when something unexpected happens. In the following we design a challenging scenario which, without the tank, could lead to dangerous behaviors. 
 \begin{figure}[t]
 \centering
-\hspace*{-0.2cm} 
+\hspace*{-0.2cm}
+\vspace*{0.15cm}
 \begin{subfigure}{1\columnwidth}
     \includegraphics[width=\linewidth]{figures/methods_comparison/average_stage_cost.pdf}
 \end{subfigure}%
 \hfill
-\hspace*{-0.2cm} 
-\begin{subfigure}{1\columnwidth}
+\hspace*{-0.2cm}
+\vspace*{0.1cm}
+\begin{subfigure}{\columnwidth}
     \includegraphics[width=\linewidth]{figures/methods_comparison/joint_limits.pdf}
 \end{subfigure}%
 \hfill
-\hspace*{-0.2cm} 
-\begin{subfigure}{1\columnwidth}
+\hspace*{-0.2cm}
+\vspace*{0.1cm}
+\begin{subfigure}{\columnwidth}
     \includegraphics[width=\linewidth]{figures/methods_comparison/self_collision.pdf}
 \end{subfigure}
 \hspace*{-0.2cm} 
-\begin{subfigure}{1\columnwidth}
+\vspace*{0.1cm}
+\begin{subfigure}{\columnwidth}
     \includegraphics[width=\linewidth]{figures/methods_comparison/dissipated_power.pdf}
 \end{subfigure}
 \hfill
 \caption{Comparison between the different control methods when the FILTER-QP is used in different stages of the cascaded architecture. Results are separate by manipulation task. The self-collision metric accounts also for the arm-reach constraint as they share the same implementation.}\label{fig:methods_comparison}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.7\columnwidth]{figures/obstacle_avoidance_test.pdf}
+    \caption{Caption}
+    \label{fig:tank_experiment}
 \end{figure}
 
 \subsection{Robust interaction}
@@ -132,9 +143,3 @@ Our RoyalPanda test platform consists of a holonomic mobile base equipped with a
 
 The goal of the following experiment is to demonstrate that the algorithm can be deployed on a real platform at high control rates. For this purpose, we perform a door opening experiment. The door and the robot base are tracked via a VICON system, eliminating the need for precise state estimation. We plan to remove this limitation in future work. In order to qualitatively evaluate the algorithm's replanning capabilities, we disturb the manipulator during the opening phase, releasing the contact between the handle and the finger. As we can see in the accompanying video, the controller is able to re-plan a feasible trajectory to the handle and successfully perform the task. 
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.8\columnwidth]{figures/obstacle_avoidance_test.pdf}
-    \caption{Caption}
-    \label{fig:tank_experiment}
-\end{figure}
