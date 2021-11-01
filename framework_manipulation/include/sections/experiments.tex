@@ -69,9 +69,23 @@ The results of the experiments are summarized in \fig \ref{fig:methods_compariso
 \caption{Comparison between the different control methods when the FILTER-QP is used in different stages of the cascaded architecture. Results are separate by manipulation task. The self-collision metric accounts also for the arm-reach constraint as they share the same implementation.}\label{fig:methods_comparison}
 \end{figure}
 
+
+\begin{figure}[t]
+\centering
+\begin{subfigure}{1\columnwidth}
+    \includegraphics[width=\linewidth]{figures/obstacle_avoidance/rollouts_no_filter.pdf}
+\end{subfigure}%
+\hfill
+\begin{subfigure}{\columnwidth}
+    \includegraphics[width=\linewidth]{figures/obstacle_avoidance/rollouts_filter.pdf}
+\end{subfigure}%
+\hfill
+\caption{Caption here}\label{fig:rollouts_comparison}
+\end{figure}
+
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.7\columnwidth]{figures/obstacle_avoidance_test.pdf}
+    \includegraphics[width=0.7\columnwidth]{figures/obstacle_avoidance/obstacle_avoidance_test.pdf}
     \caption{Caption}
     \label{fig:tank_experiment}
 \end{figure}
@@ -132,9 +146,9 @@ Our RoyalPanda test platform consists of a holonomic mobile base equipped with a
     \includegraphics[width=\linewidth]{figures/hardware_experiments/wrench_norm.pdf}
     \caption{Caption here}
 \end{subfigure}
-\hspace*{-0.0cm} 
+\hspace*{-0.2cm} 
 \begin{subfigure}{\columnwidth}
-    \includegraphics[width=\linewidth]{figures/hardware_experiments/tank_energy.pdf}
+    \includegraphics[width=\linewidth]{figures/hardware_experiments/energy_tank.pdf}
     \caption{Caption here.}
 \end{subfigure}
     \caption{Caption}
