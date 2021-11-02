@@ -115,7 +115,7 @@ We repeat the simulation for ten runs for each of the method. The results are su
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.7\columnwidth]{figures/obstacle_avoidance/obstacle_avoidance_test.pdf}
-    \caption{Caption}
+    \caption{The barplot shows the cumulative cartesian limits violation. These limits are formulated as ZBFs which are positive when a robot link does not touch the big collision sphere. $\Pi_{I}$ already outperforms $\Pi_{N}$ and $\Pi_{O}$. A small performance boost is achieved by $\Pi_{IO}$.}
     \label{fig:obstacle_avoidance}
 \end{figure}
 
@@ -142,7 +142,7 @@ The previous validation show how the framework is powerful in addressing manipul
     \caption{While the energy is always below zero when using the filter, it drastically drops in the other case. The plotted energy is computed integrated the dissipated power during interaction.}
 \end{subfigure}
 \hfill
-\caption{The figure shows the exerted wrench and the tank energy during the task. The filter regulates the dissipated power when energy is low in the tank, resulting in a reduced wrench when the object is "stuck". Statistics are extracted from 20 simulation runs of interaction with the \textit{shelf} object}\label{fig:tank_comparison}
+\caption{The filter regulates the dissipated power when energy is low in the tank, resulting in a reduced wrench when the object is "stuck". Statistics are extracted from 20 simulation runs of interaction with the \textit{shelf} object}\label{fig:tank_comparison}
 \end{figure}
 
 \vspace{0.5cm}
@@ -154,14 +154,14 @@ We finaly test the developed algorithms on Our RoyalPanda test platform. It cons
 \hspace*{-0.0cm} 
 \begin{subfigure}{0.9\columnwidth}
     \includegraphics[width=\linewidth]{figures/hardware_experiments/wrench_norm.pdf}
-    \caption{Caption here Average wrench 68 vs 34 N}
+    \caption{Wrench norm during the door opening experiment. We measure an average wrench of 68 N and 34 N when using methods $\Pi_{N}$ and $\Pi_{IO}$ respectively. The sharp wrench drop corresponds to the time when the rope breaks and energy is suddenly released. The two time series have been aligned to facilitate visualization.}
 \end{subfigure}
 \hspace*{-0.2cm} 
 \begin{subfigure}{0.9\columnwidth}
     \includegraphics[width=\linewidth]{figures/hardware_experiments/energy_tank.pdf}
-    \caption{Caption here.}
+    \caption{Evolution of the tank energy over time during the door opening experiment.}
 \end{subfigure}
-    \caption{Caption}
+    \caption{The figures show that when passivity is enforced, the controller is able to regulated the overall interaction wrench. This experiment is also reported in the accompanying video.}
     \label{fig:passivity_experiment}
 \end{figure}
 
@@ -169,13 +169,19 @@ The goal of the hardware experiment is to demonstrate that the algorithm can be 
 
 % In order to qualitatively evaluate the algorithm's replanning capabilities, we disturb the manipulator during the opening phase, releasing the contact between the handle and the finger. As we can see in the accompanying video, the controller is able to re-plan a feasible trajectory to the handle and successfully perform the task. 
 
-\section{Method limitations}
+\section{Method limitations and Future Works}
 We conclude the validation section with a qualitative discussion on the method limitations which can highlight future work directions. In the following we describe to which elements one need to take particular care and could be extended to improve the propose method.
 
 \subsection{Model mismatch}
+During the experiments we have found that the method is highly sensitive to model mismatches. In particular, if the handle would not be exactly placed or measured, the controller would generate an "hooking" motion which would instead bring to a collision between the finger tip and the handle itself. While we can assume that the robot model is known perfectly, this is often not the case for the object we intend to manipulate. Therefore, adaptations are needed that can relax the assumption of perfectly known word. While introducing passivity and constraints into the problem formulation is a step forward improving the robustness of the method, we believe that a tighter integration with perception could be extremely fruitful. The perception system could be used to extract local 3D patches that are good local and candidate interaction hotspots leveraging thus vision algorithms to obtain high reconstruction accuracy. On the other hand an articulated object poses the additional challenge of estimating its kinematic parameters, namely the center and axis of rotation. We observed that the method is less sensitive to such variations as the planning is still local and relative to the interaction geometry. Nevertheless, such information can be fed back to the stochastic controller in order to close the loop between state estimation and control. 
 Problem with poor geometric knowledge
 
 \subsection{Cost tuning}
-Mention the frame positioning and the cost deadband
+Generation of good trajectories strongly depends on a well engineered and task dependent cost formulation. While this is a ubiquitous problem in motion control we find that stochastic sampling tends to be trapped in local minima. In the presented approach, the cost contains an end effector pose and object motion cost. If the first is too strong, it might lead to a sub-optimal solution where the end effector over around the prescribed interaction point. A second situation which turned into a local optima is the placement of the interaction point. If this was too close to the finger collision geometry, often sampling would fail to find a solution that reaches the handle at the right spot without colliding with the handle. Therefore, the interaction frame was placed with some additional offset as shown in figure 
+
+\todo{add figure here}.
+
+In future work we would like to simplify cost engineering in a way to make it less sensitive to tuning and more generalizable across tasks. One way of achieving this goal would be to use a perception system to extract candidate interaction points and orientations from sensor data, removing the need for manual cost design. 
 
 \subsection{Sim to Real Gap}
+Last but not least, particular care must be taken to the chosen physics engine used as a rollouts provider. Tuning is often required to reduce the compute time and allow for longer prediction horizon. A simple way of achieving this is to increase the simulation step size at the cost of accuracy. In this work we have not quantitative evaluated the accuracy of the simulator as this is is outside our scope and simulated and real robot experiments showed positive results. Nevertheless, this is an active research area and we think that, especially in a long horizon setup, simulation fidelity can potentially improve the controller performance. 
