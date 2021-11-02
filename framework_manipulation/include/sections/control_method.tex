@@ -65,8 +65,6 @@ where $\matr{J}_c$ is the contact Jacobian. The power dissipated during the task
 where $p_{max}$ is the maximum power that can be dissipated during the task.
 As we will later see, this is the power that is drained from the tank and therefore, this cost component has the additional benefit of helping to avoid drainage of the energy tank.
 
-\add{Add regularization cost}
-
 \subsection{Cost scheduling}
 The manipulation task consists of two phases. In a first phase the manipulator reaches an estimated contact point, allowing for a fast and successful exploration in the following interaction phase. In the second phase, the goal is to bring the object to the desired state while keeping the end-effector close to the initial guess. This switch is enabled by turning on the object manipulation cost $c_o$. Reducing the end-effector position penalty during the manipulation phase allows the controller to choose a trajectory that fully exploits the contact dynamics by changing the hand pose. 
 
