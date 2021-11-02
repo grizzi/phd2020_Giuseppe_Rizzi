@@ -1,6 +1,6 @@
 \section{Numerical and Experimental Evaluation} \label{sec:experiments}
 
-The goal of this section is to evaluate the proposed control framework and the adaptation to the original SC method. To this end, we define the following metrics:
+The goal of this section is to evaluate the proposed control methods. To this end, we define the following metrics:
 \begin{itemize}
     \item \textit{average stage cost}: this performance metric is computed by averaging the stage cost evaluated at each time step. Task duration and cost scheduling is kept fixed among all the experiments.  
     \item \textit{cumulative constraints violation}: as each barrier function is, by definition, negative outside of the safe set, we define the following metric as a proxy for the size of the constraint violation along the duration of an experiment:
@@ -14,13 +14,16 @@ The goal of this section is to evaluate the proposed control framework and the a
         P_{diss} = \sum\limits_{0}^{T_{exp}} -\command^T \boldsymbol{\tau}_{ext}.
     \end{equation}
 \end{itemize}
-The simulation experiments are conducted on a dynamic manipulator model as described by \eqref{eq:eom}. To this end, we use the Raisim physics engine \cite{raisim}. The manipulation tasks consist of maneuvering different articulated objects: a \textit{shelf}, a \textit{dishwasher}, a \textit{microwave} and a \textit{drawer} as shown in \fig\ref{fig:object_manipulation}. They differ in type and orientation of the joint. The \textit{shelf} and \textit{microwave} have a vertical revolute joint, the \textit{dishwasher} has a horizontal revolute joint, while the \textit{drawer} has a horizontal prismatic joint. The simulated manipulator is controlled using a PI low-level velocity controller running at 1KHz. Imperfect velocity control is modeled by compensating only 90\% of the gravity terms.
+The simulation experiments are conducted on a dynamic manipulator model as described by \eqref{eq:eom}. The manipulation tasks consist of maneuvering different articulated objects: a \textit{shelf}, a \textit{dishwasher}, a \textit{microwave} and a \textit{drawer} as shown in \fig\ref{fig:object_manipulation}. They differ in type and orientation of the joint. The \textit{shelf} and \textit{microwave} have a vertical revolute joint, the \textit{dishwasher} has a horizontal revolute joint, while the \textit{drawer} has a horizontal prismatic joint.
   
 \begin{figure}[t]
 \centering
   \includegraphics[width=\columnwidth]{framework_manipulation/figures/mosaics/articulated_objects_sim.pdf}
-  \caption{The four articulated objects used in our simulation evaluations. From left to right: shelf, dishwasher, microwave, drawer.} \label{fig:object_manipulation}
+  \caption{The four articulated objects used in our simulation evaluations. From left to right: \textit{shelf}, \textit{dishwasher}, \textit{microwave} and \textit{drawer}.} \label{fig:object_manipulation}
 \end{figure}
+
+
+The control methods are deployed on the RoyalPanda mobile manipulator and evaluated through simulated and hardware experiments. The platform consists of an holonomic mobile base equipped with a 7-DOF manipulator. The robot's wrist mounts a 6 axis force-torque sensor and a custom set of fingers as shown in \fig\ref{fig:custom_fingers}.  The omnidirectional base is controlled by sending velocity commands to the mecanum wheel controller. The arm's low-level controller runs at 1KHz while the base mecanum controller runs at 50Hz. In order to reduce the sim-to-real gap, in all the simulated experiments, imperfect velocity control is modeled by compensating only 90\% of the gravity terms. In both real and simulated robot, the arm velocity commands are converted to joint torques using a PI low-level velocity controller running at 1KHz. 
 
 %\subsection{Power consumption}
 %In this experiment we look at the effect of the power term in the task execution. As we can see in \fig \ref{fig:power_cost_comparison}, the power cost is effective in decreasing the energy dissipation during the manipulation task. For each of the experiments where the power cost is active we set $w_p=10$ and $p_{max} = 0.0$. For all experiments we use $50$ samples as they are a good trade-off between control-frequency and performance. We observe that in all experiments the robot is able to accomplish the task (fully open the articulated object). 
@@ -33,31 +36,26 @@ The simulation experiments are conducted on a dynamic manipulator model as descr
 
 
 \subsection{Comparison of methods}
-We briefly recap each of the control methods that are evaluated in this section. We denote each controller with $\Pi_{*}$ where $*$ can be $N,\ O,\ I,\ IO$:
-\begin{itemize}
-    \item[$\Pi_{N}$:] relies exclusively on a stochastic controller to generate velocity commands, namely the input is not filtered either by a FILTER-QP or a Sequential FILTER-QP
-    \item[$\Pi_{O}$:] a FILTER-QP is used to optimize the input sequence received by the stochastic controller. The FILTER-QP is solved at the same rate as the low-level controller,
-    \item[$\Pi_{I}$:] the Sequential FILTER-QP is used in the stochastic controller to enforce safety and passivity constraints  as described in \algo \ref{algo:sequential_qp}. No FILTER-QP is solved at higher rate in the low level controller.
-    \item[$\Pi_{IO}$:] the full cascaded architecture (see \fig \ref{fig:cascaded_architecture}) is deployed, combining the previous two methods.
-\end{itemize}
-
-We evaluate the control methods in a set of experimental scenario:
+We design the following experimental scenario:
 \begin{enumerate}
-    \item \textit{object manipulation}: we validate the applicability of the method on the challenging task of moving each of the presented 4 articulated objects,   
+    \item \textit{object manipulation}: we validate the applicability of the method on the task of manipulating each of the presented 4 articulated objects,   
     \item \textit{target reaching and obstacle avoidance}: we further investigate the validity of the constraints formulation for a target reaching task in a confined environment while a sudden obstacle is placed in the workspace,
-    \item \textit{robust interaction}: finally we show that the method enables robust interaction when an unforeseen event happens, in this case, the articulated object is fixed rigidly and is not able to move for a short period of time,
-    \item \textit{real world experiments}: we further object manipulation and robust interaction on the real platform. 
+    \item \textit{robust interaction}: we construct a challenging manipulation scenario where robust interaction is needed, in this case, the articulated object is fixed rigidly and is not able to move for a short period of time,
+    \item \textit{real world experiments}: we further test the methods on the real robot for a door opening task. 
 \end{enumerate}
 
-\vspace{0.5cm}
+We run the presented algorithms on a Intel Core i7-8550U quad-core processor (1.8 GHz, up to 4.0 GHz) and use 8 threads for parallel forward sampling of rollouts. Forward simulation is provided by the \texttt{raisim} physics engine \cite{raisim}. The FILTER-QP and Sequential FILTER-QP are solved efficiently using the \texttt{osqp} C++ library \cite{osqp}. We measure an average solving time of $\approx 0.1$ ms. Finally, the main control parameters are summarized in \tab \add{add table of parameters}.  
+
+
+\vspace{0.3cm}
 \subsubsection{Object manipulation}
-We would like to investigate the performance of the algorithms when working close or outside the safety boundaries. To this end, in all the simulated experiments the robot starts in a configuration that is near the arm's joints limits and self-collision. The base of the robot is at $(-3.0, -3.0)$, outside of the prescribed position limits of $[(2.0, 2.0), (-2.0, -2.0)]$. The robot is endowed with the task to open an articulated object moving from its starting location. We perform 10 runs for each articulated object and for each control method.
+We would like to investigate the performance of the algorithms when working close or outside the safety boundaries. To this end, in all these simulated experiments the robot starts in a configuration that is near the arm's joints limits and self-collision. The base of the robot is at $(-3.0, -3.0)$, outside of the prescribed position limits of $[(2.0, 2.0), (-2.0, -2.0)]$. The robot is endowed with the task to open an articulated object moving from its starting location. We perform 20 runs for each articulated object and for each control method.
 
-The results of the experiments are summarized in \fig \ref{fig:methods_comparison}. In all cases, filtering the velocity commands has a beneficial effect. We observer a reduction of cumulative joint limits as well as self collision limits violation. We deduce that filtering the input sequence has a beneficial effect. The improvement is even more pronounced when the filtering is tightly coupled to the sampling based controller through the Safety FILTER-QP. $\Pi_{I}$ and $\Pi_{IO}$ have the best performance suggesting that in a low sampling regime, the optimization problem helps to adapt the input sequence to reduce quickly the amount of constraints violation. In \fig \ref{fig:self_collision_violation} the naive controller $\Pi_{N}$ even experiences a dramatic failure which is not visible because of plots limits. This is instead never for the other methods. 
+The results of the experiments are summarized in \fig \ref{fig:methods_comparison}. We observe a reduction of cumulative joint limits as well as self collision limits violation. We deduce that filtering the input sequence has a beneficial effect. $\Pi_{I}$ and $\Pi_{IO}$ attain the best performance suggesting that in a low sampling regime, the optimization problem helps to adapt the input sequence to reduce quickly the amount of constraints violation. In \fig \ref{fig:self_collision_violation} the naive controller $\Pi_{N}$ even experiences a dramatic failure which is not visible because of plots limits. This edge case instead never happens for the other methods. 
 
-The dissipated power is similar across the methods even though a positive trend is observed when using the adaptations proposed in this paper. A qualitative analysis has shown that the simulation wrench measured during a simulated rollout can be inaccurate. In fact, the algorithm uses big time steps to trade-off simulation accuracy with speed. An accurate evaluation of the simulator fidelity, especially when dealing with dynamic effects is a complex task that we leave to future works. In this work instead, we activate the passivity enforcing constraint only in the outer FILTER-QP has this works on real wrench measurements at high rates. Furthermore passivity is mainly a mechanism designed to reach to unforeseen events. As these are not, by definition modeled, the simulated rollouts do not predict the true evolution of the interaction wrench and therefore passivity might be enforced in a counterproductive way.
+The dissipated power is similar across the proposed methods even though filtering seems to have also a positive effect in this aspect. A qualitative analysis has shown that the wrench measured during a simulated rollout can be inaccurate. In fact, the rollouts use big time steps (0.015 s) to trade-off simulation accuracy with speed. An accurate evaluation of the simulator fidelity, especially when dealing with highly dynamical interactions, can be a complex task that we leave to future works. In this work instead, we activate the passivity enforcing constraint only in the outer FILTER-QP since this consumes real wrench measurements at high rates. As a matter of fact, passivity is mainly a mechanism designed to react to unforeseen events. As these are not modeled, the simulated rollouts are not able to predict the true evolution of the interaction wrench and therefore when passivity is enforced throughout the rollouts it could lead to detrimental effects.
 
-Overall, the simulated experiments confirm the validity of the full framework implemented in $\Pi_{IO}$ but the performance differences are not striking. We think that this is due to the low change of hitting the constraints, especially when the sampling based controller is aware of dangerous configuration through a well-engineered cost function. In fact, high cost on safety critical objectives has the effect of "trimming" bad trajectories leaving little to do in the post-processing stage performed by the FILTER-QP and Sequential FILTER-QP. For this reason, in the following we present a second simulation experiment which constitute a challenge for a purely sampling based controller. 
+Overall, the simulated experiments confirm the validity of the full framework (as implemented in $\Pi_{IO}$). Nevertheless the performance differences are not striking. We think that this is due to the low chance of hitting the constraints during the task, especially when the sampling based controller is aware of dangerous configuration through a well-engineered cost function. In fact, high cost on safety related objectives has the effect of "trimming" bad trajectories removing the need for the post-processing performed by the optimization problem. For this reason, in the following we present a second simulation experiment which constitute a challenge for a purely sampling based controller. 
 
 \begin{figure}[t]
 \centering
@@ -84,17 +82,17 @@ Overall, the simulated experiments confirm the validity of the full framework im
     \includegraphics[width=\linewidth]{figures/methods_comparison/dissipated_power.pdf}
 \end{subfigure}
 \hfill
-\caption{Comparison between the different control methods when the FILTER-QP is used in different stages of the cascaded architecture. Results are separate by manipulation task. The self-collision metric accounts also for the arm-reach constraint as they share the same implementation. \add{Where the bar goes high there is an outlier at 3.4}}\label{fig:methods_comparison}
+\caption{Comparison between the different control methods. Note that The self-collision barplot has a non visible data point at $3.4$ in the $\Pi_{N}$ method for the \textit{dishwasher} case.}\label{fig:methods_comparison}
 \end{figure}
 
-\vspace{0.5cm}
+\vspace{0.3cm}
 \subsubsection{Target reaching and obstacle avoidance}
 The naive stochastic controller relies on a task-encoding cost formulation and sampling to generate "good" rollouts. This method faces two main challenges:
 \begin{itemize}
-    \item the cost needs to be nicely tuned in order to prevent edge cases where performance in chosen in lieu of safety
-    \item sudden changes in the cost function lead to a drastic change in the policy distribution 
+    \item the cost needs to be nicely tuned in order to prevent edge cases where performance is chosen in lieu of safety,
+    \item sudden changes in the cost function lead to a drastic change in the policy distribution.
 \end{itemize}
-While the first issue can be addressed tuning the cost with a trial and error method, the second is more subtle. In fact, the policy should be able to quickly adapt but this can be hard to achieve sampling around the previous (outdated) input distribution. In this experiment we reproduce the described issue during a target reaching task. We place a collision sphere at each robot link and an obstacle in the robot workspace. The base motion is also constrained such that, in order to achieve the goal, the robot is forced to avoid the obstacle. The obstacle is perceived only when the robot is very close to it ($<$ 1cm). We show the end effector optimal trajectory for $\Pi_{N}$ and $\Pi_{IO}$ after the obstacle has been detected in \fig \ref{fig:rollouts_comparison}. We can see that the naive controller $\Pi_{N}$ is not able to quickly adapt to the unforeseen cost change and instead is trapped in a high cost region where it is hard to find a good trade-off between obstacle avoidance and the target reaching objective. The controller $\Pi_{IO}$ instead, immediately adapts the input sequence to comply to constraints and sampling can be later performed in a more favorable region of the input space.   
+While the first issue can be addressed tuning the cost with a trial and error method, the second is more subtle. In fact, the policy should be able to quickly adapt but this can be hard to achieve sampling around the previous (outdated) input distribution. In this experiment we reproduce the described issue during a target reaching task. We place a collision sphere at each robot link and an obstacle in the robot workspace. The base motion is also constrained such that, in order to achieve the goal, the robot is forced to avoid the obstacle going through a narrow passage. The obstacle is perceived only when the robot is very close to it ($<$ 1cm) causing a sudden change in the cost function. We show the end effector optimal trajectory for $\Pi_{N}$ and $\Pi_{IO}$ after the obstacle has been detected in \fig \ref{fig:rollouts_comparison}. We can see that the naive controller $\Pi_{N}$ is not able to quickly adapt to the unforeseen cost change and instead is trapped in a high cost region where it is hard to find a good trade-off between obstacle avoidance and the target reaching objective. The controller $\Pi_{IO}$ instead, immediately adapts the input sequence to comply to constraints and sampling can be later performed in a more favorable region of the input space.   
 
 \begin{figure}[t]
 \centering
@@ -108,25 +106,25 @@ While the first issue can be addressed tuning the cost with a trial and error me
     \caption{Example rollouts of $\Pi_{IO}$}
 \end{subfigure}%
 \hfill
-\caption{In the figure we visualize the optimized end effector trajectory by rolling out the optimized command. The naive controller $\Pi_{N}$ is trapped in a high region cost while $\Pi_{IO}$ immediately react to the sudden cost change.}\label{fig:rollouts_comparison}
+\caption{In the figure we visualize the optimized end effector trajectory by rolling out the optimized command. The naive controller $\Pi_{N}$ is trapped in a high region cost while $\Pi_{IO}$ immediately react to the unexpected cost change.}\label{fig:rollouts_comparison}
 \end{figure}
 
-We repeat the simulation for ten runs for each of the method. The results are summarized in \fig \ref{fig:obstacle_avoidance}. As expected, $\Pi_{IO}$ attains the best performance. We further observe that the presence of a FILTER-QP in the outer high rate loop additionally improves robustness as it enforces constraints during the open-loop execution of the optimized trajectory received by the stochastic controller. 
+We repeat the simulation for 10 runs for each of the method. The results are summarized in \fig \ref{fig:obstacle_avoidance}. As expected, $\Pi_{IO}$ attains the best performance. We further observe that the presence of a FILTER-QP in the outer high rate loop additionally improves robustness as it enforces constraints during the open-loop execution of the optimized trajectory received by the stochastic controller. 
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.7\columnwidth]{figures/obstacle_avoidance/obstacle_avoidance_test.pdf}
-    \caption{The barplot shows the cumulative cartesian limits violation. These limits are formulated as ZBFs which are positive when a robot link does not touch the big collision sphere. $\Pi_{I}$ already outperforms $\Pi_{N}$ and $\Pi_{O}$. A small performance boost is achieved by $\Pi_{IO}$.}
+    \caption{The barplot shows the cumulative cartesian limits violation. These limits are formulated as ZBFs which are positive when a robot link does not collide the big collision sphere. $\Pi_{I}$ already outperforms $\Pi_{N}$ and $\Pi_{O}$. A small performance boost is achieved by $\Pi_{IO}$.}
     \label{fig:obstacle_avoidance}
 \end{figure}
 
-\vspace{0.5cm}
+\vspace{0.3cm}
 \subsubsection{Robust interaction}
-The previous validation show how the framework is powerful in addressing manipulation tasks and overcome some limitations of a naive stochastic controller. We aim to show evidence that the additional passivity enforcing constraints add robustness to the method during interaction. By adding the energy tank constraint to the optimization problem we hope to limit the maximum dissipated energy and thus generate a stable and robust interaction behavior. In this scenario, the motion of the articulated object is limited while the robot is interacting with it. We fix the object position for $5s$. After this time the object is released and is free to move within its original limits. From the results in \fig\ref{fig:tank_comparison}, we note that when the FILTER-QP is turned off and therefore no passivity is ensured, the negative power flow is not bounded, leading to high interaction wrenches. On the other hand, when the energy tank is used, only a maximal amount of energy, namely that stored in the tank, can be used, regulating the overall interaction wrench.
+The previous validation show how the framework can address manipulation tasks and overcome some limitations of a naive stochastic controller. We aim to find evidence that the additional passivity enforcing constraint adds robustness to the method. By adding the energy tank constraint to the optimization problem, we hope to limit the maximum dissipated energy and thus generate a stable interaction behavior. In this scenario, the motion of the articulated object is limited while the robot is interacting with it. We fix the object position for $5$ seconds. After this time, the object is released and is free to move within its original limits again. From the results in \fig \ref{fig:tank_comparison}, we note that when using $\Pi_{N}$ and therefore no passivity is ensured, the negative power flow is not bounded, leading to high interaction wrenches. On the other hand, when the energy tank is deployed, as in $\Pi_{IO}$, only a maximal amount of energy, namely that stored in the tank, can be used. Furthermore, we use a small value of $\alpha$ in the passivity constraint formulation \eqref{eq:passivity_simple}. As discussed in \sect \ref{sec:practical_aspects} and shown in \fig \ref{fig:tank_as_zbf}, this choice allows for a smoother power regulation when approaching the lower energy bound when compared to larger values of $\alpha$ and prevents chattering. 
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.8\columnwidth]{figures/fix_experiment/passivity_coefficient_comparison.pdf}
-\caption{In this figure we show the chattering effect happening when the constraints is enforced with $\alpha = 1/dt = 1000$. Instead a lower $\alpha$ greatly alleviates this effect.  }\label{fig:tank_as_zbf}
+\caption{In this figure we show the chattering effect happening when the constraints is enforced with $\alpha = 1/dt = 1000$. Instead a lower $\alpha$ greatly alleviates this issue.}\label{fig:tank_as_zbf}
 \end{figure}
 
 \begin{figure}[t]
@@ -139,47 +137,61 @@ The previous validation show how the framework is powerful in addressing manipul
 \hspace*{-0.0cm} 
 \begin{subfigure}{0.8\columnwidth}
     \includegraphics[width=\linewidth]{figures/fix_experiment/energy_with_without_tank.pdf}
-    \caption{While the energy is always below zero when using the filter, it drastically drops in the other case. The plotted energy is computed integrated the dissipated power during interaction.}
+    \caption{While the energy is always below zero when using the filter, it drastically drops in the other case. The plotted energy is computed integrating the dissipated power during interaction.}
 \end{subfigure}
 \hfill
-\caption{The filter regulates the dissipated power when energy is low in the tank, resulting in a reduced wrench when the object is "stuck". Statistics are extracted from 20 simulation runs of interaction with the \textit{shelf} object}\label{fig:tank_comparison}
+\caption{The filter regulates the dissipated power when energy is low in the tank, resulting in a reduced wrench when the object is "stuck". Statistics are extracted from 20 simulation runs of interaction with the \textit{shelf} object.}\label{fig:tank_comparison}
 \end{figure}
 
-\vspace{0.5cm}
+\vspace{0.3cm}
 \subsubsection{Real world experiments}
-We finaly test the developed algorithms on Our RoyalPanda test platform. It consists of a holonomic mobile base equipped with a 7-DOF manipulator. The robot's wrist mounts a 6 axis force-torque sensor and a custom set of fingers as shown in \fig\ref{fig:custom_fingers}. This hardware adaptation simplifies the problem without limiting the capabilities of the platform. We run the presented algorithm on a Intel Core i7-8550U quad-core processor (1.8 GHz, up to 4.0 GHz) and use 8 threads for parallel forward sampling of rollouts. All control parameters are summarized in \tab \add{add table of parameters}. The target velocity commands are tracked by a PI controller which converts these into motor torques. The omnidirectional base is controlled by sending velocity commands to the mecanum wheel controller. The arm's low-level controller runs at 1KHz while the base mecanum controller runs at 50Hz. The FILTER-QP and Sequential FILTER-QP are solved efficiently using the \texttt{osqp} C++ library \cite{osqp}. We measure an average solving time of $\approx 0.1$ ms.  
+The goal of the hardware experiment is to demonstrate that the algorithm can be deployed on a real platform at high control rates. For this purpose, we perform a door opening experiment similarly to the description provided in the previous section with our RoyalPanda robot. The door displacement and the robot's base are tracked using a motion tracking system, eliminating the need for precise state estimation. We plan to remove this limitation in future work. The door motion is limited using a rope. We monitor the evolution of the tank energy and once it has reached the allowed minimum we count 3 seconds before manually cutting the rope. We repeat the experiment for the methods $\Pi_{N}$ and $\Pi_{IO}$ recalling that the last controller only uses the passivity constraint in the outer loop. The wrench norm and the evolution of the energy in the tank during the experiments can be seen in \fig \ref{fig:passivity_experiment}. As one can see in the accompanying video, without passivity, the manipulator exert a rapidly increasing wrench until the rope is broken apart. On the other hand, when passivity is enforced, the power flow and external wrench is regulated leading to a robust interaction behavior and no need for the operator intervention. When the object is released, the gripper gets stuck in a constrained configuration between the door plate and the handle. When $\Pi_{N}$ is deployed, the controller tries to push aggressively and is therefore not able to escape this gripper trap. When using $\Pi_{IO}$ instead, the tank residual energy is low and aggressive actions are prohibited. The overall behavior is safer and allows the robot to escape from the bad configuration.  
 
 \begin{figure}[t]
 \centering
 \hspace*{-0.0cm} 
 \begin{subfigure}{0.9\columnwidth}
     \includegraphics[width=\linewidth]{figures/hardware_experiments/wrench_norm.pdf}
-    \caption{Wrench norm during the door opening experiment. We measure an average wrench of 68 N and 34 N when using methods $\Pi_{N}$ and $\Pi_{IO}$ respectively. The sharp wrench drop corresponds to the time when the rope breaks and energy is suddenly released. The two time series have been aligned to facilitate visualization.}
+    \caption{Wrench norm during the door opening experiment. We measure an average wrench of 68 N and 34 N for the $\Pi_{N}$ and $\Pi_{IO}$ methods respectively. The sharp wrench drop corresponds to the time when the rope breaks and energy is suddenly released. The two time series have been aligned to facilitate visualization.}
 \end{subfigure}
 \hspace*{-0.2cm} 
 \begin{subfigure}{0.9\columnwidth}
     \includegraphics[width=\linewidth]{figures/hardware_experiments/energy_tank.pdf}
-    \caption{Evolution of the tank energy over time during the door opening experiment.}
+    \caption{Evolution of the tank energy over time during the door opening experiment. The zoomed plot shows that energy is recovered when the object is released.}
 \end{subfigure}
     \caption{The figures show that when passivity is enforced, the controller is able to regulated the overall interaction wrench. This experiment is also reported in the accompanying video.}
     \label{fig:passivity_experiment}
 \end{figure}
 
-The goal of the hardware experiment is to demonstrate that the algorithm can be deployed on a real platform at high control rates. For this purpose, we perform a door opening experiment similarly to the description provided in the previous section. The door motion and the robot base are tracked via a VICON system, eliminating the need for precise state estimation. We plan to remove this limitation in future work. The door motion is limited using a rope which is cut counting 3 seconds after the energy in the tank has reached the allowed minimum. We repeat the experiment for methods $\Pi_{N}$ and $\Pi_{IO}$ recalling that the last controller only uses the passivity constraint in the outer loop. The wrench norm and the evolution of the energy in the tank during the experiments can be seen in \fig \ref{fig:passivity_experiment}. As one can see in the accompanying video, without passivity, the manipulator exert a rapidly increasing wrench up to the point of breaking the rope apart. On the other hand, when passivity is ensured, the power flow and external wrench is regulated leading to a robust interaction behavior and no need for the operator intervention. When the object is released, the gripper gets stuck in a constrained configuration between the door plate and the handle. When $\Pi_{N}$ is deployed, the controller tries to push aggressively and is therefore not able to escape this gripper trap. When using $\Pi_{IO}$ instead, the tank residual energy is low and aggressive actions are prohibited. The overall behavior is safer and allows the robot to escape from the bad configuration.  
 
 % In order to qualitatively evaluate the algorithm's replanning capabilities, we disturb the manipulator during the opening phase, releasing the contact between the handle and the finger. As we can see in the accompanying video, the controller is able to re-plan a feasible trajectory to the handle and successfully perform the task. 
 
-\section{Method limitations and Future Works}
-We conclude the validation section with a qualitative discussion on the method limitations which can highlight future work directions. In the following we describe to which elements one need to take particular care and could be extended to improve the propose method.
+\section{Method limitations and Future Works}\label{sec:limitations_and_future_works}
+We conclude  with a qualitative discussion on the method limitations. In the following we describe the most prominent issues that emerged during the experiments and can be addressed to improve the propose method.
 
 \subsection{Model mismatch}
-During the experiments we have found that the method is highly sensitive to model mismatches. In particular, if the handle would not be exactly placed or measured, the controller would generate an "hooking" motion which would instead bring to a collision between the finger tip and the handle itself. While we can assume that the robot model is known perfectly, this is often not the case for the object we intend to manipulate. Therefore, adaptations are needed that can relax the assumption of perfectly known word. While introducing passivity and constraints into the problem formulation is a step forward improving the robustness of the method, we believe that a tighter integration with perception could be extremely fruitful. The perception system could be used to extract local 3D patches that are good local and candidate interaction hotspots leveraging thus vision algorithms to obtain high reconstruction accuracy. On the other hand an articulated object poses the additional challenge of estimating its kinematic parameters, namely the center and axis of rotation. We observed that the method is less sensitive to such variations as the planning is still local and relative to the interaction geometry. Nevertheless, such information can be fed back to the stochastic controller in order to close the loop between state estimation and control. 
-Problem with poor geometric knowledge
+We have found that the method is highly sensitive to model mismatches. While we can assume that the robot model is known with high accuracy, this is often not the case for the object we intend to manipulate. Unfortunately, we observed that a small uncertainty in the estimate of the object pose and geometry could lead to failures in the door opening experiment. In particular, if the handle placement would not be exactly measured, the controller would generate an "hooking" motion which would instead bring to a hard collision between the finger tip and the handle itself. One can try to quantify the sensibility of the method to model mismatches and leverage this knowledge to account for the estimate uncertainty. Nevertheless this is not an easy task as there seems to be a dependence on the specific object geometry, finger design, object placement and articulation type. 
 
-\subsection{Cost tuning}
-Generation of good trajectories strongly depends on a well engineered and task dependent cost formulation. While this is a ubiquitous problem in motion control we find that stochastic sampling tends to be trapped in local minima. In the presented approach, the cost contains an end effector pose and object motion cost. If the first is too strong, it might lead to a sub-optimal solution where the end effector over around the prescribed interaction point. A second situation which turned into a local optima is the placement of the interaction point. If this was too close to the finger collision geometry, often sampling would fail to find a solution that reaches the handle at the right spot without colliding with the handle. Therefore, the interaction frame was placed with some additional offset as shown in figure 
+\subsection{State and model estimation}
+We believe that a tighter integration with perception could be extremely fruitful and help to reduce the amount of prior knowledge needed. A perception system could be devised to extract local 3D patches that are used as candidate interaction hotspots. On the other hand a surface mesh is not sufficient to model the object motion and dynamical behavior. As a matter of fact, an articulated object is also described by its kinematic parameters, namely the center and axis of rotation. Last but not least, mass, damping and friction could be estimated. We observed that the method is less sensitive to uncertainty in these model parameters as mass, damping and friction where never tuned to accurately match the real articulated object. 
 
-\todo{add figure here}.
+\subsection{Cost engineering}
+The generation of good trajectories strongly depends on a well engineered and task dependent cost formulation. Because of a poor cost tuning or formulation, stochastic policy optimization, as in the presented method, tends to be trapped in local minima. As an example, the cost contains an end effector pose and object motion cost. If the first is too strong, it might lead to a sub-optimal solution where the end effector over around the prescribed interaction point. A second situation which turned into a local optima is the placement of the interaction point. If this was too close to the finger collision geometry, often sampling would fail to find a solution that reaches the handle at the right spot without colliding with the handle. Therefore, the interaction frame was placed with some additional offset as shown in figure 
+
+\begin{figure}[t]
+\centering
+\begin{subfigure}{0.48\columnwidth}
+    \includegraphics[width=\linewidth]{figures/panda_grasp_2.png}
+    \caption{Bad frame placement.}
+\end{subfigure}%
+\hfill
+\begin{subfigure}{0.48\columnwidth}
+    \includegraphics[width=\linewidth]{figures/panda_grasp_1.png}
+    \caption{Good frame placement.}
+\end{subfigure}%
+\hfill
+\caption{The location of the interaction frame used to compute the target reaching cost for manipulation can play a big role in terms of finding a successful manipulation strategy.}\label{fig:frame_placement}
+\end{figure}
 
 In future work we would like to simplify cost engineering in a way to make it less sensitive to tuning and more generalizable across tasks. One way of achieving this goal would be to use a perception system to extract candidate interaction points and orientations from sensor data, removing the need for manual cost design. 
 
