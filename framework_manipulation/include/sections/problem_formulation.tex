@@ -1,7 +1,7 @@
 \section{Modeling and Problem Formulation} \label{sec:formulation}
 
 In this work we consider the challenging task of manipulating articulated objects\footnote{We define articulated objects as non-actuated objects composed of more than one rigid part connected by joints allowing rotations or translations.} with a mobile manipulator through \textit{non-prehensile manipulation}. We define $\configRobot \in \nR{\robotDoF}$ and $\dconfigRobot \in \nR{\robotDoF}$ as the vectors of the robot configuration and its time derivative, respectively, where $\robotDoF \in \nN{}_{>0}$ is the robot's DOF.
-Similarly, we describe the object configuration and corresponding time derivative by $\configObject \in \nR{\objectDoF}$ and $\dconfigObject \in \nR{\objectDoF}$, respectively, where $\objectDoF \in \nN{}_{>0}$ is the object's DOF. The system input $\command  \in \nR{\robotDoF}$ are the desired robot joint velocities $\dconfigRobotDesired$. The state vector is defined by,
+Similarly, we describe the object configuration and corresponding time derivative by $\configObject \in \nR{\objectDoF}$ and $\dconfigObject \in \nR{\objectDoF}$, respectively, where $\objectDoF \in \nN{}_{>0}$ is the object's DOF. The state vector is defined by,
 \begin{equation}
     \state = [\configRobot^\transpose \vSpace 
       \dconfigRobot^\transpose \vSpace 
@@ -19,26 +19,39 @@ The time evolution of the state is described by the following equation of motion
     \end{bmatrix},
 \end{equation}
 where $\matr{M}_r \in \nR{\robotDoF \times \robotDoF}$ and $\matr{M}_o \in \nR{\objectDoF \times \objectDoF}$ represent the inertia matrices while $\matr{J}_r(\configRobot) \in \nR{\robotDoF \times 3}$ and $\matr{J}_o(\configObject) \in \nR{\objectDoF \times 3}$ are the Jacobians at the robot and object contact point\footnote{Without loss of generality we consider single contacts to simplify the notation. Nevertheless, extension to the multi-contact case is straightforward.}, respectively.
-$\matr{J}_r$ and $\matr{J}_o$ map the interaction force $\vect{f}_{ext} \in \nR{3}$ at the contact point into the efforts at the object and robot joints. Coriolis and gravity terms are denoted as $\robotCoriolis$ and $\objectCoriolis$. 
-The joint torques, denoted by $\vect{\tau}_{cmd}  \in \nR{\robotDoF}$, are computed by a low-level velocity controller as a function of the velocity references $\command$. We define with  $\mathcal{X} \subseteq \nR{2(\robotDoF + \objectDoF)}$ and $\mathcal{U} \subseteq \nR{\robotDoF}$ the spaces of admissible states and inputs, respectively. 
+$\matr{J}^T_r$ and $\matr{J}^T_o$ map the interaction force $\vect{f}_{ext} \in \nR{3}$ at the contact point into the efforts at the object and robot joints. Coriolis and gravity terms are denoted as $\robotCoriolis$ and $\objectCoriolis$. 
 
-%The control objective is to minimize the distance from an initial to final desired configuration through a stochastic feedback policy $\policy(\vect{x}_t)$ where $\boldsymbol{\theta}$ are the policy parameters and $T$ is the length of the receding time horizon.
-The control objective is to find the feedback policy $\policy(\vect{x}_t)$ that minimizes the distance from an initial configuration to a final desired configuration, where $\boldsymbol{\theta}$ are the policy parameters, $T$ is the length of the receding time horizon, and $\vect{x}_t)$ is the system state at time $t$.
-The \textit{distance} to the desired configuration must be defined for the specific problem and can be computed in a space different to $\mathcal{X}$ via an opportune mapping $h : \mathcal{X} \rightarrow \mathcal{H}$: 
+The system input $\command  \in \nR{\robotDoF}$ are the desired robot joint velocities $\dconfigRobotDesired$. The joint torques, denoted by $\vect{\tau}_{cmd}  \in \nR{\robotDoF}$, are computed by a low-level velocity controller as a function of the velocity references $\command$. We define with  $\mathcal{X} \subseteq \nR{2(\robotDoF + \objectDoF)}$ and $\mathcal{U} \subseteq \nR{\robotDoF}$ the spaces of admissible states and inputs, respectively. 
+
+
+The control trajectory is defined as a sequence of control inputs over a time horizon $T$ and beginning at time $t$: $U_t = \{\command_t, \command_{t+1}, \dots, \command_{t+T-1}\}$. Each command is sampled from a feedback policy distribution $U_t \sim \policy(\state_t) = p(U_t | \state_t; \policyParams)$ where $\policyParams$ are the distribution parameters.
+
+The control objective is to find the feedback policy $\policy(\state_t)$ that minimizes some statistics over the distance from the system state at all times $t$, $\state_t$ to the desired state $\state^*_t$.
+
+The \textit{distance} to the desired state must be defined for the specific problem and can be computed via an opportune mapping function $h : \mathcal{X} \rightarrow \nR{}$. We can now formulate the control objective as an optimization problem: 
 \begin{mini}|s| 
-{\policy}{\lim_{t \rightarrow \infty} || h(\state^*) - h(\state(t)) ||}{}{\label{eq:objective}}
+{\poliuyParams}{\expectation{\policy}  \int\limits_{t}^{\infty} h(\state^*_t, \state_t)  }{}{\label{eq:objective}}
 \addConstraint{\dstate_t=f(\state_t, \command_t) \quad \forall \ t}{}{}
+\addConstraint{\command_t \sim \policy(\state_t) \quad \forall \ t}{}{}
 \addConstraint{\state_t  \in \mathcal{X}         \quad \forall \ t}{}{}
 \addConstraint{\command_t \in \mathcal{U}        \quad \forall \ t}{}{}.
 \end{mini}
 
 %As an example, the manipulation task that we analyse consists of moving an articulated object to a desired configuration. 
-In particular, in this work we address the problem of moving an articulated object to a desired configuration.
-In this case the distance function $h(\vect{x})$ in \eqref{eq:objective} can be defined as:
-\begin{equation}
-   || h(\state^*) - h(\state(t)) || = || \configObject^* - \configObject ||_2,
+%In particular, in this work we address the problem of moving an articulated object to a desired configuration.
+
+%The optimal control problem subjected to constraints in \eqref{eq:objective} requires solving a complex minimization in a high dimensional and non-linear space. To facilitate the solving of \eqref{eq:objective}, additional \textit{surrogate objectives} are defined to introduce some bias towards the optimal solution. These objectives will appear as additional \textit{cost terms} that penalize specific configurations. The separate terms will be presented and explained in Section~\ref{sec:control_method}.
+
+Commonly the objective in \eqref{eq:objective} is simplified to the sum of a finite horizon and final cost term that approximate the infinite horizon:
+\begin{equation} \label{eq:value_function}
+    \expectation{\policy} || h(\state^*) - h(\state_t)|| \approx
+    \expectation{\policy} \underbrace{\left[ 
+    c_{\text{term}}(\state_{t + H}) + \int\limits_{t}^{t + H} c(\state_t) dt \right]}_{J(\state_t)},
 \end{equation}
-with $\configObject^*$ as the desired final configuration of the object. 
-The optimal control problem subjected to constraints in \eqref{eq:objective} requires solving a complex minimization in a high dimensional and non-linear space. 
-To facilitate the solving of \eqref{eq:objective}, additional \textit{surrogate objectives} are defined to introduce some bias towards the optimal solution. These objectives will appear as additional \textit{cost terms} that penalize specific configurations. 
-The separate terms will be presented and explained in Section~\ref{sec:control_method}.
+where the cost function $c(\state_t) \in \nR{}_{\geq 0}$ maps the current state and input into a non-negative scalar, which indicates how close the state is to the goal, $t$ and $t + H$ are the initial and time at the end of the horizon, and $c_{\text{term}}(\state_{t+H}))  \in \nR{}_{\geq 0}$ is the terminal cost which approximates the tail of the infinite horizon cumulative cost. For the sake of notation simplicity we have omitted the dependence from the desired state $\state^*$.
+
+%In this case the distance function $h(\state)$ in \eqref{eq:objective} can be defined as:
+%\begin{equation}
+%   || h(\state^*) - h(\state(t)) || = || \configObject^* - \configObject ||_2,
+%\end{equation}
+%with $\configObject^*$ as the desired final configuration of the object. 
