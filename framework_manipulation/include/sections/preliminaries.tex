@@ -1,17 +1,19 @@
 \section{Preliminaries} \label{sec:theory}
 
-\subsection{Sampling-based control}
-In contrast to deterministic policy optimization, we look at the optimal control problem \eqref{eq:objective} from a Bayesian perspective. This approach has many similarities with policy gradient methods used in reinforcement learning \cite{williams1992simple}. The key difference is that the method is used \emph{online} to iteratively update a parametric policy. While there are several avenues to derive the update equations, for example \emph{Variational Inference} \cite{lambert_stein_2020} or \emph{free energy} \cite{williams_information_2017}, here we will use Stochastic Control (SC) and follow a Bayesian approach similar to \cite{levine2018reinforcement}. 
+As the proposed method uses a combination of theoretical tools that span different applications and previous works, we present a short summary that can help the reader to better understand the remainder of the paper and build some preliminary background.
 
-The control problem is represented through a graphical model populated by state, input and an additional binary random variable $\successState$ whose value is $1$ when a trajectory is optimal, and $\successState = 0$ when it is not. Each trajectory is assigned a likelihood which depends on its cumulative cost. Any monotonically decreasing function can be used to map costs to a \textit{pseudo success likelihood}:
+\subsection{Sampling-based control}
+In contrast to deterministic policy optimization, we look at the optimal control problem \eqref{eq:objective} from a Bayesian perspective. This approach has many similarities with policy gradient methods used in reinforcement learning \cite{williams1992simple}. The key difference is that the method is used \emph{online} to iteratively update a parametric policy. While there are several avenues to derive the update equations, for example \emph{Variational Inference} \cite{lambert_stein_2020} or \emph{Free Energy} \cite{williams_information_2017}, here we will use Stochastic Control (SC) and follow a Bayesian approach similar to \cite{levine2018reinforcement}. 
+
+The control problem is formulated introducing an additional binary random variable $\successState$ whose value is $1$ when a trajectory is optimal, and $\successState = 0$ when it is not. Each trajectory is assigned a likelihood which depends on its cumulative cost. Any monotonically decreasing function $g(\codt): \nR{} \rightarrow \nR{>0}$ can be used to map costs to a \textit{pseudo success likelihood}:
 \begin{equation}
-p(\successState = 1| \policy; \state_t ) \propto g(J) \triangleq \mathcal{J}.
+p(\successState = 1| \policy; \state_t ) \propto g(J(\state_t)) \triangleq \mathcal{J}.
 \end{equation}
-The optimal control objective is to find the optimal input parameters $\policyParams$ which maximize the success probability $\succProb$. In order to improve convergence, we optimize its logarithm, as it has high gradients in the domain where the probability is low. In the following equation, we denote with $X_t$ the sequence of states obtained by rolling out a sample policy $U_t = [\command_t, \dots, \command_{t+T-1}]$: 
+The optimal control objective is to find the optimal input parameters $\policyParams$ which maximize the success probability $\succProb$. In order to improve convergence, we optimize its logarithm, as it has high gradients in the domain where the probability is low. In the following equation, we denote with $X_t$ the sequence of states obtained by rolling out a policy sample $U_t = [\command_t, \command_{t+1}, \dots, \command_{t+T-1}] \sim \policy(\state_t)$: 
 \begin{align}
     \policyParams^* &= \underset{\policyParams}{\arg\max} \log \succProb \\
-        &= \underset{\policyParams}{\arg\max} \int_{\policy} \succCondProb p(\traj) \\
-        &= \underset{\policyParams}{\arg\max}  \expPolicy{\succCondProb}. \label{eq:input_to_params}
+        &= \underset{\policyParams}{\arg\max} \log \int_{\policy} \succCondProb p(\traj) \\
+        &= \underset{\policyParams}{\arg\max}  \log \expPolicy{\succCondProb}. \label{eq:input_to_params}
 \end{align}
 To update the policy, we perform gradient descent:
 \begin{equation}
