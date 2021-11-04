@@ -2,14 +2,14 @@
 %2345678901234567890123456789012345678901234567890123456789012345678901234567890
 %        1         2         3         4         5         6         7         8
 
-\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out if you need a4paper
+\documentclass[journal]{IEEEtran}  % Comment this line out if you need a4paper
 
 %\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4 paper
 
-\IEEEoverridecommandlockouts                              % This command is only needed if 
+% \IEEEoverridecommandlockouts                              % This command is only needed if 
                                                           % you want to use the \thanks command
 \newcommand{\red}[1]{{\color{red} #1}}
-\overrideIEEEmargins                                      % Needed to meet printer requirements.
+% \overrideIEEEmargins                                      % Needed to meet printer requirements.
 
 %In case you encounter the following error:
 %Error 1010 The PDF file may be corrupt (unable to open PDF file) OR
@@ -24,24 +24,32 @@
 
 \input{include/packages}
 
-\title{\LARGE \bf
+
+\begin{document}
+
+\title{
 A Framework for Interaction Control of Mobile Manipulators
 }
 
 
-\author{Giuseppe Rizzi, Jen Jen Chung, Abel Gawel, Marco Tognon, Lionel Ott and Roland Siegwart% <-this % stops a space
+\author{Giuseppe Rizzi, Jen Jen Chung,~\IEEEmembership{Member,~IEEE}, Abel Gawel, Marco Tognon, Lionel Ott and Roland Siegwart,~\IEEEmembership{Fellow,~IEEE}% <-this % stops a space
 \thanks{This work was supported by the European Union H2020 program under project PILOTING No H2020-ICT-2019-2 871542.}
 \thanks{The authors are with the Autonomous Systems Lab, ETH Z\"urich, Z\"urich 8092, Switzerland. {\tt\small\{grizzi; chungj; gawela; mtognon; lioott; rsiegwart\}@ethz.ch}}%
 }
 
+% The paper headers                                                                                  
+\markboth{IEEE Transactions on Robotics,~Vol.~X, No.~X, November~2021}%                              
+{Rizzi \MakeLowercase{\textit{et al.}}: A Framework for Interaction Control of Mobile Manipulators}
 
-\begin{document}
+% \IEEEpubid{0000--0000/00\$00.00~\copyright~2021 IEEE}
+% Remember, if you use this you must call \IEEEpubidadjcol in the second                             
+% column for its text to clear the IEEEpubid mark.                                                   
 
 
 
 \maketitle
-\thispagestyle{empty}
-\pagestyle{empty}
+% \thispagestyle{empty}
+% \pagestyle{empty}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -52,6 +60,9 @@ In this work we investigate and deploy stochastic control techniques for the cha
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{IEEEkeywords}
+
+\end{IEEEkeywords}
 
 \input{include/sections/introduction}
 
@@ -96,11 +107,26 @@ In this work we investigate and deploy stochastic control techniques for the cha
 
 % References are important to the reader; therefore, each citation must be complete and correct. If at all possible, references should be commonly available publications.
 
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/grizzi.jpg}}]{Giuseppe Rizzi}
+\end{IEEEbiography}
 
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/jjchung.jpg}}]{Jen Jen Chung}
+Jen Jen Chung (Member, IEEE) is a Senior Researcher in the Autonomous Systems Lab (ASL) at ETH Zürich. Her current research interests include perception and learning for mobile manipulation, algorithms for robot navigation through crowds, informative path planning and adaptive sampling. Prior to working at ASL, Jen Jen was a postdoctoral scholar at Oregon State University researching multiagent learning methods and she completed her Ph.D. on information-based exploration-exploitation strategies for autonomous soaring platforms at the Australian Centre for Field Robotics in the University of Sydney. She received her Ph.D. (2014) and B.E. (2010) from the University of Sydney.
+\end{IEEEbiography}
 
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/agawel.jpg}}]{Abel Gawel}
+\end{IEEEbiography}
 
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/mtognon.jpg}}]{Marco Tognon}
+\end{IEEEbiography}
 
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/lott.jpg}}]{Lionel Ott}
+\end{IEEEbiography}
 
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/rsiegwart.jpg}}]{Roland Siegwart}
+Roland Siegwart (Fellow, IEEE) is a Professor for autonomous mobile robots with ETH Zurich, Founding Co-Director of the Technology Transfer Center, Wyss Zurich and Board Member of multiple high-tech companies. From 1996 to 2006, he was a Professor with EPFL Lausanne, held visiting positions with Stanford University and NASA Ames and was Vice President of ETH Zurich from 2010 to 2014. His research interest include the design, control, and navigation of flying, and wheeled and walking robots operating in complex and highly dynamical environments.
 
+Prof. Siegwart received the IEEE RAS Pioneer Award and IEEE RAS Inaba Technical Award. He is among the most cited scientist in robots world-wide, Co-Founder of more than half a dozen spin-off companies, and a strong promoter of innovation and entrepreneurship in Switzerland.
+\end{IEEEbiography}
 
 \end{document}
