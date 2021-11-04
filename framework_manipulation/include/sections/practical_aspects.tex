@@ -32,7 +32,10 @@ where we defined the residual energy $S(x_t(t))-\epsilon$ as $E_{res}$. The abov
     \dot{h}_{pass} = \dot{S}(x_t) \geq -\alpha h_{pass}
      =\alpha (\epsilon - S(x_t))).
 \end{equation*}
-The passivity can therefore seen as a ZBF and consequently inherits its properties. A smaller value for $\alpha$ makes the constraint more conservative and improves its performance at the boundary. This effect is shown in \fig \ref{fig:tank_as_zbf} in the experiment section.
+The passivity can therefore seen as a ZBF and consequently inherits its properties. A smaller value for $\alpha$ makes the constraint more conservative and improves its performance at the boundary. Assume, for example that the dissipated power is always equal to the maximal power allowed by the passivity constraints $\dot{E}_{res} = - \alpha E_{res}$, then $E_{res}(t) = E_{res}(0) e^{-\alpha t}$. A smaller $\alpha$ makes the energy drop more slowly and avoids a fast depletion of the tank.
+
+
+This effect is shown in \fig \ref{fig:tank_as_zbf} in the experiment section.
 
 \subsection{Sampling strategy}
 \add{Briefly Describe some heuristics here such as sampling the zero velocity and the zero noise trajectory}
@@ -70,15 +73,5 @@ A large proportion of simulation time is spent on collision detection. We reduce
 
 \caption{Original collision meshes are often approximated by convex hulls which are inaccurate while also more complex representations. In contrast, a simplified mesh can bring more accuracy as well as a computational performance gain in terms of simulation rate.}\label{fig:1}
 
-\end{figure}
-
- 
-\subsection{Cascaded control architecture}
-The expensive rollout sampling procedure often limits the rate of the controller. Instead, the QP can be efficiently solved at almost the same rate as the low-level controller. We propose a \emph{cascaded control} architecture composed of a low-rate policy update block and a high-rate low-level control loop. The latter solves the FILTER-QP in \eqref{eq:cbf-qp} point-wise to find the best input according to the latest received measurements. 
-\begin{figure}[t!]
-\centering
-\hspace*{-0.7cm}
-\includegraphics[width=1.1\columnwidth]{figures/schemes/high_level_architecture.pdf}
-\caption{Cascaded control architecture: the stochastic controller computes a velocity trajectory $\bar{U}$ at approximately 100Hz. The input vector is queried and interpolated at a higher rate of approximately 1000Hz (tick line) and is filtered using the latest odometry.} \label{fig:cascaded_architecture}
 \end{figure}
 
