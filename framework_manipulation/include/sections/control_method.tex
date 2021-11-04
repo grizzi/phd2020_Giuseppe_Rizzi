@@ -135,7 +135,7 @@ As described in \sect \ref{sec:theory}, we can formulate a quadratic program to 
 \addConstraint{\int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \command \ dt \geq -S(x_t(0)) + \epsilon + \delta_t}{}{\quad \text{(Passivity)}}
 \addConstraint{\tilde{\vect{u}}_t \in \mathcal{U}}{}{\quad \text{(Input Limits)}},
 \end{mini}
-where $\boldsymbol{\delta}$ is the vector of slack variables and $\matr{P}$ is a positive definite diagonal matrix. Finally, the set denoted by $\mathcal{I}$ is the set of collision link pairs.  We name this problem FILTER-QP as it changes the control input only if it is unsafe or causes a loss of passivity. Instead of simply applying this optimization point-wise, we \emph{filter} the full input sequence in a sequential manner. After a policy update and for each time step, a FILTER-QP is solved. The newly computed command is applied to advance to the next step in the horizon as shown in \algo \ref{algo:sequential_qp}. The resulting filtered input sequence $\bar{U}^*_t$ is then used to warm-start the nominal policy for the next round of rollout sampling (see \fig \ref{fig:sampling_scheme}). 
+where $\boldsymbol{\delta}$ is the vector of slack variables and $\matr{P}$ is a positive definite diagonal matrix. Finally, the set denoted by $\mathcal{I}$ is the set of collision link pairs.  We name this problem FILTER-QP as it changes the control input only if it is unsafe or causes a loss of passivity. Instead of simply applying this optimization point-wise, we \emph{filter} the full input sequence in a sequential manner. After a policy update and for each time step, a FILTER-QP is solved. The newly computed command is applied to advance to the next step in the horizon as shown in \algo \ref{algo:sequential_qp}. The resulting filtered input sequence $\bar{U}^*_t$ is then used to warm-start the nominal policy for the next round of rollout sampling (see \fig \ref{fig:receding_horizon}). 
 
 \begin{algorithm}
 \caption{Sequential FILTER-QP \label{algo:sequential_qp}}
@@ -154,12 +154,6 @@ $n \gets 0$\;
 }
 \end{algorithm}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.8\columnwidth]{figures/schemes/stochastic_controller.pdf}
-\caption{The sampling scheme is refined using Sequential FILTER-QP. The newly filtered trajectory is shifted in time and used to warm start the next sampling round.} \label{fig:sampling_scheme}
-\end{figure}
-
 \subsection{Cascaded control architecture}
 The expensive rollout sampling procedure often limits the rate of the controller. Instead, the QP can be efficiently solved at almost the same rate as the low-level controller. We propose a \emph{cascaded control} architecture composed of a low-rate policy update block and a high-rate low-level control loop. The latter solves the FILTER-QP in \eqref{eq:cbf-qp} point-wise to find the best input according to the latest received measurements. The full cascaded control architecture is shown in \fig \ref{fig:cascaded_architecture}.
 
@@ -167,7 +161,7 @@ The expensive rollout sampling procedure often limits the rate of the controller
 \centering
 \hspace*{-0.7cm}
 \includegraphics[width=1.1\columnwidth]{figures/schemes/high_level_architecture.pdf}
-\caption{Cascaded control architecture: the stochastic controller computes a velocity trajectory $\bar{U}$ at approximately 100Hz. The input vector is queried and interpolated at a higher rate of approximately 1000Hz (tick line) and is filtered using the latest odometry.} \label{fig:cascaded_architecture}
+\caption{Cascaded control architecture: the sampling based controller computes a velocity trajectory $\bar{U}$ at approximately 100Hz. The input vector is queried and interpolated at a higher rate of approximately 1000Hz (tick line) and is filtered using the latest odometry.} \label{fig:cascaded_architecture}
 \end{figure}
 
 We can now summarize as follows all the possible approaches to the mobile manipulation control problem. We denote each controller with $\Pi_{*}$ where $*$ can be $N,\ O,\ I,\ IO$:
