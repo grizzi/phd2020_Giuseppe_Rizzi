@@ -1,6 +1,6 @@
 \section{Control Method} \label{sec:control_method}
 
-In this section we combine sampling, barrier functions and energy tank into a novel model-based controller for robust and safe interaction control. First the sampling method is presented with a brief explanation of each cost components. Afterwards, the ZBFs are formulated for the manipulation task. Ultimately, a passivity analysis of the system allows the integration of an energy tank to ensure autonomous passivity. 
+In this section we combine sampling, barrier functions and energy tank into a novel model-based control framework for robust and safe interaction control. We use the presented sampling method to generate input state trajectories that optimize a task dependent objective in a receding horizon fashion. As sampling does not inherently provide safety guarantees, we formulate a sequential optimization problem that process the optimized trajectories in order to enforce safety constraints. Ultimately, we perform a passivity analysis of the system and use an energy tank to bound the dissipated energy during the task and make the system passive in case of unexpected events that could compromise its stability.
 
 \subsection{Sampling-based control}
 The sampling-based framework offers the freedom to directly plan in torque space or use position/velocity control and defer tracking to a low-level controller. In fact, directly planning in the joint space allows us to account for objectives which are not in the operational control space such as joint limits and self-collision avoidance. The internal model used to sample trajectory rollouts has the same form as in \eqref{eq:eom}. Joint velocity commands are sampled and then translated to motor torques:
@@ -40,21 +40,21 @@ In the following we drop from the notation the dependence from the current state
  \end{align}
  where the scalar $\weightScalar{j}$ is a constant cost added when the limit is violated. The matrix $\weightMatrix{js}$ adds a quadratic term in the limit violation. This was shown in~\cite{williams_information-theoretic_2018} to help the controller find its way back if poor sampling brings the system outside of the joint position limits.
  
- \paragraph{Arm reach} we introduce an additional term that penalizes configurations where the arm's end-effector moves excessively far from the base. This helps to bias solutions where base motion is preferred over stretching the arm which can lead to singular configurations. The translation vector from the end-effector frame $E$ to the arm base frame $B$ is defined with the vector $\vect{p}_{BE} \in \nR{3}$. The current reach is then $r_{\text{curr}} = || \vect{p}_{BE} ||^2$. Given a maximum reach $r_{\text{max}} \in \nR{}_{\geq 0}$, the \textit{reach cost} is then defined by:
+ \paragraph{Arm reach} we introduce an additional term that penalizes configurations where the arm's end-effector moves excessively far from the base. This helps to bias solutions where base motion is preferred over stretching the arm which can lead to singular configurations. The translation vector from the end-effector frame $\mathcal{E}$ to the arm base frame $\mathcal{B}$ is defined with the vector $\vect{p}_{BE} \in \nR{3}$. The current reach is then $r_{\text{curr}} = || \vect{p}_{BE} ||^2$. Given a maximum reach $r_{\text{max}} \in \nR{}_{\geq 0}$, the \textit{reach cost} is then defined by:
  \begin{equation}
    c_r = \mathds{1}[r_{\text{curr}} > r_{\text{max}}] (\weightScalar{r} + \weightScalar{rs}(r_{\text{curr}} - r_{\text{max}})^2),    
  \end{equation}
 
  \paragraph{Self-collision avoidance} similarly to the arm reach, the self-collision avoidance can be implemented as an additional cost term which is active when the distance between a pair of frames is less then a pair-dependent threshold. Given the distance between two frames $d_{ij}$ and a threshold $d^{min}_{ij}$ the self-collision cost for the pair is:
  \begin{equation}
-   c_{sc} = \mathds{1}[d_{ij} < d^{min}_{ij}] (\weightScalar{r} + \weightScalar{rs}(d^{min}_{ij} - d_{ij})^2).    
+   c_{sc} = \sum_{ij, i \neq j} \mathds{1}[d_{ij} < d^{min}_{ij}] (\weightScalar{r} + \weightScalar{rs}(d^{min}_{ij} - d_{ij})^2).    
  \end{equation}
  
  \paragraph{Object manipulation} in the manipulation task the goal is to change the state of an articulated object through interaction. The \textit{manipulation cost} penalizes deviations from the target object configuration $\configObject^{*}$,
 \begin{equation}
     c_o(\configObject; \weightMatrix{o}) = || \configObject - \configObject^{*}||^2_{\weightMatrix{o}}.
 \end{equation}
-\paragraph{Power minimization} we propose a new cost component that takes into account the power dissipated to perform the task. We leverage the fact that as rollouts are performed in simulation, the joint torque generated through interaction can be easily computed by summing the contribution of each force $\vect{f}_c \in \nR{3}$ at each contact point $c$:
+\paragraph{Power minimization} we propose a new cost component that takes into account the power dissipated to perform the task. In fact a successful interaction (i.e opening the door) could happen in multiple ways, however trajectories that dissipate low power are most efficient as they do not act against the environment and robot kinematic constraints. We leverage the fact that as rollouts are performed in simulation, the joint torque generated through interaction can be easily computed by summing the contribution of each force $\vect{f}_c \in \nR{3}$ at each contact point $c$:
 \begin{equation}
 \boldsymbol{\tau}_{ext} = \sum\limits_{c} \matr{J}_c \vect{f}_c,    
 \end{equation}
@@ -71,29 +71,27 @@ The manipulation task consists of two phases. In a first phase the manipulator r
 %This approach is in contrast with previous works where manipulation generally follows a prescribed grasping state~\cite{abraham_model-based_2020}. Grasping introduces a kinematic constraint that, while reducing the optimal control search space, does not allow for more flexible, contact-based behaviors to emerge such as pulling, pushing or sliding. 
 
 \subsection{Barrier Functions}
-In the previous subsection a combination of cost components were introduced in order to address both performance and safety. The variety of objectives makes the cost landscape highly complex such that trading-off performance against safety objectives can be quite challenging and tedious. In the following, we look at how barrier functions can encode safety-critical constraints. We start by deriving the ZBF constraints based on the differential kinematics equation,
+In the previous subsection a combination of cost components were introduced in order to address both performance and safety. The variety of objectives makes the cost landscape highly complex such that trading-off performance against safety objectives can be quite challenging and tedious. Furthermore, sampling does not provide any formal guarantee that constraints encoded in the form of additional cost terms will be satisfied. In the following, we look at how barrier functions can encode safety-critical constraints. We start by deriving the ZBF constraints based on the differential kinematics equation,
 \begin{equation}
     \dot{\state} = \matr{J} \dconfigRobot\;.
 \end{equation}
 As described in \cite{benzi2021optimization}, a simple ZBF can be derived for each joint to keep it between its lower and upper bounds, $q_i^-$ and $q_i^+$, respectively:
 \begin{equation}
-h_{ql}^i = \epsilon_{ql} \frac{(q_i^+ - q)(q - q_i^-)}{(q_i^+ - q_i^-)}\;.
+h_{ql}^i = \frac{(q_i^+ - q)(q - q_i^-)}{(q_i^+ - q_i^-)}\;.
 \end{equation}
 In the following we treat the safety requirements associated to robot frames and denote with $\vect{p}_{i} \in \nR{3}$ the position of frame $i$ computed through forward kinematics.  
 The self-collision safe set can be obtained by approximating potentially colliding frames with non-intersecting spheres. Then the self-collision ZBF is defined as,
 \begin{equation}
-    h_{sc}^{ij} = \frac{1}{2}(||\vect{p}_i - \vect{p}_j||^2 - D_c^2),
+    h_{sc}^{ij} = \frac{1}{2}(||\vect{p}_i - \vect{p}_j||^2 - d_c^2),
 \end{equation}
-associated with the $i$\textsuperscript{th}  and $j$\textsuperscript{th} collision pair frames. Note that we can similarly encode arm reach limits. In fact, the following is a valid zeroing ZBF, positive only when the end-effector is within the prescribed reach with respect to the arm base,
+where $d_c = r_i + r_j$ is the sum of the radius of the two collision spheres associated with the $i$\textsuperscript{th}  and $j$\textsuperscript{th} collision pair frames. Note that we can similarly encode arm reach limits. In fact, the following is a valid zeroing ZBF, positive only when the end-effector is within the prescribed reach with respect to the arm base,
 \begin{equation}
     h_{ar} = \frac{1}{2}(D_r^2 - (\vect{p}_{ee} - \vect{p}_{base})^T P (\vect{p}_{ee} - \vect{p}_{base}) ).
 \end{equation}
-The projection matrix $P = \text{diag}(1, 1, 0) \in \nR{3 \times 3}$ makes sure that the reach is only computed in the 2D plane. Each of these CBFs translates to a constraint of the form in \eqref{eq:cbf-const} which is affine in the commands. 
+The projection matrix $P = \text{diag}(1, 1, 0) \in \nR{3 \times 3}$ makes sure that the reach is only computed in the 2D plane. This prevents the arm to stretch out and reach singular configurations that are hard to escape. Each of these ZBFs translates to a constraint of the form in \eqref{eq:cbf-const} which is affine in the commands. 
 
 \subsection{Energy Tank}
 As described in \sect \ref{sec:theory}, energy tanks can be used to \emph{passify} the system, ensuring always stability. Inspired by the work in \cite{benzi2021optimization} and \cite{shahriari2018valve}, this adaptation naturally fits the control method so far developed. The system model is first augmented with a virtual tank. 
-
-%As a consequence, the forward simulation of each rollout also contains the time evolution of the tank's energy and this can be used to ensure passivity in a \emph{predictive} manner. 
 
 We are left with the task of defining the \emph{power ports} connected to the tank that ensure passivity is preserved. To this end, we perform a passivity analysis of the \emph{real} system. Its 
 velocity controller follows a dynamically compensated PI control law:
@@ -107,16 +105,16 @@ with the auxiliary error variable $\configRobotError =  \configRobot - \configRo
 The energy dynamics can be obtained by computing the time derivative of the previous expression. Plugging in \eqref{eq:eom} and exploiting the fact that $\massMatrix - 2 \coriolis$ is skew symmetric we get:
 \begin{equation*}
 \begin{aligned}
-    \dot{S}_{robot} &= \dconfigRobotError^T \massMatrix \ddconfigRobotError + \frac{1}{2} \dconfigRobotError^T \dot{\massMatrix} \dconfigRobotError + \dconfigRobotError^T \matr{K}_P \configRobotError \\
+    \dot{S}_{robot} &= \dconfigRobotError^T \massMatrix \ddconfigRobotError + \frac{1}{2} \dconfigRobotError^T \dot{\matr{M}}(\configRobot) \dconfigRobotError + \dconfigRobotError^T \matr{K}_P \configRobotError \\
     &= \dconfigRobotError^T \left[ -\coriolis \dconfigRobotError - \matr{K}_P \configRobotError - \matr{K}_D \dconfigRobotError - \matr{K}_I \int_{0}^{\sigma} \dconfigRobotError + \externalTorque \right] \\
-    &\quad + \frac{1}{2} \dconfigRobotError^T \dot{\massMatrix} \dconfigRobotError + \dconfigRobotError^T \matr{K}_P \configRobotError \\
-    &= -\dconfigRobotError^T \matr{K}_P \configRobotError + \dconfigRobotError^T \externalTorque + \frac{1}{2} \dconfigRobotError^T\left[ \dot{\massMatrix} - 2\coriolis \right] \dconfigRobotError \\
+    &\quad + \frac{1}{2} \dconfigRobotError^T \dot{\matr{M}}(\configRobot) \dconfigRobotError + \dconfigRobotError^T \matr{K}_P \configRobotError \\
+    &= -\dconfigRobotError^T \matr{K}_P \configRobotError + \dconfigRobotError^T \externalTorque + \frac{1}{2} \dconfigRobotError^T\left[ \dot{\matr{M}}(\configRobot) - 2\coriolis \right] \dconfigRobotError \\
     &\quad - \dconfigRobotError^T \matr{K}_D \dconfigRobotError  - \dconfigRobotError^T \matr{K}_I \int^{\sigma}_{0} \dconfigRobotError\ dt\\
     &= \dconfigRobotError^T \matr{K}_P \configRobotError + \dconfigRobotError^T \externalTorque - \dconfigRobotError^T \matr{K}_D \dconfigRobotError -  \dconfigRobotError^T \matr{K}_I \int^{\sigma}_{0} \dconfigRobotError\ dt.  
 \end{aligned}
 \end{equation*}
 As we compute the desired position integrating the desired velocity over time, it holds that $\configRobotError = \int^{\sigma}_{0}
-\dconfigRobotError\ dt$. We choose $K_P = K_I$, obtaining,
+\dconfigRobotError\ dt$. We choose $\matr{K}_P = \matr{K}_I$, obtaining,
 \begin{equation}
     \dot{S}_{robot} = \dconfigRobotError^T \externalTorque - \dconfigRobotError^T \matr{K}_D \dconfigRobotError \leq \dconfigRobotError^T \externalTorque. 
 \end{equation}
@@ -151,7 +149,7 @@ As described in \sect \ref{sec:theory}, we can formulate a quadratic program to 
 \addConstraint{\int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \command \ dt \geq -S(x_t(0)) + \epsilon + \delta_t}{}{\quad \text{(Passivity)}}
 \addConstraint{\tilde{\vect{u}}_t \in \mathcal{U}}{}{\quad \text{(Input Limits)}},
 \end{mini}
-where $\boldsymbol{\delta}$ is the vector of slack variables and $\matr{P}$ is a positive definite diagonal matrix. Finally, the set denoted by $\mathcal{I}$ is the set of collision link pairs.  We name this problem FILTER-QP as it changes the control input only if it is unsafe or causes a loss of passivity. Instead of simply applying this optimization point-wise, we \emph{filter} the full input sequence in a sequential manner. After a policy update and for each time step, a FILTER-QP is solved. The newly computed command is applied to advance to the next step in the horizon as shown in \algo \ref{algo:sequential_qp}. The resulting filtered input sequence $\bar{U}_t$ is then used as the nominal policy for the next round of rollout sampling. 
+where $\boldsymbol{\delta}$ is the vector of slack variables and $\matr{P}$ is a positive definite diagonal matrix. Finally, the set denoted by $\mathcal{I}$ is the set of collision link pairs.  We name this problem FILTER-QP as it changes the control input only if it is unsafe or causes a loss of passivity. Instead of simply applying this optimization point-wise, we \emph{filter} the full input sequence in a sequential manner. After a policy update and for each time step, a FILTER-QP is solved. The newly computed command is applied to advance to the next step in the horizon as shown in \algo \ref{algo:sequential_qp}. The resulting filtered input sequence $\bar{U}_t$ is then used to warm-start the nominal policy for the next round of rollout sampling. 
 
 \begin{algorithm}
 \caption{Sequential FILTER-QP \label{algo:sequential_qp}}
@@ -175,6 +173,17 @@ $n \gets 0$\;
 \includegraphics[width=0.8\columnwidth]{figures/schemes/stochastic_controller.pdf}
 \caption{The sampling scheme is refined using Sequential QP. The newly filtered trajectory is shifted in time and used to warm start the next sampling round.} \label{fig:sampling_scheme}
 \end{figure}
+
+\subsection{Cascaded control architecture}
+The expensive rollout sampling procedure often limits the rate of the controller. Instead, the QP can be efficiently solved at almost the same rate as the low-level controller. We propose a \emph{cascaded control} architecture composed of a low-rate policy update block and a high-rate low-level control loop. The latter solves the FILTER-QP in \eqref{eq:cbf-qp} point-wise to find the best input according to the latest received measurements. The full cascaded control architecture is shown in \fig \ref{fig:cascaded_architecture}.
+
+\begin{figure}[t!]
+\centering
+\hspace*{-0.7cm}
+\includegraphics[width=1.1\columnwidth]{figures/schemes/high_level_architecture.pdf}
+\caption{Cascaded control architecture: the stochastic controller computes a velocity trajectory $\bar{U}$ at approximately 100Hz. The input vector is queried and interpolated at a higher rate of approximately 1000Hz (tick line) and is filtered using the latest odometry.} \label{fig:cascaded_architecture}
+\end{figure}
+
 
 \add{Rephrase this in a better way. For now I just needed a place to put this.}
 We now summarize as follows the possible approaches to the mobile manipulation control problem. We denote each controller with $\Pi_{*}$ where $*$ can be $N,\ O,\ I,\ IO$:
