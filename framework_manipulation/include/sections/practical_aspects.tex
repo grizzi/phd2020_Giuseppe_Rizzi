@@ -13,10 +13,20 @@ As the sampled control is not sufficiently smooth for a practical application, w
 
 \subsection{Adaptive temperature} 
 The coefficient $\lambda$ in \eqref{eq:weighting} determines how much ``aggressive" the weighting between different trajectories is. Adopting a constant value would give a numerically zero weight to most of the trajectories. Shifting the trajectory cost by the minimum cost as proposed in~\cite{williams_information_2017} also does not alleviate this issue. 
-Especially in regions of high cost, trajectories that are equivalently good can be assigned very different weights. We instead propose to adopt the same technique as in~\cite{theodorou2010generalized} where the parameter $\lambda$ can be automatically optimized to maximally discriminate between the experienced trajectories. The modified exponential utility is then defined by,
+Especially in regions of high cost, trajectories that are equivalently good can be assigned very different weights. We instead propose to adopt the same technique as in~\cite{theodorou2010generalized} where the $\lambda$ is scaled to better discriminate between the experienced trajectories. The modified exponential utility is then defined by,
 \begin{equation} \label{eq:adaptive_t}
     \exp (-\lambda J ) = \exp \left( -h \frac{J - J_{\min}}{J_{\max} - J_{\min}} \right).
 \end{equation}
+which has the nice property of being invariant to the cost scale. Assume for example, that in a target reaching task, the goal pose is far away and thus the cost incurred by each sampled rollout sampling is scaled by a common scalar factor $\beta$. This factor would disappear when using the previous equation for mapping rollouts to likelihood. We show the effect of cost-scale invariance in \fig \ref{fig:exponential_mapping_comparison}. In the figure we assume that samples' costs are uniformly distributed in the range between minimum and maximum cost and that the minimum cost shows a $20$\% reduction with respect to the worse rollout\footnote{This is a reasonable choice since we are in a online setup and we assume to be in a low sampling budget regime}. We compare a naive exponential mapping $\mathcal{J} = \exp(-\lambda J)$ (\textit{naive}), with baseline reduction $\mathcal{J} = \exp(\lambda (J - J_{min}))$ (\textit{baseline}) and the mapping in \eqref{eq:scale_invariant_mapping} (\textit{invariant}).
+
+\begin{figure}
+    \centering
+    \includegraphics{}
+    \caption{In each plot we change the maximum and minimum cost ($80$\% of maximum cost). We set $\lambda$ and $\h$ to 10.}
+    \label{fig:exponential_mapping_comparison}
+\end{figure}
+
+The first two methods collapse all the weight to a single sample when the cost is high, and therefore the gradient estimate in \eqref{eq:update_rule} show an high variance. In practice, other samples are assigned a value which is numerically zero. Instead, the mapping in \eqref{eq:invariant_mapping} assigns a non-zero weight to more samples independently from the current cost scale and helps to stabilize the gradient estimate.
 
 \subsection{Chattering}
 We observed that a naive implementation of the passivity constraint leads to a chattering behavior at the constraint boundary. We start discretizing the constraint inequality to obtain a constraint which is affine in the input $\command$:
@@ -32,8 +42,13 @@ where we defined the residual energy $S(x_t(t))-\epsilon$ as $E_{res}$. The abov
     \dot{h}_{pass} = \dot{S}(x_t) \geq -\alpha h_{pass}
      =\alpha (\epsilon - S(x_t))).
 \end{equation*}
-The passivity can therefore seen as a ZBF and consequently inherits its properties. A smaller value for $\alpha$ makes the constraint more conservative and improves its performance at the boundary. Assume, for example that the dissipated power is always equal to the maximal power allowed by the passivity constraints $\dot{E}_{res} = - \alpha E_{res}$, then $E_{res}(t) = E_{res}(0) e^{-\alpha t}$. A smaller $\alpha$ makes the energy drop more slowly and avoids a fast depletion of the tank.
-
+The passivity can therefore seen as a ZBF and consequently inherits its properties. A smaller value for $\alpha$ makes the constraint more conservative and improves its performance at the boundary. In the worst case scenario, the dissipated power is always equal to the maximal power allowed by the passivity constraint: $\dot{E}_{res} = - \alpha E_{res}$. Then $E_{res}(t) = E_{res}(0) e^{-\alpha t}$. A smaller $\alpha$ makes the energy drop more slowly and avoids a fast depletion of the tank as shown in \fig \ref{fig:worst_case_energy_profile}.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\columnwidth]{figures/worst_case_energy_profile.pdf}
+    \caption{The figure shows the \textit{worst case} tank energy profile which is how the energy in the tank would evolve if the maximum allowed energy would be dissipated. The smaller the $\alpha$ and the more conservative is the constraint and the energy is depleted at a lower rate.}
+    \label{fig:worst_case_energy_profile}
+\end{figure}
 
 This effect is shown in \fig \ref{fig:tank_as_zbf} in the experiment section.
 
@@ -62,14 +77,6 @@ A large proportion of simulation time is spent on collision detection. We reduce
     \includegraphics[width=\linewidth]{framework_manipulation/figures/hardware/single_hook_cropped.pdf}
     \caption{Hook finger}\label{fig:hook_finger}
 \end{subfigure}
-% \subfloat{%
-%     \begin{tabular}{c|c|c|c}
-%              &  (a) & (b) & (c) \\ 
-%                       \hline
-%          Mean sim rate & 0.98 KHz & 2.13 KHz & 2.94 KHz\\
-%     \end{tabular}
-%     \label{subtbl:the-table}
-%   }
 
 \caption{Original collision meshes are often approximated by convex hulls which are inaccurate while also more complex representations. In contrast, a simplified mesh can bring more accuracy as well as a computational performance gain in terms of simulation rate.}\label{fig:1}
 

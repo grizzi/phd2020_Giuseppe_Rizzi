@@ -15,10 +15,10 @@ The success likelihood can be further expanded to make explicit its dependence o
         &= \int_{\policy} p(\successState | X_t, U_t; \state_t) p(X_t, U_t; \state_t) \\
         &= \int_{\policy}p(\successState | X_t, U_t) p(X_t| U_t) p(U_t) \label{eq:deterministic_dynamics}\\
         &= \int_{\policy}p(\successState | X_t, U_t) \policy(U_t) \\
-        &= \expectation{\policy} [p(\successState | X_t, U_t)]
+        &= \expectation{\policy} [p(\successState | X_t, U_t)].
         \label{eq:input_to_params}
 \end{align}
-The step in \eqref{eq:deterministic_dynamics} follows from the assumption of deterministic dynamics and we drop the explicit dependence on $\state_t$ as this is already contained in the states sequence $X_t$. Any monotonically decreasing function $g(\cdot): \nR{} \rightarrow \nR{}_{>0}$ can be used to map costs to a \textit{pseudo success likelihood}:
+The step in \eqref{eq:deterministic_dynamics} follows from the assumption of deterministic dynamics and we drop the explicit dependence on $\state_t$ as this is already contained in the state sequence $X_t$. Any monotonically decreasing function $g(\cdot): \nR{} \rightarrow \nR{}_{>0}$ can be used to map costs to a \textit{pseudo success likelihood}:
 \begin{equation}
 p(\successState = 1| X_t, U_t) \propto g(J(X_t, U_t)) \triangleq \mathcal{J}.
 \end{equation}
