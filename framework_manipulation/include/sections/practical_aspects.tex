@@ -9,14 +9,16 @@ The policy update rule in \eqref{eq:update_rule} consists of a receding horizon 
 Model-based predictive control rarely achieves the rate of common low-level controllers because of the time consuming rollouts sampling. Nevertheless, the generated input sequence can be used in open-loop by a cascaded joint velocity trajectory tracking controller. 
 
 At the beginning of a new sampling, all the stored rollouts are shifted back by the real-time number of steps elapsed since the last optimization. A subset of the best rollouts are kept to warm start the next iteration. 
-As the sampled control is not sufficiently smooth for a practical application, we filter it using a moving window Savitzky-Golay filter~\cite{gorry1990general} before the FILTER-QP. 
+As the sampled control is not sufficiently smooth for a practical application, we filter it using a moving window Savitzky-Golay filter~\cite{gorry1990general} before the Sequential FILTER-QP. 
 
 \begin{figure}[t]
     \centering
-    \includegraphics{}
-    \caption{Caption}
-    \label{fig:my_label}
+    \includegraphics[width=\columnwidth]{figures/schemes/receding_horizon.pdf}
+    \vspace{0.1cm}
+    \caption{The figure shows the implementation of the receding horizon scheme. The blue variables represent the information available at the new optimization step. Some information is reused from the previous iteration to warm start the sampling procedure as shown in dark green. All the previous samples and nominal trajectory are shifted by a $\Delta t = t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. }
+    \label{fig:receding_horizon}
 \end{figure}
+
 \subsection{Likelihood mapping} 
 The coefficient $\lambda$ in \eqref{eq:weighting} determines how much ``aggressive" the weighting between different trajectories is. Adopting a constant value would give a numerically zero weight to most of the trajectories. Shifting the trajectory cost by the minimum cost as proposed in~\cite{williams_information_2017} also does not alleviate this issue. 
 Especially in regions of high cost, trajectories that are equivalently good can be assigned very different weights. We instead propose to adopt the same technique as in~\cite{theodorou2010generalized} where the $\lambda$ is scaled to better discriminate between the experienced trajectories. The modified exponential utility is then defined by,
@@ -28,7 +30,7 @@ which has the nice property of being invariant to the cost scale. Assume for exa
 \begin{figure}[t]
     \centering
     \includegraphics{figures/likelihood_mapping.pdf}
-    \caption{In each plot we change the maximum and minimum cost ($80$\% of maximum cost). We set $\lambda$ and $\h$ to 10 in all comparison.}
+    \caption{In each plot we change the maximum and minimum cost ($80$\% of maximum cost). We set $\lambda$ and $h$ to 10 in all comparison.}
     \label{fig:exponential_mapping_comparison}
 \end{figure}
 
@@ -51,7 +53,7 @@ where we defined the residual energy $S(x_t(t))-\epsilon$ as $E_{res}$. The abov
 The passivity can therefore seen as a ZBF and consequently inherits its properties. A smaller value for $\alpha$ makes the constraint more conservative and improves its performance at the boundary. In the worst case scenario, the dissipated power is always equal to the maximal power allowed by the passivity constraint: $\dot{E}_{res} = - \alpha E_{res}$. Then $E_{res}(t) = E_{res}(0) e^{-\alpha t}$. A smaller $\alpha$ makes the energy drop more slowly and avoids a fast depletion of the tank as shown in \fig \ref{fig:worst_case_energy_profile}.
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.9\columnwidth]{figures/worst_case_energy_profile.pdf}
+    \includegraphics[width=0.8\columnwidth]{figures/worst_case_energy_profile.pdf}
     \caption{The figure shows the \textit{worst case} tank energy profile which is how the energy in the tank would evolve if the maximum allowed energy would be dissipated. The smaller the $\alpha$ and the more conservative is the constraint and the energy is depleted at a lower rate.}
     \label{fig:worst_case_energy_profile}
 \end{figure}
