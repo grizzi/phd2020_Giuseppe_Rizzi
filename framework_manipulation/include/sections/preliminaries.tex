@@ -45,7 +45,7 @@ The step size can be decoupled from the noise variance $\rho = \alpha \variance 
   \omega_l  &\approx \frac{\exp ( -\lambda J_l )}{\sum \limits_{l=1}^{N} \exp ( -\lambda J_l)}, \label{eq:weighting}
 \end{align}
 where $N$ is the number of sampled rollouts. 
-The input sequence applied to the system is then chosen as the \emph{maximum-likelihood-estimator} of the policy, which is trivially given by its mean: $U_t = \policyParams$.
+The input sequence applied to the system is then chosen as the \emph{maximum-likelihood-estimator} of the policy, which is trivially given by its mean: $U^*_t = \policyParams$.
 
 \subsection{Control Barrier Functions}
 It is desirable to design a controller that mediates performance and safety. \emph{Control Barrier Functions} have been recently introduced as a means to unify these objectives. This theory is based on the concept of \emph{forward invariance} of a safe set $\safeSet $, which is where safety conditions are met. A set $\mathcal{S}$ is called \emph{forward invariant} if for every $\vect{x}_0 \in \mathcal{S},\ \vect{x}(t) \in \mathcal{S}$ for every $t$. A differentiable function $\zbf$  characterizes the safe set, such that:
