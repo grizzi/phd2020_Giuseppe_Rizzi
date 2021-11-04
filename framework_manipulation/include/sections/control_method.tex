@@ -154,6 +154,18 @@ $n \gets 0$\;
 }
 \end{algorithm}
 
+\subsection{Receding Horizon Control} 
+At the beginning of a new sampling, all the stored rollouts are shifted back by the real-time number of steps elapsed since the last optimization. A subset of the best rollouts are kept to warm start the next iteration. 
+As the sampled control is not sufficiently smooth for a practical application, we filter it using a moving window Savitzky-Golay filter~\cite{gorry1990general} before the Sequential FILTER-QP. The full pipeline is visualized in \fig \ref{fig:receding_horizon}.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/schemes/receding_horizon.pdf}
+    \vspace{0.1cm}
+    \caption{The figure shows the implementation of the receding horizon scheme. The blue variables represent the information available at the new optimization step. Some information is reused from the previous iteration to warm start the sampling procedure as shown in dark green. All the previous samples and nominal trajectory are shifted by a $\Delta t = t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. The Sequential-QP block, highlighted in purple is optional and deployed by methods $\Pi_{I}$ and $\Pi_{IO}$.}
+    \label{fig:receding_horizon}
+\end{figure}
+
 \subsection{Cascaded control architecture}
 The expensive rollout sampling procedure often limits the rate of the controller. Instead, the QP can be efficiently solved at almost the same rate as the low-level controller. We propose a \emph{cascaded control} architecture composed of a low-rate policy update block and a high-rate low-level control loop. The latter solves the FILTER-QP in \eqref{eq:cbf-qp} point-wise to find the best input according to the latest received measurements. The full cascaded control architecture is shown in \fig \ref{fig:cascaded_architecture}.
 
