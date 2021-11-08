@@ -5,20 +5,6 @@ We address here some issues that arise when implementing the described algorithm
 \subsection{Gradient Clipping} 
 The policy update rule in \eqref{eq:update_rule} consists of a receding horizon \emph{mini-batch} SGD. As a consequence, the gradient variance can vary greatly between successive iterations of the algorithm. To prevent this phenomenon, which is especially evident with a small sampling budget, we clip the gradients to a user-defined threshold.  
 
-\subsection{Receding Horizon Control} 
-Model-based predictive control rarely achieves the rate of common low-level controllers because of the time consuming rollouts sampling. Nevertheless, the generated input sequence can be used in open-loop by a cascaded joint velocity trajectory tracking controller. 
-
-At the beginning of a new sampling, all the stored rollouts are shifted back by the real-time number of steps elapsed since the last optimization. A subset of the best rollouts are kept to warm start the next iteration. 
-As the sampled control is not sufficiently smooth for a practical application, we filter it using a moving window Savitzky-Golay filter~\cite{gorry1990general} before the Sequential FILTER-QP. 
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\columnwidth]{figures/schemes/receding_horizon.pdf}
-    \vspace{0.1cm}
-    \caption{The figure shows the implementation of the receding horizon scheme. The blue variables represent the information available at the new optimization step. Some information is reused from the previous iteration to warm start the sampling procedure as shown in dark green. All the previous samples and nominal trajectory are shifted by a $\Delta t = t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. }
-    \label{fig:receding_horizon}
-\end{figure}
-
 \subsection{Likelihood mapping} 
 The coefficient $\lambda$ in \eqref{eq:weighting} determines how much ``aggressive" the weighting between different trajectories is. Adopting a constant value would give a numerically zero weight to most of the trajectories. Shifting the trajectory cost by the minimum cost as proposed in~\cite{williams_information_2017} also does not alleviate this issue. 
 Especially in regions of high cost, trajectories that are equivalently good can be assigned very different weights. We instead propose to adopt the same technique as in~\cite{theodorou2010generalized} where the $\lambda$ is scaled to better discriminate between the experienced trajectories. The modified exponential utility is then defined by,
@@ -61,7 +47,7 @@ The passivity can therefore seen as a ZBF and consequently inherits its properti
 This effect is shown in \fig \ref{fig:tank_as_zbf} in the experiment section.
 
 \subsection{Sampling strategy}
-\add{Briefly Describe some heuristics here such as sampling the zero velocity and the zero noise trajectory}
+At each control step, it is desirable to sample a zero input trajectory, meaning that all velocity commands are $\command_t = \bm{0} \forall t$ as this would allow the robot to stop when the goal is achieved. Similarly, we would like to keep sampling the unperturbed nominal command trajectory. In fact, if we assume this to be optimal for a time instant, re-sampling would perturb it and likely increase its associated cost. With this motivations in mind, we modify the sampling procedure such that there is always an unperturbed and zero velocity profile in the samples batch.
 
 \subsection{Simulator tuning}
 Crucial to the overall performance is the accuracy of the simulation environment (implementing \eqref{eq:eom}). Unfortunately the discrepancy between the simulator and the real physical model known as the \emph{sim-to-real} gap is always present. A typical failure case consists of an over-estimation of an object's friction. In such cases, we have often observed a ``scratching" emergent behavior where the robot would rely on friction to move the object. In practice friction is hard to measure and depends on the contact patch between surfaces. On the other hand, kinematic constraints between contact points depends on the system geometry which can be accurately measured (e.g from CAD models). Therefore solutions that exploit the latter are more likely to succeed on the real platform. One can bias the controller towards these solutions by setting, for example, a very low friction coefficient between contact bodies.
