@@ -10,7 +10,7 @@ The sampling-based framework offers the freedom to directly plan in torque space
 with an appropriate choice of the positive-definite diagonal gain matrix $\matr{K}_{D} \in \nR{\robotDoF\times\robotDoF}$. 
 
 \subsection{Cost shaping}
-As described in Section~\ref{sec:formulation}, the control objective is to drive the system to a desired state. Furthermore, as state constraints are not explicitly taken into account by the formulation, a common heuristic is to penalize deviations from feasible states in the cost function. Input constraints are easier to handle as the non-linear dynamics can be augmented with a function that projects the sampled inputs to the feasible set $\mathcal{U}$. In the following we define several cost components associated with the different high-level objectives and constraints.
+As described in Section~\ref{sec:formulation}, the control objective is to drive the system to minimize a task-dependent cost function over time. Furthermore, as state constraints are not explicitly taken into account by the formulation, a common heuristic is to penalize deviations from feasible states in the cost function. In the following we define several cost components associated with the different high-level objectives and constraints.
 We denote by $\mathds{1}[\cdot]$ the \textit{indicator function} such that,
 \begin{equation}
     \mathds{1}[x] = 
@@ -19,7 +19,7 @@ We denote by $\mathds{1}[\cdot]$ the \textit{indicator function} such that,
     0 & \text{otherwise}.
     \end{cases}
 \end{equation}
-In the following we drop from the notation the dependence on the current state. We use $\weightMatrix{}$ to denote positive semidefinite weight matrices and $\weightScalar{}$ for non-negative scalar parameters. 
+In the following we drop from the notation the dependence on the current state. We use $\weightMatrix{}$ to denote positive semidefinite weight matrices and $\weightScalar{}$ for non-negative scalar parameters. Note that input constraints are not treated here as additional cost terms as the non-linear dynamics can be augmented with a function that projects the sampled inputs to the feasible set $\mathcal{U}$.
 
 \paragraph{Target reaching} in the target reaching task, the goal is to bring a frame attached to the robot (generally the end-effector frame) to a desired pose. We define with $\matr{T}$ and $\matr{T}^*$ the current and desired target frame pose, respectively. The \textit{tracking cost} is computed as a weighted distance in the tangent space to $SE(3)$ using the logarithmic mapping~\cite{blanco2010tutorial}:
 \begin{equation} \label{eq:tracking_cost}
@@ -40,7 +40,7 @@ In the following we drop from the notation the dependence on the current state. 
  \end{align}
  where the scalar $\weightScalar{j}$ is a constant cost added when the limit is violated. The matrix $\weightMatrix{js}$ adds a quadratic term in the limit violation. This was shown in~\cite{williams_information-theoretic_2018} to help the controller find its way back if poor sampling brings the system outside of the joint position limits.
  
- \paragraph{Arm reach} we introduce an additional term that penalizes configurations where the arm's end-effector moves excessively far from the base. This helps to bias solutions where base motion is preferred over stretching the arm which can lead to singular configurations. The translation vector from the end-effector frame $\mathcal{E}$ to the arm base frame $\mathcal{B}$ is defined with the vector $\vect{p}_{BE} \in \nR{3}$. The current reach is then $r_{\text{curr}} = || \vect{p}_{BE} ||^2$. Given a maximum reach $r_{\text{max}} \in \nR{}_{\geq 0}$, the \textit{reach cost} is then defined by:
+ \paragraph{Arm reach} we introduce an additional term that penalizes configurations where the arm's end-effector moves excessively far from the base. This helps to bias solutions where base motion is preferred over stretching the arm which can lead to singular configurations. The translation vector from the end-effector frame $\mathcal{E}$ to the arm base frame $\mathcal{B}$ is defined with the vector $\vect{p}_{\mathcal{B}\mathcal{E}} \in \nR{3}$. The current reach is then $r_{\text{curr}} = || \vect{p}_{\mathcal{B}\mathcal{E}} ||^2$. Given a maximum reach $r_{\text{max}} \in \nR{}_{\geq 0}$, the \textit{reach cost} is then defined by:
  \begin{equation}
    c_r = \mathds{1}[r_{\text{curr}} > r_{\text{max}}] (\weightScalar{r} + \weightScalar{rs}(r_{\text{curr}} - r_{\text{max}})^2).    
  \end{equation}
@@ -56,14 +56,13 @@ In the following we drop from the notation the dependence on the current state. 
 \end{equation}
 \paragraph{Power minimization} we propose a new cost component that takes into account the power dissipated to perform the task. In fact a successful interaction (i.e opening the door) could happen in multiple ways, however trajectories that dissipate low power are most efficient as they do not act against the environment and robot kinematic constraints. We leverage the fact that as rollouts are performed in simulation, the joint torque generated through interaction can be easily computed by summing the contribution of each force $\vect{f}_c \in \nR{3}$ at each contact point $c$:
 \begin{equation}
-\boldsymbol{\tau}_{ext} = \sum\limits_{c} \matr{J}_c \vect{f}_c,    
+\boldsymbol{\tau}_{ext} = \sum\limits_{c} \matr{J}_c^T \vect{f}_c,    
 \end{equation}
 where $\matr{J}_c$ is the contact Jacobian. The power dissipated during the task is therefore $-\boldsymbol{\tau}_{ext}^T\command$, which is positive when acting ``against" the environment. The cost associated with power penalization is:
 \begin{equation}
    c_p = \weightScalar{p} \cdot \max(0, - \boldsymbol{\tau}_{ext}^T\command - p_{max}),      
  \end{equation}
 where $p_{max}$ is the maximum power that can be dissipated during the task.
-As we will later see, this is the power that is drained from the tank and therefore, this cost component has the additional benefit of helping to avoid depletion of the energy tank.
 
 \subsection{Cost scheduling}
 The manipulation task consists of two phases. In a first phase the manipulator reaches an estimated contact point, allowing for a fast and successful exploration in the following interaction phase. In the second phase, the goal is to bring the object to the desired state while keeping the end-effector close to the contact location. This switch is enabled by turning on the object manipulation cost $c_o$. Reducing the end-effector position penalty during the manipulation phase allows the controller to choose a trajectory that fully exploits the contact dynamics by changing the hand pose. 
@@ -88,10 +87,10 @@ where $d_c = r_i + r_j$ is the sum of the radius of the two collision spheres as
 \begin{equation}
     h_{ar} = \frac{1}{2}(D_r^2 - (\vect{p}_{ee} - \vect{p}_{base})^T P (\vect{p}_{ee} - \vect{p}_{base}) ).
 \end{equation}
-The projection matrix $P = \text{diag}(1, 1, 0) \in \nR{3 \times 3}$ makes sure that the reach is only computed in the 2D plane. This prevents the arm to stretch out and reach singular configurations that are hard to escape. Each of these ZBFs translates to a constraint of the form in \eqref{eq:cbf-const} which is affine in the commands. 
+The projection matrix $P = \text{diag}(1, 1, 0) \in \nR{3 \times 3}$ makes sure that the reach is only computed in the 2D plane. This prevents the arm to stretch out and reach singular configurations. Each of these ZBFs translates to a constraint of the form in \eqref{eq:cbf-const} which is affine in the commands. 
 
 \subsection{Energy Tank}
-As described in \sect \ref{sec:theory}, energy tanks can be used to \emph{passify} the system and ensuring so stability. Inspired by the work in \cite{benzi2021optimization} and \cite{shahriari2018valve}, this adaptation naturally fits the control method we have developed so far. After the system model is augmented with a virtual tank, we are left with the task of defining the \emph{power ports} connected to the tank that ensure passivity is preserved. To this end, we perform a passivity analysis of the \emph{real} system. Its 
+As described in \sect \ref{sec:theory}, energy tanks can be used to \emph{passify} the system and ensuring so stability. Inspired by the work in \cite{benzi2021optimization} and \cite{shahriari2018valve}, this adaptation naturally fits the control method we have developed so far. After the system model is augmented with a virtual tank, we are left with the task of defining the \emph{power ports} connected to the tank in order to ensure that passivity is preserved. To this end, we perform a passivity analysis of the \emph{real} system. Its 
 velocity controller follows a dynamically compensated PI control law:
 \begin{equation}
 \commandTorque = \coriolis \dconfigRobotDesired + g(\configRobot) - \matr{K}_D \dconfigRobotError - \matr{K}_I \int_{0}^{\sigma} \dconfigRobotError\ dt,
@@ -100,7 +99,7 @@ with the auxiliary error variable $\configRobotError =  \configRobot - \configRo
 \begin{equation}
     S_{robot} = \frac{1}{2} \dconfigRobotError^T \massMatrix \dconfigRobotError + \frac{1}{2} \configRobotError^T \matr{K}_P \configRobotError.
 \end{equation}
-In order to study the passivity of the system, we need to derive the robot energy dynamics. A complete derivation can be found in the Appendix~\ref{app:passivity_analysis}. It turns out that:
+In order to study the passivity of the system, we need to derive the robot energy dynamics $\dot{S}_{robot}$. A complete derivation can be found in the Appendix~\ref{app:passivity_analysis}. It turns out that:
 \begin{equation}
     \dot{S}_{robot} = \dconfigRobotError^T \externalTorque - \dconfigRobotError^T \matr{K}_D \dconfigRobotError \leq \dconfigRobotError^T \externalTorque. 
 \end{equation}
@@ -121,21 +120,21 @@ The time evolution of the autonomous system's energy is,
 \end{equation}
 showing the system's passivity. The increase of the robot's energy is compensated by a reduction of the tank's energy. Passivity is ensured if,
 \begin{equation}
-    \int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \command \ dt \geq \epsilon,
+    \int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \dconfigRobotDesired \ dt = \int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \command \ dt \geq \epsilon - S(0),
 \end{equation}
-where $\epsilon$ is a positive minimum residual energy to avoid a singularity condition and complete tank depletion.
+where $\epsilon$ is a positive minimum residual energy to avoid a singularity condition and complete tank depletion and $S(0)$ is the energy initially stored in the tank.
 
 \subsection{Closing the loop}
 As described in \sect \ref{sec:theory}, we can formulate a quadratic program to find the command which is the closest to the sampled one while also satisfying the ZBF and passivity constraints previously introduced:
 \begin{mini}|s| 
 {\tilde{\vect{u}}_t, \boldsymbol{\delta}}{||\tilde{\vect{u}}_t - \command_t||^2 + \boldsymbol{\delta}^T \matr{P} \boldsymbol{\delta}\quad \text{(FILTER-QP)}}{}{\label{eq:cbf-qp}}
-\addConstraint{\dot{h}^i_{ql} \geq -{h}_{ql} + \delta^i_{ql} \quad \forall \ i \in [1,  m] }{}{\quad \text{(Joint Limits)}}
-\addConstraint{\dot{h}^{ij}_{sc} \geq -{h}_{ij} + \delta^{ij}_{sc} \quad \forall \ (i,j) \in \mathcal{I}}{}{\quad \text{(Self Collision)}}
-\addConstraint{\dot{h}^i_{ar} \geq -{h}_{ar} + \delta^i_{ar}}{}{\quad \text{(Arm Reach)}}
-\addConstraint{\int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \command \ dt \geq -S(x_t(0)) + \epsilon + \delta_t}{}{\quad \text{(Passivity)}}
-\addConstraint{\tilde{\vect{u}}_t \in \mathcal{U}}{}{\quad \text{(Input Limits)}},
+\addConstraint{\dot{h}^i_{ql} \geq -{h}_{ql} + \delta^i_{ql} \quad \forall \ i \in [1,  m] }{}{\ \text{(Joint Limits)}}
+\addConstraint{\dot{h}^{ij}_{sc} \geq -{h}_{ij} + \delta^{ij}_{sc} \quad \forall \ (i,j) \in \mathcal{I}}{}{\ \text{(Self Collision)}}
+\addConstraint{\dot{h}^i_{ar} \geq -{h}_{ar} + \delta^i_{ar}}{}{\ \text{(Arm Reach)}}
+\addConstraint{\int\limits_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \command \ dt \geq -S(0) + \epsilon + \delta_t}{}{ \text{\ (Passivity)}}
+\addConstraint{\tilde{\vect{u}}_t \in \mathcal{U}}{}{ \text{\ (Input Limits)}},
 \end{mini}
-where $\boldsymbol{\delta}$ is the vector of slack variables and $\matr{P}$ is a positive definite diagonal matrix. Finally, the set denoted by $\mathcal{I}$ is the set of collision link pairs.  We name this problem FILTER-QP as it changes the control input only if it is unsafe or causes a loss of passivity. Instead of simply applying this optimization point-wise, we \emph{filter} the full input sequence in a sequential manner. After a policy update and for each time step, a FILTER-QP is solved. The newly computed command is applied to advance to the next step in the horizon as shown in \algo \ref{algo:sequential_qp}. The resulting filtered input sequence $\bar{U}^*_t$ is then used to warm-start the nominal policy for the next round of rollout sampling (see \fig \ref{fig:receding_horizon}). 
+where $\boldsymbol{\delta}$ is the vector of slack variables and $\matr{P}$ is a positive definite diagonal matrix weighting the slack variable penalization. Finally, the set denoted by $\mathcal{I}$ is the set of collision link pairs.  We name this problem FILTER-QP as it changes the control input only if it is unsafe or causes a loss of passivity. Instead of simply applying this optimization point-wise, we can \emph{filter} the full input sequence in a sequential manner. After a policy update and for each time step, a FILTER-QP is solved. The newly computed command is applied to advance to the next step in the horizon as shown in \algo \ref{algo:sequential_qp}. The resulting filtered input sequence $\bar{U}^*_t$ is then used to warm-start the nominal policy for the next round of rollout sampling (see \fig \ref{fig:receding_horizon}). 
 
 \begin{algorithm}
 \caption{Sequential FILTER-QP \label{algo:sequential_qp}}
@@ -162,11 +161,10 @@ As the sampled control is not sufficiently smooth for a practical application, w
     \centering
     \includegraphics[width=\columnwidth]{figures/schemes/receding_horizon.pdf}
     \vspace{0.1cm}
-    \caption{The figure shows the implementation of the receding horizon scheme. The blue variables represent the information available at the new optimization step. Some information is reused from the previous iteration to warm start the sampling procedure as shown in dark green. All the previous samples and nominal trajectory are shifted by a $\Delta t = t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. The Sequential-QP block, highlighted in purple is optional and deployed by methods $\Pi_{I}$ and $\Pi_{IO}$.}
+    \caption{The figure shows the implementation of the receding horizon scheme. The blue variables represent the information available at the new optimization step. Some information is reused from the previous iteration to warm start the sampling procedure as shown in dark green. All the previous samples and the nominal trajectory are shifted by $\Delta t = t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. The Sequential-QP block, highlighted in purple, is optional and deployed by methods $\Pi_{I}$ and $\Pi_{IO}$.}
     \label{fig:receding_horizon}
 \end{figure}
 
-\subsection{Cascaded control architecture}
 The expensive rollout sampling procedure often limits the rate of the controller. Instead, the QP can be efficiently solved at almost the same rate as the low-level controller. We propose a \emph{cascaded control} architecture composed of a low-rate policy update block and a high-rate low-level control loop. The latter solves the FILTER-QP in \eqref{eq:cbf-qp} point-wise to find the best input according to the latest received measurements. The full cascaded control architecture is shown in \fig \ref{fig:cascaded_architecture}.
 
 \begin{figure}[t!]
@@ -181,5 +179,5 @@ We can now summarize as follows all the possible approaches to the mobile manipu
     \item[$\Pi_{N}$:] relies exclusively on a stochastic controller to generate velocity commands, namely the input is not filtered either by a FILTER-QP or a Sequential FILTER-QP
     \item[$\Pi_{O}$:] a FILTER-QP is used to optimize the input sequence received by the stochastic controller. The FILTER-QP is solved at the same rate as the low-level controller,
     \item[$\Pi_{I}$:] the Sequential FILTER-QP is used in the stochastic controller to enforce safety and passivity constraints  as described in \algo \ref{algo:sequential_qp}. No FILTER-QP is solved at higher rate in the low-level controller.
-    \item[$\Pi_{IO}$:] the full cascaded architecture (see \fig \ref{fig:cascaded_architecture}) is deployed, combining the previous two methods.
+    \item[$\Pi_{IO}$:] the full cascaded architecture is deployed, combining the previous two methods.
 \end{itemize}

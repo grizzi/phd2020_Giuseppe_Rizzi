@@ -24,11 +24,11 @@ $\matr{J}^T_r$ and $\matr{J}^T_o$ map the interaction force $\vect{f}_{ext} \in 
 The system input $\command  \in \nR{\robotDoF}$ are the desired robot joint velocities $\dconfigRobotDesired$. The joint torques, denoted by $\vect{\tau}_{cmd}  \in \nR{\robotDoF}$, are computed by a low-level velocity controller as a function of the velocity references $\command$. We define with  $\mathcal{X} \subseteq \nR{2(\robotDoF + \objectDoF)}$ and $\mathcal{U} \subseteq \nR{\robotDoF}$ as the spaces of admissible states and inputs, respectively. 
 
 
-The control trajectory is defined as a sequence of control inputs over a time horizon $T$ and beginning at time $t$: $U_t = \{\command_t, \command_{t+1}, \dots, \command_{t+T-1}\}$. Each command sequence is sampled from a feedback policy distribution $U_t \sim \policy$ where $\policyParams$ are the distribution parameters. We denote with $X_t = \{\state_t, \state_{t+1}, \dots, \state_{t+T-1}\}$ the state sequence obtained by rolling out a policy sample $U_t$ when starting at the current state $\state_t$. 
+The control trajectory is defined as a sequence of control inputs over a time horizon $T$ and beginning at time $t$: $U_t = \{\command_t, \command_{t+1}, \dots, \command_{t+T-1}\}$. Each command sequence is sampled from a feedback policy distribution $U_t \sim \policy$ where $\policyParams$ are the distribution parameters. We denote with $X_t = \{\state_t, \state_{t+1}, \dots, \state_{t+T}\}$ the state sequence obtained by rolling out a policy sample $U_t$ when starting at the current state $\state_t$. 
 
 The control objective is to find the feedback policy $\policy(\state_t)$ that minimizes some statistics over an objective metric $h : \mathcal{X} \times \mathcal{X} \times \mathcal{U} \rightarrow \nR{}$ that maps for each time $t$, the system state $\state_t$, the desired state $\state^*_t$ and command $\command_t$ to a scalar value. We can now formulate the control objective as an optimization problem: 
 \begin{mini}|s| 
-{\policyParams}{\expectation{\policy}  \int\limits_{t}^{\infty} h(\state^*_t, \state_t, \command_t)  }{}{\label{eq:objective}}
+{\policyParams}{\expectation{\policy}  \int\limits_{t}^{\infty} h(\state^*_t, \state_t, \command_t)\  dt }{}{\label{eq:objective}}
 \addConstraint{\dstate_t=f(\state_t, \command_t) \quad \forall \ t}{}{}
 \addConstraint{\command_t \sim \policy(\state_t) \quad \forall \ t}{}{}
 \addConstraint{\state_t  \in \mathcal{X}         \quad \forall \ t}{}{}
@@ -37,9 +37,9 @@ The control objective is to find the feedback policy $\policy(\state_t)$ that mi
 
 Commonly, the objective in \eqref{eq:objective} is simplified to the sum of a finite horizon and final cost term that approximates the infinite horizon. In the discrete time setting we have:
 \begin{equation} \label{eq:value_function}
-    \expectation{\policy} \left[ h(\state^*, \state_t, \command_t) \right] \approx
-    \expectation{\policy} \underbrace{\left[ 
-    c_{\text{term}}(\state_{t + T}) + \sum\limits_{t}^{t + T - 1} c(\state_t, \command_t) dt \right]}_{J(X_t, U_t)},
+    \underset{\policy}{\expectation{}} \left[\int\limits_t^{\infty} h(\state^*, \state_t, \command_t)dt \right] \approx
+    \underset{\policy}{\expectation{}} \underbrace{\left[ 
+    c_{\text{term}}(\state_{t + T}) + \sum\limits_{t}^{t + T - 1} c(\state_t, \command_t) \right]}_{J(X_t, U_t)},
 \end{equation}
 For the sake of notation simplicity we have omitted the dependence from the desired state $\state_t^*$. The cost function $c(\state_t, \command_t) \in \nR{}_{\geq 0}$ maps the current state and input into a non-negative scalar, which indicates how close the state and commands are to the goal, $t$ and $t + T$ are the initial and final time of the horizon, and $c_{\text{term}}(\state_{t+T})  \in \nR{}_{\geq 0}$ is the terminal cost which approximates the tail of the infinite horizon cumulative cost. 
 
