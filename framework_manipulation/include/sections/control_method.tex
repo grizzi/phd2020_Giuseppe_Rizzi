@@ -6,6 +6,20 @@ In this section we combine sampling, barrier functions and energy tank into a no
     \item \textit{pointwise}, for each command executed by the low-level controller, in order to account for different control rates and ensure passivity, hence stability of the system.
 \end{itemize}
 
+\begin{figure}[t!]
+\centering
+\hspace*{-0.7cm}
+\includegraphics[width=1.3\columnwidth]{figures/schemes/receding_horizon_new_paper.pdf}
+\caption{} \label{fig:block_scheme}
+\end{figure}
+
+We can now summarize as follows all the possible approaches to the mobile manipulation control problem. We denote each controller with $\Pi_{*}$ where $*$ can be $N,\ O,\ I,\ IO$:
+\begin{itemize}
+    \item[$\Pi_{N}$:] relies exclusively on a stochastic controller to generate velocity commands, namely the input is not filtered either by a FILTER-QP or a Sequential FILTER-QP
+    \item[$\Pi_{O}$:] a FILTER-QP is used to optimize the input sequence received by the stochastic controller. The FILTER-QP is solved at the same rate as the low-level controller,
+    \item[$\Pi_{I}$:] the Sequential FILTER-QP is used in the stochastic controller to enforce safety and passivity constraints  as described in \algo \ref{algo:sequential_qp}. No FILTER-QP is solved at higher rate in the low-level controller.
+    \item[$\Pi_{IO}$:] the full cascaded architecture is deployed, combining the previous two methods.
+\end{itemize}
 
 \subsection{Sampling-based control}
 The sampling-based framework offers the freedom to directly plan in torque space or use position/velocity control and defer tracking to a low-level controller. In fact, directly planning in the joint space allows us to account for objectives which are not in the operational control space such as joint limits and self-collision avoidance. The internal model used to sample trajectory rollouts has the same form as in \eqref{eq:eom}. Joint velocity commands are sampled and then translated to motor torques:
