@@ -25,7 +25,7 @@ When the cost is high, the first two methods collapse all the weight to a single
 \subsection{Chattering}
 We observed that a naive implementation of the passivity constraint leads to a chattering behavior at the constraint boundary. We start discretizing the constraint inequality to obtain a constraint which is affine in the input $\command$:
 \begin{equation*}
-    \int_{0}^{t + dt} \boldsymbol{\tau}_{ext}^T \command \ dt \approx \underbrace{\boldsymbol{\tau}_{ext}(t)^T \command(t) dt}_{-P_{diss}} + S(x_t(t)) \geq \epsilon,
+    \int_{0}^{t + dt} \boldsymbol{\tau}_{ext}^T \command \ dt \approx \underbrace{\boldsymbol{\tau}_{ext}(t)^T \command(t) }_{-P_{diss}}dt + S(x_t(t)) \geq \epsilon,
 \end{equation*}
 which is equivalent to 
 \begin{equation} \label{eq:passivity_simple}
@@ -36,7 +36,9 @@ where we defined the residual energy $S(x_t(t))-\epsilon$ as $E_{res}$. The abov
     \dot{h}_{pass} = \dot{S}(x_t) \geq -\alpha h_{pass}
      =\alpha (\epsilon - S(x_t)).
 \end{equation*}
-The passivity can therefore be seen as a ZBF and consequently inherits its properties. A smaller value for $\alpha$ makes the constraint more conservative and improves its performance at the boundary. In the worst case scenario, the dissipated power is always equal to the maximal power allowed by the passivity constraint: $\dot{E}_{res} = - \alpha E_{res}$. Then $E_{res}(t) = E_{res}(0) e^{-\alpha t}$. A smaller $\alpha$ makes the energy drop more slowly and avoids a fast depletion of the tank as shown in \fig \ref{fig:worst_case_energy_profile}.
+The passivity can therefore be seen as a ZBF and consequently inherits its properties. A smaller value for $\alpha$ makes the constraint more conservative and improves its performance at the boundary. 
+
+In order to gain a better intuitive understanding of this tuning parameter, consider the the worst case scenario. In this scenario, the power flow is always equal to the maximal dissipated power allowed by the passivity constraint: $\dot{E}_{res} = - \alpha E_{res}$. Then $E_{res}(t) = E_{res}(0) e^{-\alpha t}$. A smaller $\alpha$ reduces the energy tank deplation rate  (as shown in \fig \ref{fig:worst_case_energy_profile}) at the cost of making the system more conservative.
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.8\columnwidth]{figures/worst_case_energy_profile.pdf}
@@ -46,10 +48,10 @@ The passivity can therefore be seen as a ZBF and consequently inherits its prope
 This effect is also shown in \fig \ref{fig:tank_as_zbf} in the experiment section.
 
 \subsection{Sampling strategy}
-At each control step, it is desirable to sample a zero input trajectory, meaning that all velocity commands are $\command_t = \bm{0} \forall t$, as this would allow the robot to stop when the goal is achieved. Similarly, we would like to keep sampling the unperturbed nominal command trajectory. In fact, if we assume this to be optimal for a time instant, re-sampling would perturb it and likely increase its associated cost. With these motivations in mind, we modify the sampling procedure such that there is always an unperturbed and zero velocity profile in the batch of samples.
+At each control step, it is desirable to sample a zero input trajectory, meaning that all velocity commands are $\command_t = \bm{0}\ \forall\ t$, as this would allow the robot to stop when the goal is reached. Similarly, we would like to keep sampling the unperturbed nominal command trajectory. In fact, if we assume this to be optimal for a time instant, re-sampling would perturb it and very likely increase its associated cost. With these motivations in mind, we modify the sampling procedure such that there is always an unperturbed and zero velocity input sequences in the batch of samples.
 
 \subsection{Simulator tuning}
-Crucial to the overall performance is the accuracy of the simulation environment (implementing \eqref{eq:eom}). Unfortunately the discrepancy between the simulator and the real physical model known as the \emph{sim-to-real} gap is always present. A typical failure case consists of an over-estimation of an object's friction. In such cases, we have often observed a ``scratching" emergent behavior where the robot would rely on friction to move the object. In practice friction is hard to measure and depends on the contact patch between surfaces. On the other hand, kinematic constraints between contact points depends on the system geometry which can be accurately measured (e.g from CAD models). Therefore solutions that exploit the latter are more likely to succeed on the real platform. One can bias the controller towards these solutions by setting, for example, a very low friction coefficient between contact bodies.
+Crucial to the overall performance is the accuracy of the simulation environment (implementing \eqref{eq:eom}). Unfortunately the discrepancy between the simulator and the real physical model known as the \emph{sim-to-real} gap is unavoidable. A typical failure case consists of an over-estimation of an object's friction. In such cases, we have often observed a ``scratching" emergent behavior where the robot would rely on friction to move the object. In practice friction is hard to measure and depends on the contact patch between surfaces. On the other hand, kinematic constraints between contact points depends on the system geometry which can be accurately measured (e.g from CAD models). Therefore solutions that exploit the latter are more likely to succeed on the real platform. One can bias the controller towards these solutions by setting, for example, a very low friction coefficient between contact bodies.
 
 \subsection{Contact-mesh simplification}
 A large proportion of simulation time is spent on collision detection. We reduce the component meshes to the relevant ones and simplify to primitive shapes, as shown in \fig\ref{fig:1}. We are especially interested in the collision objects belonging to the robot end-effector and the object. This adaptation tremendously reduces computation especially during the contact phase. In our following evaluations we observed that using the original mesh shown in \fig\ref{fig:original_mesh} results in a mean simulation rate of 0.98kHz. In contrast, the two finger mesh and hook finger mesh in \fig\ref{fig:two_fingers}-\ref{fig:hook_finger} allow mean simulation rates of 2.13kHz and 2.94kHz, respectively.
