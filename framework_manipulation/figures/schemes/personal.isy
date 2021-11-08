@@ -1,4 +1,12 @@
 <ipestyle name="cushion-gradients">
+<preamble>
+\makeatletter
+\newcommand*\Gigant{%
+  \@setfontsize\Gigant{200}{9.0}%
+}
+\makeatother
+</preamble>
+
   <gradient name="gradient-blue" type="radial" coords="-3.2 22 0 40 40 80" extend="yes">
 		<stop offset="0" color="0.541 0.824 1"/>
 		<stop offset="0.4" color="0.38 0.576 0.812"/>
@@ -35,5 +43,6 @@
 		<stop offset="1" color="0.698 0.349 0.349"/>
 	</gradient>
 	<layout paper="1312 1000" origin="0 0" frame="1312 1000"/>
+	<textsize name="Gigant" value="\Gigant"/>
 </ipestyle>
 
