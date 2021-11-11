@@ -1,26 +1,26 @@
 \section{Derivation of policy gradient}\label{sec:app_derivation_policy_gradient}
-Recall that the optimization variables are the parameters of the current policy, namely the mean vector of the normally distributed control sequence $\policyParams = \bar{\boldsymbol{\mu}} = \{\boldsymbol{\mu}_t,  \boldsymbol{\mu}_{t+1}, \dots, \boldsymbol{\mu}_{t+T-1} \}$. For a input command at time $k$ in the horizon, $\command_k \sim \mathcal{N}(\boldsymbol{\mu}_k, \Sigma)$. Recall also that we map costs to \emph{success likelihoods} using the exponential function $\succCondProb = \exp(-\lambda J(X_t, U_t)) = \mathcal{J}_t$ . We show the derivation of the gradient for one nominal input vector $\boldsymbol{\mu}_k$:
+Recall that the optimization variables are the parameters of the current policy, namely the mean vector of the normally distributed control sequence $\policyParams = \{\boldsymbol{\mu}_t,  \boldsymbol{\mu}_{t+1}, \dots, \boldsymbol{\mu}_{t+T-1} \}$. For a input command at time $k$ in the horizon, $\command_k \sim \mathcal{N}(\boldsymbol{\mu}_k, \Sigma)$. Recall also that we map costs to \emph{success likelihoods} using the exponential function $\succCondProb = \exp(-\lambda J(X_t, U_t)) = \mathcal{J}_t$ . We show the derivation of the gradient for one nominal input vector $\boldsymbol{\mu}_k$:
 
 \begin{align}
     \nabla_{\boldsymbol{\mu}_k} \log \expPolicy{\succCondProb}
     &= \frac{\nabla_{\boldsymbol{\mu}_k} \expPolicy{\succCondProb}}{\expPolicy{\succCondProb}} \\
-    &= \frac{\nabla_{\boldsymbol{\mu}_k} \expPolicy{\mathcal{J}_t}}{\expPolicy{\mathcal{J}_t}} \label{eq:log_gradient}
+    &= \frac{\nabla_{\boldsymbol{\mu}_k} \expPolicy{\mathcal{J}_t}}{\expPolicy{\mathcal{J}_t}}. \label{eq:log_gradient}
 \end{align}
-
+%
  We further expand the numerator in the previous expression:
 \begin{align}
     \nabla_{\boldsymbol{\mu}_k} \expPolicy{\mathcal{J}_t} 
     &= \nabla_{\boldsymbol{\mu}_k} \int \mathcal{J}_t \policy(U_t) \label{eq:param_independence}\\
     &= \int \mathcal{J}_t \nabla_{\boldsymbol{\mu}_t} \policy(U_t) \\
     &= \int \mathcal{J}_t \policy(U_t) \nabla_{\boldsymbol{\mu}_k} \log \policy(U_t) \\
-    &= \expectation{\policy} [\mathcal{J}_t \nabla_{\boldsymbol{\mu}_k} \log \policy(U_t)] \label{eq:almost_there}
+    &= \expectation{\policy} [\mathcal{J}_t \nabla_{\boldsymbol{\mu}_k} \log \policy(U_t)], \label{eq:almost_there}
 \end{align}
 where the step \eqref{eq:param_independence} follows from the independence of the success likelihood from the policy parameters. We now look at the gradient of the policy log-likelihood with respect to the mean vector:
 \begin{align}
     &\nabla_{\boldsymbol{\mu}_k} \log \policy(U_t) \\
-    &= \nabla_{\boldsymbol{\mu}_k} \log \prod_{t}^{T+t-1} \frac{1}{\sqrt{(2\pi)^{n_u}|\variance|}}\exp\left(-\frac{1}{2}||\command_t - \boldsymbol{\mu}_t||_{\variance^{-1}}\right) \\
-    &= \nabla_{\boldsymbol{\mu}_k} \sum_{t}^{T+t-1} \log \frac{1}{\sqrt{(2\pi)^{n_u}|\variance|}} + \left(-\frac{1}{2}||\command_t - \boldsymbol{\mu}_t||_{\variance^{-1}}\right) \\
-    &= \nabla_{\boldsymbol{\mu}_k} \sum_{t}^{T+t-1} -\frac{1}{2}||\command_t - \boldsymbol{\mu}_t||_{\variance^{-1}} \\
+    &= \nabla_{\boldsymbol{\mu}_k} \log \prod_{t}^{t+T-1} \frac{1}{\sqrt{(2\pi)^{n_u}|\variance|}}\exp\left(-\frac{1}{2}||\command_t - \boldsymbol{\mu}_t||_{\variance^{-1}}\right) \\
+    &= \nabla_{\boldsymbol{\mu}_k} \sum_{t}^{t+T-1} \log \frac{1}{\sqrt{(2\pi)^{n_u}|\variance|}} + \left(-\frac{1}{2}||\command_t - \boldsymbol{\mu}_t||_{\variance^{-1}}\right) \\
+    &= \nabla_{\boldsymbol{\mu}_k} \sum_{t}^{t+T-1} -\frac{1}{2}||\command_t - \boldsymbol{\mu}_t||_{\variance^{-1}} \\
     &= \nabla_{\boldsymbol{\mu}_k} -\frac{1}{2}||\command_k - \boldsymbol{\mu}_k||_{\variance^{-1}} \\
     &= \variance^{-1}(\command_k - \boldsymbol{\mu}_k) \\
     &= \variance^{-1} \noise_k
@@ -64,21 +64,45 @@ As we compute the desired position integrating the desired velocity over time, i
 
 \begin{table}[h!]
 \centering
-\begin{tabular}{c c c c}
+\begin{tabular}{c | c c}
  \toprule
- Col1 & Col2 & Col2 & Col3 \\ [0.5ex] 
+ \multirow{8}{4em}{Sampling-Based\\Controller} 
+ & rollouts       & 40       \\
+ & $\Delta t$     & 0.015s   \\
+ & $T$            & 1s       \\     
+ & $h$            & 10       \\
+ & $g_{max}$      & 0.2      \\
+ & $\rho$         & 1.0      \\ 
+ & caching\tablefootnote{Portion of rollouts reused from the previous iteration}        & 30\%     \\ 
+ & $\Sigma$       & $[0.5, 0.5, 0.5, 1.25, \dots, 1.25] \in \nR{11}$ \\
  \midrule
- 1 & 6 & 87837 & 787 \\ 
- 
- 2 & 7 & 78 & 5415 \\
- 
- 3 & 545 & 778 & 7507 \\
- 
- 4 & 545 & 18744 & 7560 \\
- 
- 5 & 88 & 788 & 6344 \\ [1ex] 
+ \multirow{9}{4em}{Cost\\Function} 
+ & $\bm{W}_t$       & $10^2 \cdot I,\ I \in \nR{6}$\\
+ & $w_{\gamma}$     & $10^2$ \\ 
+ & $w_{j}$   & $10^3$ \\
+ & $\bm{W}_{js}$  & $10^2$ \\
+ & $w_r$          & $10^3$ \\
+ & $w_{rs}$       & $10^2$ \\
+ & $\bm{W}_{o}$   & $10^2$ \\
+ & $p_{max}$      & $0$ \\
+ & $w_p$          & $10$ \\
+ \midrule
+ \multirow{2}{4em}{Savitzky-Golay}
+ & polynomial order & $3$ \\
+ & window size & $30$ \\
+ \midrule
+ \multirow{2}{4em}{Energy Tank}
+ & $S(0)$ & $10J$ \\
+ & $\epsilon$ & $2J$ \\
+ \midrule
+ \multirow{5}{4em}{FILTER-QP \\Slack Penalties}
+ & input limits     & hard constraint \\
+ & joint limits     &  $10$     \\
+ & cartesian limits &  $10^2$    \\
+ & self collision   &  $10^2$    \\
+ & passivity        &  $10^2$    \\
  \bottomrule
 \end{tabular}
-\caption{Table to test captions and labels.} \label{ta}
+\caption{The table summarizes the most relevant method's parameters. Note that the same set of parameters have been used for all different objects in simulation and real world experiments.}
 \label{tab:parameters}
 \end{table}
