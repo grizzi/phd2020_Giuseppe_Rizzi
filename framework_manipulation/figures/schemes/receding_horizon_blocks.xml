@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.23">
-<info created="D:20210927161152" modified="D:20211107124750"/>
+<info created="D:20210927161152" modified="D:20211109104150"/>
 <preamble>\usepackage{amsmath}\usepackage{amssymb}\usepackage{bbm}
 \usepackage[nocomma]{optidef}
 
@@ -353,9 +353,23 @@ h
 </gradient>
 </ipestyle>
 <page>
+<layer name="iota"/>
 <layer name="alpha"/>
 <layer name="beta"/>
-<view layers="alpha" active="alpha"/>
+<layer name="gamma"/>
+<layer name="delta"/>
+<layer name="epsilon"/>
+<layer name="zeta"/>
+<layer name="eta"/>
+<layer name="theta"/>
+<view layers="iota alpha beta gamma delta epsilon zeta eta theta" active="iota"/>
+<path layer="iota" fill="white">
+64 880 m
+64 432 l
+952 432 l
+952 880 l
+h
+</path>
 <path layer="alpha" matrix="1.45 0 0 1 -267.2 176" stroke="black" pen="ultrafat">
 256 576 m
 256 528 l
@@ -412,11 +426,10 @@ N-K</text>
 <text matrix="1 0 0 1 0 296" transformations="translations" pos="348 288" stroke="darkgreen" type="label" width="59.661" height="15.094" depth="4.53" valign="baseline" size="LARGE" style="math">\{U_t\}_0^{N-1}</text>
 <text matrix="1 0 0 1 -156 228" transformations="translations" pos="348 288" stroke="black" type="label" width="59.661" height="15.089" depth="5" valign="baseline" size="LARGE" style="math">\{U_t\}_{K}^{N-1}</text>
 <text matrix="1 0 0 1 -156 300" transformations="translations" pos="348 288" stroke="darkgreen" type="label" width="59.856" height="15.094" depth="4.53" valign="baseline" size="LARGE" style="math">\{U_t\}_{0}^{K-1}</text>
-<text matrix="1 0 0 1.05 32 366.4" transformations="translations" pos="348 288" stroke="darkgreen" type="label" width="67.908" height="15.094" depth="4.53" valign="baseline" size="LARGE" style="math">\{U_{t^-}\}_{0}^{N-1}</text>
+<text matrix="1 0 0 1.05 108 366.4" transformations="translations" pos="348 288" stroke="darkgreen" type="label" width="107.367" height="24.376" depth="8.75" valign="baseline" size="Huge" style="math">\{U_{t^-}\}_{0}^{N-1}</text>
 <text matrix="0.93143 0 0 1.18018 107.872 119.604" transformations="translations" pos="60 408" stroke="black" type="label" width="29.809" height="18.587" depth="6.2" valign="baseline" size="Huge">\vspace{1cm}\hspace{0.8mm}$\bigoplus$</text>
 <text matrix="1 0 0 1 20 228" transformations="translations" pos="324 288" stroke="darkgreen" type="label" width="71.885" height="12.915" depth="4.3" valign="baseline" size="LARGE" style="math">\{\boldsymbol{\mu}_t, \dots, \}</text>
-<text matrix="-0.636364 0 0 -0.139466 726.182 546.184" transformations="translations" pos="324 288" stroke="darkgreen" type="label" width="133.413" height="12.914" depth="5.25" valign="baseline" size="LARGE" style="math">U^*_{t-1} = \\
-\{\boldsymbol{\mu}_{t^-}, \dots, \}</text>
+<text matrix="-0.636364 0 0 -0.139466 746.182 594.184" transformations="translations" pos="324 288" stroke="darkgreen" type="label" width="49.835" height="18.601" depth="10.02" valign="baseline" size="Huge" style="math">U^*_{t-1}</text>
 <path matrix="1.44445 0 0 1 58.6661 168" stroke="black" pen="ultrafat" arrow="normal/normal">
 264 440 m
 192 440 l
@@ -438,43 +451,42 @@ N-K</text>
 72 464 m
 72 528 l
 </path>
-<text matrix="1 0 0 1 -160 388" transformations="translations" pos="348 288" stroke="black" type="label" width="59.661" height="15.094" depth="4.53" valign="baseline" size="LARGE" style="math">\{U_t\}_{0}^{N-1}</text>
-<path matrix="1 0 0 1.05 124 148.4" stroke="black" dash="dashed" pen="ultrafat">
+<text matrix="1 0 0 1 -164 384" transformations="translations" pos="348 288" stroke="black" type="label" width="93.479" height="24.376" depth="8.75" valign="baseline" size="Huge" style="math">\{U_t\}_{0}^{N-1}</text>
+<path matrix="1 0 0 1.575 124 -141.4" stroke="black" dash="dashed" pen="ultrafat">
 328 552 m
 328 520 l
 </path>
-<path matrix="1 0 0 1.32273 124 7.67242" stroke="darkgreen" pen="ultrafat" arrow="normal/normal">
+<path matrix="1 0 0 1.03928 124 141.459" stroke="darkgreen" pen="ultrafat" arrow="normal/normal">
 328 516 m
 328 472 l
 </path>
-<path matrix="1 0 0 1 -44 176" stroke="black" dash="dashed" pen="ultrafat">
+<path matrix="1 0 0 1.57143 -44 -139.429" stroke="black" dash="dashed" pen="ultrafat">
 328 552 m
 328 520 l
 </path>
-<path matrix="1 0 0 1.36364 -44 -11.6364" stroke="darkgreen" pen="ultrafat" arrow="normal/normal">
+<path matrix="1 0 0 0.999992 -44 160.005" stroke="darkgreen" pen="ultrafat" arrow="normal/normal">
 328 516 m
 328 472 l
 </path>
-<text matrix="1 0 0 1 -60 380" transformations="translations" pos="348 288" stroke="darkgreen" type="label" width="66.956" height="15.094" depth="4.53" valign="baseline" size="LARGE" style="math">\{ \omega_{t^-} \}_{0}^{N-1}</text>
-<text matrix="1 0 0 1 96 168" transformations="translations" pos="436 464" stroke="blue" type="label" width="6.087" height="10.589" depth="0" valign="baseline" size="LARGE" style="math">t</text>
-<text matrix="1 0 0 1 -48 536" transformations="translations" pos="324 288" stroke="black" type="label" width="19.722" height="11.806" depth="4.26" valign="baseline" size="LARGE" style="math">U^*_t</text>
-<path matrix="1 0 0 1 100 176" stroke="black" dash="dashed" pen="ultrafat">
+<text matrix="1 0 0 1 -52 376" transformations="translations" pos="348 288" stroke="darkgreen" type="label" width="105.997" height="24.376" depth="8.75" valign="baseline" size="Huge" style="math">\{ \omega_{t^-} \}_{0}^{N-1}</text>
+<text matrix="1 0 0 1 128 164" transformations="translations" pos="436 464" stroke="blue" type="label" width="8.764" height="15.246" depth="0" valign="baseline" size="Huge" style="math">t</text>
+<text matrix="1 0 0 1 -48 536" transformations="translations" pos="324 288" stroke="black" type="label" width="29.902" height="18.609" depth="7.68" valign="baseline" size="Huge" style="math">U^*_t</text>
+<path matrix="1 0 0 1 160 204" stroke="black" dash="dashed" pen="ultrafat">
 456 528 m
 456 448 l
 456 448 l
 </path>
-<path matrix="0.642857 0 0 1.2 262.857 99.2" stroke="darkgreen" pen="ultrafat" arrow="normal/normal">
+<path matrix="1.71132 0 0 1.55 -164.36 -28.2" stroke="darkgreen" pen="ultrafat" arrow="normal/normal">
 456 444 m
 456 364 l
 400 364 l
 </path>
-<text matrix="1 0 0 1 32 124" transformations="translations" pos="32 568" stroke="blue" type="label" width="54.589" height="7.649" depth="3.35" valign="baseline" size="LARGE" style="math">\bm{x}_t,\ \boldsymbol{\tau}_{ext}</text>
 <path matrix="1 0 0 1 60 48" stroke="black" fill="black" pen="ultrafat" arrow="normal/normal">
 100 704 m
 100 740 l
 </path>
-<text matrix="1 0 0 1 128 536" transformations="translations" pos="324 288" stroke="black" type="label" width="19.722" height="15.642" depth="4.26" valign="baseline" size="LARGE" style="math">\tilde{U}^*_t</text>
-<text matrix="1 0 0 1 200 448" transformations="translations" pos="324 288" stroke="black" type="label" width="19.722" height="13.981" depth="4.26" valign="baseline" size="LARGE" style="math">\bar{U}^*_t</text>
+<text matrix="1 0 0 1 128 536" transformations="translations" pos="324 288" stroke="black" type="label" width="29.902" height="22.527" depth="7.68" valign="baseline" size="Huge" style="math">\tilde{U}^*_t</text>
+<text matrix="1 0 0 1 252 460" transformations="translations" pos="324 288" stroke="black" type="label" width="29.902" height="20.136" depth="7.68" valign="baseline" size="Huge" style="math">\bar{U}^*_t</text>
 <path matrix="1.35 0 0 1 -29.6 260" stroke="black" pen="ultrafat">
 256 576 m
 256 528 l
@@ -503,16 +515,16 @@ FILTER-QP</text>
 332 764 m
 396 764 l
 </path>
-<path matrix="1 0 0 1 80 48" stroke="black" fill="black" pen="ultrafat">
+<path matrix="1 0 0 1 140 68" stroke="black" fill="black" pen="ultrafat">
 476 740 m
 476 664 l
 </path>
-<path matrix="1 0 0 1 80 48" stroke="black" pen="ultrafat">
+<path matrix="1.25862 0 0 6 -16.2069 -3312" stroke="black" pen="ultrafat">
 140 680 m
 372 680 l
 372 672 l
 </path>
-<path layer="beta" matrix="9.41581 0 0 6.65242 140.013 483.697" stroke="black" fill="white" pen="fat" gradient="gradient-blue">
+<path layer="delta" matrix="9.41581 0 0 6.65242 140.013 483.697" stroke="black" fill="white" pen="ultrafat" gradient="gradient-blue">
 4 0 m
 36 0 l
 4 0 0 4 36 4 40 4 a
@@ -528,7 +540,7 @@ h
 524 572 m
 456 572 l
 </path>
-<text layer="beta" matrix="1 0 0 1 112 160" transformations="translations" pos="92 396" stroke="black" type="label" width="262.744" height="17.215" depth="4.82" valign="baseline" size="Huge">Sampling and Warm-Start</text>
+<text layer="delta" matrix="1 0 0 1 112 160" transformations="translations" pos="92 396" stroke="black" type="label" width="262.744" height="17.215" depth="4.82" valign="baseline" size="Huge">Sampling and Warm-Start</text>
 <text layer="alpha" matrix="0.537639 0 31.9335 5.9016 -11188.13 -1225.99" transformations="translations" pos="204 348" stroke="black" type="minipage" width="252" height="21.082" depth="16.14" valign="top" size="LARGE">\centering
 Gradient \\
 Step</text>
@@ -539,14 +551,14 @@ Step</text>
 768 832 l
 h
 </path>
-<path stroke="black" pen="ultrafat">
+<path matrix="1.625 0 0 1 -516 0" stroke="black" pen="ultrafat">
 832 832 m
 832 784 l
 896 784 l
 896 832 l
 h
 </path>
-<path stroke="black" pen="ultrafat">
+<path matrix="1.3125 0 0 1 -416 -328" stroke="black" pen="ultrafat">
 960 832 m
 960 784 l
 1024 784 l
@@ -556,45 +568,40 @@ h
 <text matrix="1 0 0 1 -8 8" transformations="translations" pos="688 816" stroke="black" type="minipage" width="80" height="20.988" depth="16.04" valign="top" size="LARGE">\centering
 FILTER
 QP</text>
-<text transformations="translations" pos="848 816" stroke="black" type="minipage" width="32" height="8.371" depth="3.39" valign="top" size="LARGE">\centering
+<text matrix="1 0 0 1 24 0" transformations="translations" pos="848 816" stroke="black" type="minipage" width="32" height="10.954" depth="5.98" valign="top" size="Huge">\centering
 PI</text>
-<text matrix="1 0 0 1 -4 -12" transformations="translations" pos="976 816" stroke="black" type="label" width="42.846" height="11.955" depth="0" valign="baseline" size="LARGE">Robot</text>
-<path stroke="black" pen="ultrafat" arrow="normal/normal">
+<text matrix="1 0 0 1 -120 -344" transformations="translations" pos="976 816" stroke="black" type="label" width="61.69" height="17.213" depth="0" valign="baseline" size="Huge">Robot</text>
+<path matrix="1 0 0 1 0 0" stroke="black" pen="ultrafat" arrow="normal/normal">
 768 808 m
 832 808 l
 </path>
-<path stroke="black" pen="ultrafat" arrow="normal/normal">
-896 808 m
-960 808 l
-</path>
-<path matrix="1 0 0 1.02381 0 -14.7619" stroke="blue" pen="ultrafat">
+<path matrix="0.354839 0 0 0.881597 379.355 73.4102" stroke="blue" pen="ultrafat">
 712 452 m
 712 620 l
 588 620 l
 </path>
-<text matrix="1 0 0 1 892 168" transformations="translations" pos="32 568" stroke="blue" type="label" width="54.589" height="7.649" depth="3.35" valign="baseline" size="LARGE" style="math">\bm{x}_t,\ \boldsymbol{\tau}_{ext}</text>
-<group matrix="1 0 0 1 12 -4">
-<path stroke="black" fill="black" pen="ultrafat">
-624 832 m
-624 788 l
-628 788 l
-628 832 l
-624 832 l
-</path>
-<path stroke="black" fill="black" pen="ultrafat">
-628 832 m
-628 788 l
-624 788 l
-624 832 l
-628 832 l
-</path>
-</group>
-<text matrix="1 0 0 1 -20 16" transformations="translations" pos="620 852" stroke="black" type="label" width="69.651" height="8.307" depth="2.32" valign="baseline" size="large">input selector</text>
-<path stroke="black" fill="black" pen="ultrafat" arrow="normal/normal">
+<text matrix="1 0 0 1 708 -80" transformations="translations" pos="32 568" stroke="blue" type="label" width="84.083" height="11.016" depth="4.82" valign="baseline" size="Huge" style="math">\bm{x}_t,\ \boldsymbol{\tau}_{ext}</text>
+<text layer="eta" matrix="1 0 0 1 40 8" transformations="translations" pos="620 852" stroke="black" type="label" width="134.674" height="17.215" depth="4.82" valign="baseline" size="Huge">input selector</text>
+<path layer="alpha" stroke="black" fill="black" pen="ultrafat" arrow="normal/normal">
 600 808 m
 672 808 l
 </path>
-<path layer="beta" matrix="7.29208 0 0 4.39819 312.013 759.697" stroke="black" fill="white" pen="fat" gradient="gradient-orange">
+<text transformations="translations" pos="640 768" stroke="black" type="label" width="27.71" height="18.609" depth="7.68" valign="baseline" size="Huge" style="math">\bar{\bm{u}}^*_t</text>
+<text matrix="1 0 0 1 152 -4" transformations="translations" pos="640 768" stroke="black" type="label" width="27.71" height="18.609" depth="7.68" valign="baseline" size="Huge" style="math">\tilde{\bm{u}}^*_t</text>
+<text matrix="1 0 0 1 252 -136" transformations="translations" pos="640 768" stroke="black" type="label" width="50.325" height="11.018" depth="5.81" valign="baseline" size="Huge" style="math">\boldsymbol{\tau}_{cmd}</text>
+<path stroke="black" fill="black">
+5.65685 0 0 5.65685 616 808 e
+</path>
+<path matrix="1 0 0 1 24 0" stroke="black" fill="black" pen="ultrafat" arrow="normal/normal">
+864 784 m
+864 504 l
+</path>
+<path matrix="1.03429 0 0 1 -4.11429 0" stroke="blue" pen="ultrafat" arrow="normal/normal">
+820 472 m
+120 472 l
+120 704 l
+</path>
+<path layer="zeta" matrix="2.80497 0 0 3.53226 832.012 762.691" stroke="black" fill="white" pen="ultrafat" gradient="gradient-orange">
 4 0 m
 36 0 l
 4 0 0 4 36 4 40 4 a
@@ -606,17 +613,14 @@ PI</text>
 4 0 0 4 4 4 4 0 a
 h
 </path>
-<text matrix="0.783429 0 0 0.686496 193.991 582.908" transformations="translations" pos="212 328" stroke="black" type="label" width="196.595" height="17.215" depth="4.82" valign="baseline" size="Huge">Trajectory Filtering</text>
-<text layer="alpha" transformations="translations" pos="640 768" stroke="black" type="label" width="16.449" height="9.875" depth="2.58" valign="baseline" size="LARGE">$\bar{\bm{u}}_t$</text>
-<text matrix="1 0 0 1 152 24" transformations="translations" pos="640 768" stroke="black" type="label" width="16.449" height="11.535" depth="2.58" valign="baseline" size="LARGE" style="math">\tilde{\bm{u}}_t</text>
-<text matrix="1 0 0 1 276 20" transformations="translations" pos="640 768" stroke="black" type="label" width="30.824" height="7.654" depth="2.58" valign="baseline" size="LARGE" style="math">\boldsymbol{\tau}_{cmd}</text>
-<path matrix="0.99537 0 0 1 4.59259 0" stroke="blue" pen="ultrafat" arrow="normal/normal">
-992 784 m
-992 448 l
-128 448 l
-128 704 l
+<text matrix="0.888889 0 0 1 502.222 508" transformations="translations" pos="272 320" stroke="black" type="minipage" width="288" height="26.021" depth="21.08" valign="top" size="Huge">\centering
+Velocity\\
+Controller</text>
+<path layer="alpha" stroke="blue" pen="ultrafat" arrow="normal/normal">
+720 472 m
+720 784 l
 </path>
-<path layer="beta" matrix="8.92873 0 0 4.45249 672.013 755.397" stroke="black" fill="white" pen="fat" gradient="gradient-brown">
+<path layer="epsilon" matrix="6.79232 0 0 5.48754 500.012 723.654" stroke="black" fill="white" pen="ultrafat" gradient="gradient-red">
 4 0 m
 36 0 l
 4 0 0 4 36 4 40 4 a
@@ -628,8 +632,26 @@ h
 4 0 0 4 4 4 4 0 a
 h
 </path>
-<text matrix="1 0 0 1 16 -24" transformations="translations" pos="732 824" stroke="black" type="label" width="208.569" height="17.213" depth="0" valign="baseline" size="Huge">Low Level Controller</text>
-<path matrix="4.811 0 0 6.69842 75.9927 703.697" stroke="black" fill="white" pen="fat" gradient="gradient-green">
+<text matrix="1 0 0 1 220 496" transformations="translations" pos="272 320" stroke="black" type="minipage" width="288" height="28.284" depth="23.36" valign="top" size="Huge">\centering
+Trajectory \\
+Filtering</text>
+<path layer="theta" stroke="blue" pen="ultrafat" arrow="normal/normal">
+720 472 m
+720 724 l
+</path>
+<path layer="gamma" matrix="1 0 0 0.666667 0 214.667" stroke="darkgreen" pen="ultrafat" arrow="normal/normal">
+284 692 m
+284 644 l
+</path>
+<path matrix="1 0 0 0.727273 0 175.636" stroke="darkgreen" pen="ultrafat" arrow="normal/normal">
+452 688 m
+452 644 l
+</path>
+<path layer="alpha" stroke="black" pen="ultrafat">
+284 768 m
+284 732 l
+</path>
+<path layer="beta" matrix="8.92024 0 0 6.38059 75.9927 703.697" stroke="black" fill="white" pen="ultrafat" gradient="gradient-green">
 4 0 m
 36 0 l
 4 0 0 4 36 4 40 4 a
@@ -641,9 +663,26 @@ h
 4 0 0 4 4 4 4 0 a
 h
 </path>
-<text matrix="1 0 0 1 -184 456" transformations="translations" pos="244 368" stroke="black" type="minipage" width="232" height="43.35" depth="38.46" valign="top" size="Huge">\centering
-Simulation \\
-and \\
+<text matrix="1 0 0 1 -108 440" transformations="translations" pos="244 368" stroke="black" type="minipage" width="232" height="28.432" depth="23.49" valign="top" size="Huge">\centering
+Simulation
+and
 Optimization</text>
+<text layer="alpha" transformations="translations" pos="732 592" stroke="blue" type="label" width="99.263" height="17.007" depth="0" valign="baseline" size="Huge">\textbf{1000 Hz}</text>
+<text matrix="1 0 0 1 -132 -8" transformations="translations" pos="708 452" stroke="blue" type="label" width="122.457" height="17.007" depth="2.12" valign="baseline" size="Huge">$\bm{&lt;}$ \textbf{100 Hz} </text>
+<path stroke="blue" fill="blue" pen="ultrafat">
+8 0 0 8 720 472 e
+</path>
+<path layer="eta" matrix="0.769231 0 0 0.52381 142.154 384.762" stroke="black" fill="blue" dash="dotted" pen="ultrafat">
+616 808 m
+668 892 l
+</path>
+<text layer="beta" matrix="1 0 0 1 -12 4" transformations="translations" pos="468 788" stroke="blue" type="label" width="24.139" height="11.018" depth="4.17" valign="baseline" size="Huge" style="math">\bm{x}_t</text>
+<path fill="white">
+72 744 m
+72 744 l
+72 744 l
+72 744 l
+h
+</path>
 </page>
 </ipe>
