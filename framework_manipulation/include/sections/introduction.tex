@@ -1,12 +1,12 @@
 \section{Introduction} \label{sec:introduction}
 % Vision
 \showthe\font
-\IEEEPARstart{T}{here} is a growing interest in deploying autonomous systems in unstructured environments to perform complex manipulation tasks for different applications like assistive service in the healthcare domain~\cite{cooper2020ari}, agrifoods~\cite{duckett2018agricultural}, and industrial inspection and maintenance~\cite{lattanzi2017review}. In particular, we are interested in the manipulation of movable and articulated objects which poses additional challenges beyond those experienced in a static environment. Mobile manipulator robots present a compelling choice to tackle these problems since they combine an unconstrained workspace with highly dexterous interaction capabilities. However, to fully exploit these capabilities, systems require planning and control algorithms that can generate fast, accurate, and coordinated reactive whole-body motions that account for multiple potential contacts with the environment. 
+\IEEEPARstart{T}{here} is a growing interest in deploying autonomous systems in unstructured environments to perform complex manipulation tasks for different applications like assistive service in the healthcare domain~\cite{cooper2020ari}, agrifoods~\cite{duckett2018agricultural}, and industrial inspection and maintenance~\cite{lattanzi2017review}. In those scenarios, the community is particularly interested in the manipulation of movable and articulated objects (like the furniture in \fig\ref{fig:royal_panda}) which poses additional challenges beyond those experienced in a static environment. Mobile manipulator robots present a compelling choice to tackle these problems since they combine an unconstrained workspace with highly dexterous interaction capabilities. However, to fully exploit these capabilities, systems require planning and control algorithms that can generate fast, accurate, and coordinated reactive whole-body motions that account for multiple potential contacts with the environment. 
 
 \subsection{Related Works}
 
 % Existing methods
-While traditional ``plan-and-act'' frameworks break down manipulation tasks into subproblems that are easier to solve (e.g. reach, grasp, pull)~\cite{Murali2020}, they do not offer fast replanning, which is crucial for mobile manipulation in dynamic and uncertain environments.
+While traditional ``plan-and-act'' frameworks break down manipulation tasks into subproblems that are easier to solve (e.g., reach, grasp, pull)~\cite{Murali2020}, they do not offer fast replanning that is crucial for mobile manipulation in dynamic and uncertain environments.
 
 With the recent advancements in artificial intelligence, reinforcement learning (RL) is a promising method to solve a range of robotic control tasks, including manipulation~\cite{finn2016deep}, as they learn an end-to-end representation of the optimal policy. However, real-world applications of RL typically require training times that are not practical for physical hardware and suffer from the well-known \textit{sim-to-real} gap~\cite{chebotar2019closing}. 
 On the other side of the spectrum, Model Predictive Control (MPC) has gained broad interest in the robotics community thanks to its ability to deal with input constraints and task objectives by solving a multivariate optimization problem or using the \textit{principle of optimality}. 
@@ -17,7 +17,7 @@ Nevertheless, MPC requires a model that is locally differentiable with respect t
 \begin{figure}[t]
 \centering
 \includegraphics[trim={0 500 0 800},clip,width=0.8\columnwidth]{framework_manipulation/figures/hardware/system_figure_new.jpg}
-\caption{\textit{RoyalPanda}, a 10-DOF mobile manipulator while performing a door opening task.} \label{fig:royal_panda}
+\caption{\textit{RoyalPanda} (a 10-DOF mobile manipulator) while performing a door opening task.} \label{fig:royal_panda}
 \end{figure}
 
 % Performance : sampling control
@@ -34,24 +34,24 @@ In order to avoid safety-critical configurations additional cost terms are often
 Recently \emph{Control Barrier Functions} (CBFs) have been introduced as a mean to constrain the system to a safe set. The safe set defines the locus where all safety requirements are met, e.g., no self-collision happens and joint limits are fulfilled. CBFs are expressed as affine inequality constraints in the control input that, when satisfied point-wise in the candidate safe set, imply forward invariance of the set and hence safety \cite{ames2016control}.  This control method has been successfully deployed in safety-critical applications such as adaptive cruise control and lane keeping \cite{vahidi2003research}, segway stabilization \cite{gurriet2018towards} and human-robot collaboration \cite{benzi2021optimization}.
 
 % Stability : passivity
-Last but not least, sampling-based methods do not ensure stability which, especially during autonomous interaction, is as important as performance. In this regard, we are interested in a stable interaction with an \emph{a priori} poorly known environment. This lack of knowledge might come from sensing limitations or model mismatches. \emph{Passivity theory} has drawn attention in recent years as a way to analyze the stability of a controlled system. Intuitively, a passive system cannot produce more energy than what it is provided with. A rather new approach to ensure \emph{passivity} is to use an auxiliary virtual system called an \emph{energy tank} as a storing element containing the maximum energy available to perform the task. When more than this energy budget is demanded, actions that could destabilize the system are prohibited and the system is made passive. Energy tanks have been successfully deployed in many robotics applications such as for impedance controllers with time-varying stiffness \cite{schindlbeck2015unified}, force-impedance control \cite{shahriari2018valve}, and lately with CBFs for controlling a robotic arm \cite{benzi2021optimization}.
+Last but not least, sampling-based methods do not formally guarantee stability which, especially during autonomous interaction, is as important as performance. In this regard, we are interested in a stable interaction with an \emph{a priori} poorly known environment. This lack of knowledge might come from sensing limitations or model mismatches. \emph{Passivity theory}~\cite{willems1972dissipative} has drawn attention in recent years as a way to analyze the stability of a controlled system. Intuitively, a passive system cannot produce more energy than what it is provided with. A rather new approach to ensure \emph{passivity} is to use an \emph{energy tank}, i.e., an auxiliary virtual system that serves as a storing element containing the maximum energy available to perform the task~\cite{ferraguti2015energy}. When more than this energy budget is demanded, actions that could destabilize the system are prohibited and the system is made passive. Energy tanks have been successfully deployed in many robotics applications such as for impedance controllers with time-varying stiffness \cite{schindlbeck2015unified}, force-impedance control \cite{shahriari2018valve}, and lately with CBFs for controlling a robotic arm \cite{benzi2021optimization}.
 
 \subsection{Contributions}
 
-In an effort to propose a practical and efficient method for complex robotic manipulation with theoretical guarantees of stability and safety, our main contribution is a formally proven stable and robust receding horizon algorithm that achieves real-time whole-body control of a mobile manipulator for the complex manipulation of movable and articulated objects. This new framework for mobile manipulation combines tools from stochastic optimization, safety-critical control, and passivity theory. The proposed method is based on an iterative sampling of control trajectories to find the optimal strategy that performs the desired manipulation given the current state. The safety and stability of the system are ensured through a sequential optimization problem that finds the closest policy to the optimized one, which respects constraints and the overall passivity of the autonomous system. 
+In an effort to propose a practical and efficient method for complex robotic manipulation that at the same time provides theoretical guarantees of stability and safety, our main contribution is a formally proven stable and robust receding horizon algorithm that achieves real-time whole-body control of a mobile manipulator for the complex manipulation of movable and articulated objects. This new framework for mobile manipulation combines tools from stochastic optimization, safety-critical control, and passivity theory. The proposed method is based on an iterative sampling of control trajectories to find the optimal strategy that performs the desired manipulation given the current state. The safety and stability of the system are ensured through a sequential optimization problem that finds the closest policy to the optimized one, which respects constraints and the overall passivity of the autonomous system. 
 
 
 % Results
-To demonstrate the applicability and effectiveness of this approach, we perform several numerical studies where we deploy the algorithms on our \textit{RoyalPanda} platform (a 7-DOF Franka Emika Panda arm mounted on the holonomic Clearpath Ridgeback base, shown in \fig\ref{fig:royal_panda}) for a target reaching and door opening task. An open source implementation of our solution is provided at \url{put-new-video-here}.
+To demonstrate the applicability and effectiveness of this approach, we perform several numerical and experimental studies where we deploy the algorithms on our \textit{RoyalPanda} platform (a 7-DOF Franka Emika Panda arm mounted on the holonomic Clearpath Ridgeback base, shown in \fig\ref{fig:royal_panda}) for a target reaching and door opening task. An open source implementation of our solution is provided at \url{put-new-video-here}.
 
-In summary, the contributions of the present work are as follows:
+In summary, the contributions of the present work are summarized as follows:
 \begin{enumerate}
     \item A review of the main theoretical background introducing receding horizon sampling-based control, the concept of barrier functions and energy tanks;
     \item a framework for robust and safe model-based receding horizon control of a mobile manipulator;
     \item practical insights that enhance the performance of the presented algorithms;
     
-    \item a simulation evaluation of the effectiveness of the approach with in-depth evaluations of the contributions of each algorithmic component;
-    \item real hardware experiments showing its applicability to the real platform;
+    \item a simulation evaluation of the effectiveness of the approach with in-depth analysis of the contributions of each algorithmic component;
+    \item real hardware experiments showing its applicability on a real platform;
     \item an open source implementation of the proposed method including a multi-threaded sampling-based controller and an efficient quadratic program for addressing kinematic and dynamic constraints.
     \end{enumerate}
 
@@ -59,5 +59,4 @@ In summary, the contributions of the present work are as follows:
 
 The remainder of the paper is organized as follows. In 
 \sect \ref{sec:formulation} the manipulation problem is formulated. In \sect \ref{sec:theory} we review the main theoretical background. These  theoretical tools are combined in a unified control method in \sect \ref{sec:control_method}. We summarize the main practical insights and aspects of the algorithms in \sect \ref{sec:practical_aspects}.
-We then evaluate the overall method in \sect \ref{sec:experiments} on simulated and hardware experiments. Finally we conclude with a qualitative discussion on the method's limitations and future research directions in \sect \ref{sec:limitations_and_future_works}.
-
+We then evaluate the overall method in \sect \ref{sec:experiments} on simulation and hardware experiments. Finally we present a qualitative discussion on the method's limitations and future research directions in \sect \ref{sec:limitations_and_future_works}. We conclude this letter with \sect \ref{sec:conclusions}.

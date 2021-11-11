@@ -55,7 +55,7 @@ A Framework for Interaction Control of Mobile Manipulators
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
 
-In this work we investigate and deploy stochastic control techniques for the challenging task of mobile manipulation. By their nature, manipulation tasks necessitate environment interactions which require the handling of non-differentiable switching contact dynamics.These dynamics represent a strong limitation for traditional gradient-based optimization methods such as Model Predictive Control (MPC) and Differential Dynamic Programming (DDP). \emph{Sampling-based} techniques alleviate these constraints but do not ensure that the robot will be stable and constraints will not be violated. On the other hand, real-world applications in human environment require safety and robustness to unexpected events. For this reason, we propose a novel framework for safe robotic manipulation of movable objects which combines sampling-based control together with \emph{Control Barrier Functions} and \emph{Passivity Theory} that, thanks to formal stability guarantees, enhance the safety and robustness of the method. The proposed controller enables robust real-time deployment of stochastic control. We deploy the algorithm on a 10-DOF mobile manipulator robot using a conventional CPU. A video of the experiments can be found at \url{new-url-here}.
+In this work we investigate and deploy stochastic control techniques for the challenging task of mobile manipulation. By their nature, manipulation tasks necessitate environment interactions which require the handling of non-differentiable switching contact dynamics. These dynamics represent a strong limitation for traditional gradient-based optimization methods such as Model Predictive Control (MPC) and Differential Dynamic Programming (DDP). \emph{Sampling-based} techniques alleviate these constraints but do not ensure that the robot will be stable and constraints will not be violated. On the other hand, real-world applications in human environment require safety and robustness to unexpected events. For this reason, we propose a novel framework for safe robotic manipulation of movable objects which combines sampling-based control together with \emph{Control Barrier Functions} and \emph{Passivity Theory} that, thanks to formal stability guarantees, enhance the safety and robustness of the method. The proposed controller enables robust deployment of stochastic control using a conventional CPU. We deploy the algorithm on a 10-DOF mobile manipulator robot. A video of the experiments can be found at \url{new-url-here}. An open-source efficient implementation of the proposed algorithms can be found at \url{https://git.io/JXi4d}.
 \end{abstract}
 
 
@@ -108,16 +108,24 @@ In this work we investigate and deploy stochastic control techniques for the cha
 % References are important to the reader; therefore, each citation must be complete and correct. If at all possible, references should be commonly available publications.
 
 \begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/grizzi.jpg}}]{Giuseppe Rizzi}
+Giuseppe Rizzi has received a B.Sc in Mechanical Engineering at Politecnico di Milano in 2016 and a M.Sc in Robotics, Systems and Control at ETH Zürich in 2019. He has joined the Robotic Sustem Lab (RSL) as a Research Assistant and worked an autonomous navigation and manipulation for the MBZIRC competition (2019). In 2020 he has started a PhD program in the Autonomous System Lab (ASL) and has joined the Mobile Manipulation Team. His research interests include control and perception for robotic manipulation.  
 \end{IEEEbiography}
 
 \begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/jjchung.jpg}}]{Jen Jen Chung}
 Jen Jen Chung (Member, IEEE) is a Senior Researcher in the Autonomous Systems Lab (ASL) at ETH Zürich. Her current research interests include perception and learning for mobile manipulation, algorithms for robot navigation through crowds, informative path planning and adaptive sampling. Prior to working at ASL, Jen Jen was a postdoctoral scholar at Oregon State University researching multiagent learning methods and she completed her Ph.D. on information-based exploration-exploitation strategies for autonomous soaring platforms at the Australian Centre for Field Robotics in the University of Sydney. She received her Ph.D. (2014) and B.E. (2010) from the University of Sydney.
 \end{IEEEbiography}
 
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/agawel.jpg}}]{Abel Gawel}
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/gawela.jpg}}]{Abel Gawel} Abel Gawel is currently a Senior Researcher in Computer Vision and Machine Learning with the Huawei European Research Center. Before that he was a Senior Scientist at the Autonomous Systems Lab of ETH Zurich. He received the PhD from ETH Zurich in 2018 and was a visiting Postdoctoral Fellow in the CRI group at NTU Singapore in 2019. His research interests include SLAM, high-accuracy localization, object recognition, and semantic scene understanding with application in construction robotics, industrial inspection, and search and rescue robotics. Prior to joining ETH in 2014, he worked for Bosch Corporate Research and the BMW group.
 \end{IEEEbiography}
 
 \begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/mtognon.jpg}}]{Marco Tognon}
+(S'15-M'18) is a postdoctoral researcher in the Autonomous System Lab (ASL) at ETH Zurich, Switzerland.
+He received the Ph.D.~degree in Robotics in 2018, from INSA Toulouse, France, developing his thesis at LAAS-CNRS.
+His thesis has been awarded with three prizes. 
+He received the M.Sc. degree in automation engineering in 2014, from the University of Padua, Italy, with a master thesis carried out at MPI for Biological Cybernetics, T\"ubingen, Germany.
+From 2018 to 2020 he has been postdoctoral researcher at LAAS-CNRS, Toulouse, France. 
+%Since 2020 he is postdoctoral researcher at ETH Zurich, Switzerland, in the ASL group.
+His current research interests include robotics, aerial physical interaction, multi-robot systems, and human-robot physical interaction.
 \end{IEEEbiography}
 
 \begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/lott.jpg}}]{Lionel Ott}
