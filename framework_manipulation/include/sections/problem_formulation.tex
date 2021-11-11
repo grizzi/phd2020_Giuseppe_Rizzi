@@ -8,9 +8,10 @@ Similarly, we describe the object configuration and corresponding time derivativ
       \configObject^\transpose \vSpace
       \dconfigObject^\transpose ]^\transpose  \in \nR{2(\robotDoF + \objectDoF)}.
 \end{equation}
-The time evolution of the state is described by the following equation of motion:
+The time evolution of the state is given by $\dstate = f(\state, \command)$, where
 \begin{equation} \label{eq:eom}
-    \dstate = f(\state, \command) =  
+    %\dstate = 
+    f(\state, \command) =  
     \begin{bmatrix}
       \dconfigRobot \\
       \matr{M}_r^{-1}(\matr{J}_{r}^\transpose \vect{f}_{ext} - \robotCoriolis + \vect{\tau}_{cmd}(\command)) \\
@@ -18,13 +19,13 @@ The time evolution of the state is described by the following equation of motion
       \matr{M}_o^{-1}(-\matr{J}_{o}^\transpose \vect{f}_{ext} - \objectCoriolis)
     \end{bmatrix},
 \end{equation}
-where $\matr{M}_r \in \nR{\robotDoF \times \robotDoF}$ and $\matr{M}_o \in \nR{\objectDoF \times \objectDoF}$ represent the inertia matrices while $\matr{J}_r(\configRobot) \in \nR{\robotDoF \times 3}$ and $\matr{J}_o(\configObject) \in \nR{\objectDoF \times 3}$ are the Jacobians at the robot and object contact point\footnote{Without loss of generality we consider single contacts to simplify the notation. Nevertheless, extension to the multi-contact case is straightforward.}, respectively.
+$\matr{M}_r \in \nR{\robotDoF \times \robotDoF}$ and $\matr{M}_o \in \nR{\objectDoF \times \objectDoF}$ represent the inertia matrices while $\matr{J}_r(\configRobot) \in \nR{\robotDoF \times 3}$ and $\matr{J}_o(\configObject) \in \nR{\objectDoF \times 3}$ are the Jacobians at the robot and object contact point\footnote{Without loss of generality we consider single contacts to simplify the notation. Nevertheless, extension to the multi-contact case is straightforward.}, respectively.
 $\matr{J}^T_r$ and $\matr{J}^T_o$ map the interaction force $\vect{f}_{ext} \in \nR{3}$ at the contact point into the efforts at the object and robot joints. Coriolis and gravity terms are denoted as $\robotCoriolis$ and $\objectCoriolis$. 
 
 The system input $\command  \in \nR{\robotDoF}$ are the desired robot joint velocities $\dconfigRobotDesired$. The joint torques, denoted by $\vect{\tau}_{cmd}  \in \nR{\robotDoF}$, are computed by a low-level velocity controller as a function of the velocity references $\command$. We define with  $\mathcal{X} \subseteq \nR{2(\robotDoF + \objectDoF)}$ and $\mathcal{U} \subseteq \nR{\robotDoF}$ as the spaces of admissible states and inputs, respectively. 
 
 
-The control trajectory is defined as a sequence of control inputs over a time horizon $T$ and beginning at time $t$: $U_t = \{\command_t, \command_{t+1}, \dots, \command_{t+T-1}\}$. Each command sequence is sampled from a feedback policy distribution $U_t \sim \policy$ where $\policyParams$ are the distribution parameters. We denote with $X_t = \{\state_t, \state_{t+1}, \dots, \state_{t+T}\}$ the state sequence obtained by rolling out a policy sample $U_t$ when starting at the current state $\state_t$. 
+The control trajectory is defined as a sequence of control inputs over a time horizon $T$ and starting at time $t$: $U_t = \{\command_t, \command_{t+1}, \dots, \command_{t+T-1}\}$. Each command sequence is sampled from a feedback policy distribution $U_t \sim \policy$ where $\policyParams$ are the distribution parameters. We denote with $X_t = \{\state_t, \state_{t+1}, \dots, \state_{t+T}\}$ the state sequence obtained by rolling out a policy sample $U_t$ when starting at the current state $\state_t$. 
 
 The control objective is to find the feedback policy $\policy(\state_t)$ that minimizes some statistics over an objective metric $h : \mathcal{X} \times \mathcal{X} \times \mathcal{U} \rightarrow \nR{}$ that maps for each time $t$, the system state $\state_t$, the desired state $\state^*_t$ and command $\command_t$ to a scalar value. We can now formulate the control objective as an optimization problem: 
 \begin{mini}|s| 

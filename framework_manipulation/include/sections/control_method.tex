@@ -1,24 +1,26 @@
 \section{Control Method} \label{sec:control_method}
 
-In this section we combine sampling, barrier functions and energy tank into a novel model-based control framework for robust and safe interaction control. We use the presented sampling method to generate joint velocity command sequences that optimize a task-dependent objective in a receding horizon fashion. We encode a set of tasks and safety related objectives as different cost terms. Nevertheless, sampling does not inherently provide guarantees and therefore we need a method to enhance safety. We address this problem using an optimization problem as a non-invasive way to change the command sequence when constraints are not fulfilled. In particular, we solve a \texit{sequential} optimization problem (QP), which takes as input a command sequence and starting state and returns a modified command-state sequence satisfying all constraints. Nevertheless, as the expensive rollout sampling procedure often limits the rate of the controller, a portion of this input sequence must be executed in \textit{open-loop} which can be unsafe in dynamic environments and for low sampling rates. On the other hand, the quadratic program can be efficiently solved at almost the same rate as the low-level controller. To this end, we propose a \emph{cascaded control} architecture composed of a low-rate policy update and a high-rate low-level control loop blocks. The latter solves the QP for the current state-input pair in order to find the best input according to the latest received measurements. In other words, the optimization problem is solved:
+In this section we combine sampling, barrier functions and energy tank into a novel model-based control framework for robust and safe interaction control. We use the presented sampling method to generate joint velocity command sequences that optimize a task-dependent objective in a receding horizon fashion. We encode a set of tasks and safety related objectives as different cost terms. Nevertheless, sampling does not inherently provide guarantees and therefore we need a method to enhance safety. We address this problem using an optimization problem as a non-invasive way to change the command sequence when constraints are not fulfilled. In particular, we solve a \texit{sequential} optimization problem (QP), which takes as input a command sequence and the starting state, and returns a modified command-state sequence satisfying all constraints. Nevertheless, as the expensive rollout sampling procedure often limits the rate of the controller, a portion of this input sequence must be executed in \textit{open-loop} which can be unsafe in dynamic environments and for low sampling rates. On the other hand, the QP can be efficiently solved at almost the same rate as the low-level controller. To this end, we propose a \emph{cascaded control} architecture composed of an inner loop where the policy is updated at a low-rate and an outer loop  where the low-level controllers tracks the policy commands. In the outer loop a QP is solved for the current state-input pair in order to find the best input according to the latest received measurements. In the inner loop the same QP is solved for each state-input pair of the optimal rollout trajectory.
+In other words, the optimization problem is solved:
 \begin{itemize}
     \item \textit{sequentially}, for each command in the optimal input-state trajectory to ``sanitize" the sampling-based controller output wherever constraints might be violated,
-    \item \textit{pointwise}, for each command executed by the low-level controller, in order to account for different control rates.
+    \item \textit{point-wise}, for each command executed by the low-level controller, in order to account for different control rates.
 \end{itemize}
-Sequential and pointwise optimizations are denoted as Sequential FILTER-QP and FILTER-QP respectively.
+The complete high-level schematic of the full framework is depicted in \fig~\ref{fig:block_scheme}. Sequential and point-wise optimizations are denoted as Sequential FILTER-QP and FILTER-QP respectively and belong to the \textit{Trajectory Filtering} block of \fig~\ref{fig:block_scheme}. 
+
 The full method is amenable to different variants. In particular, by turning on/off filtering in the outer or inner control loop, we can synthesize four possible controller implementations. In the following we define with $\Pi_{*}$ each controller where $*$ can be $N,\ O,\ I,\ IO$:
 \begin{itemize}
-    \item[$\Pi_{N}$:] relies exclusively on a stochastic controller to generate velocity commands, namely the \textit{Trajectory Filtering} block is completely missing and the sampled input trajectory is tracked as is, from the low-level velocity controller,
+    \item[$\Pi_{N}$:] relies exclusively on a stochastic controller to generate velocity commands, namely the \textit{Trajectory Filtering} block is completely missing and the sampled input trajectory is tracked as it is by the low-level velocity controller,
     \item[$\Pi_{O}$:] a FILTER-QP is used to filter the instantaneous input command to be tracked by the low-level velocity controller,
-    \item[$\Pi_{I}$:] the Sequential FILTER-QP is used to filter the full optimized command trajectory in a sequential manner but no FILTER-QP is used in the outer control loop,
+    \item[$\Pi_{I}$:] the Sequential FILTER-QP is used to filter the full optimized command trajectory in a sequential manner but no FILTER-QP is used in the inner control loop,
     \item[$\Pi_{IO}$:] the full cascaded architecture is deployed, combining the previous two methods.
 \end{itemize}
-The complete high-level schematic of the full framework is depicted in \fig~\ref{fig:block_scheme}.
 
 \begin{figure}[t!]
 \centering
-\hspace*{-1.5cm}
-\includegraphics[width=1.3\columnwidth]{figures/schemes/receding_horizon_paper.pdf}
+\vspace{-0.5cm}
+% \hspace*{-1.5cm}
+\includegraphics[trim=120 0 50 0, clip, width=0.95\columnwidth] {figures/schemes/receding_horizon_paper.pdf}
 \caption{The figure shows an high-level schematic of the method. The blue variables represent the information available at the new optimization step. Some information is reused from the previous iteration to warm start the sampling procedure as shown in dark green. The cascaded control scheme is composed by a low-rate input sequence generation and an high-rate velocity command tracking blocks. We propose to modify the input sequence in both blocks through the Sequential FILTER-QP and FILTER-QP as a way to add guarantees to the command sequences generated via sampling and stochastic optimization.} \label{fig:block_scheme}
 \end{figure}
 
@@ -44,7 +46,7 @@ We denote by $\mathds{1}[\cdot]$ the \textit{indicator function} such that,
     0 & \text{otherwise}.
     \end{cases}
 \end{equation}
-In the following we drop from the notation the dependence on the current state. We use $\weightMatrix{}$ to denote positive semidefinite weight matrices and $\weightScalar{}$ for non-negative scalar parameters. Note that input constraints are not treated here as additional cost terms as the non-linear dynamics can be augmented with a function that projects the sampled inputs to the feasible set $\mathcal{U}$.
+In the following we drop in the notation the dependence on the current state. We use $\weightMatrix{}$ to denote positive semidefinite weight matrices and $\weightScalar{}$ for non-negative scalar parameters. Note that input constraints are not treated here as additional cost terms as the non-linear dynamics can be augmented with a function that projects the sampled inputs into the feasible set $\mathcal{U}$.
 
 \paragraph{Target reaching} in the target reaching task, the goal is to bring a frame attached to the robot (generally the end-effector frame) to a desired pose. We define with $\matr{T}$ and $\matr{T}^*$ the current and desired target frame pose, respectively. The \textit{tracking cost} is computed as a weighted distance in the tangent space to $SE(3)$ using the logarithmic mapping~\cite{blanco2010tutorial}:
 \begin{equation} \label{eq:tracking_cost}
@@ -190,10 +192,11 @@ Intuitively, the increase of the robot's energy is compensated with a reduction 
 \begin{equation}
     S(t) = S(0) + \int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \dconfigRobotDesired \ dt  \geq 0
 \end{equation}
-or equivalently iff
+recovering the constraint in \eqref{eq:pass_const} and therefore concluding the proof.
+\end{proof}
+In practice, the constraints in \eqref{eq:pass_const} is formulated as
 \begin{equation}
     \int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \command \ dt \geq \epsilon - S(0),
 \end{equation}
-where $\epsilon$ is a positive minimum residual energy to avoid a singularity condition and complete tank depletion. This concludes the proof. 
-\end{proof}
+where $\epsilon$ is a positive minimum residual energy to avoid the singularity that the tank suffer when it is completely depleted.  
 

@@ -3,7 +3,11 @@
 We address here some issues that arise when implementing the described algorithm on a resource-constrained platform. Furthermore, we introduce many practical expedients that deal with limited sampling budget, slow control rates and finally with sim-to-real transfer.  
 
 \subsection{Gradient clipping} 
-The policy update rule in \eqref{eq:update_rule} consists of a receding horizon \emph{mini-batch} SGD. As a consequence, the gradient variance can vary greatly between successive iterations of the algorithm. To prevent this phenomenon, which is especially evident with a small sampling budget, we clip the gradients to a user-defined threshold.  
+The policy update rule in \eqref{eq:update_rule} consists of a receding horizon \emph{mini-batch} SGD. As a consequence, the gradient variance can vary greatly between successive iterations of the algorithm. To prevent this phenomenon, which is especially evident with a small sampling budget, we clip the gradients to a user-defined threshold:
+\begin{equation}
+    g_i = \text{sign}(g_i) \cdot \min(|g_i|, g_{max}) 
+\end{equation}
+where $g_i$ is the i\textsuperscript{th} component of the stochastic approximation of the gradient vector and $g_{max} \in \nR{}_{>0}$ is the gradient threshold.
 
 \subsection{Likelihood mapping} 
 The coefficient $\lambda$ in \eqref{eq:weighting} determines how ``aggressive" the weighting between different trajectories is. Adopting a constant value would give a numerically zero weight to most of the trajectories. Shifting the trajectory cost by the minimum cost as proposed in~\cite{williams_information_2017} also does not alleviate this issue. 
