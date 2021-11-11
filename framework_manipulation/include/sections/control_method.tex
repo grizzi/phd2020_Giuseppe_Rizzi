@@ -1,25 +1,31 @@
 \section{Control Method} \label{sec:control_method}
 
-In this section we combine sampling, barrier functions and energy tank into a novel model-based control framework for robust and safe interaction control. We use the presented sampling method to generate joint velocity command sequences that optimize a task-dependent objective in a receding horizon fashion. We encode a set of tasks and safety related objectives as different cost terms. Nevertheless, sampling does not inherently provide guarantees and therefore we need a method to enhance safety. We address this problem using ZBFs as a non-invasive way to change the command sequence when constraints are not fulfilled. In particular, we solve a sequential optimization problem, called Sequential FILTER-QP that ensure forward invariance with respect to the safe set when joint velocities are accurately tracked. Each command trajectory is ``filtered" to satisfy constraints before being sent to the low level controller. While the safety objectives are here formulated on a kinematic level (obstacle avoidance, joint and cartesian limits), we are also interested to the robustness of the dynamical system during interaction, especially in case of unexpected events that could compromise its stability. For this purpose, we complete the proposed framework with a passivity analysis and use an energy tank to bound the energy dissipated during the manipulation task. Passivity is guaranteed in the form of an additional constraint in the quadratic program, the FILTER-QP, which is solved pointwise at a higher frequency in the low-level control loop. In other words, the optimization problem is solved:
+In this section we combine sampling, barrier functions and energy tank into a novel model-based control framework for robust and safe interaction control. We use the presented sampling method to generate joint velocity command sequences that optimize a task-dependent objective in a receding horizon fashion. We encode a set of tasks and safety related objectives as different cost terms. Nevertheless, sampling does not inherently provide guarantees and therefore we need a method to enhance safety. We address this problem using an optimization problem as a non-invasive way to change the command sequence when constraints are not fulfilled. In particular, we solve a \texit{sequential} optimization problem (QP), which takes as input a command sequence and starting state and returns a modified command-state sequence satisfying all constraints. Nevertheless, as the expensive rollout sampling procedure often limits the rate of the controller, a portion of this input sequence must be executed in \textit{open-loop} which can be unsafe in dynamic environments and for low sampling rates. On the other hand, the quadratic program can be efficiently solved at almost the same rate as the low-level controller. To this end, we propose a \emph{cascaded control} architecture composed of a low-rate policy update and a high-rate low-level control loop blocks. The latter solves the QP for the current state-input pair in order to find the best input according to the latest received measurements. In other words, the optimization problem is solved:
 \begin{itemize}
     \item \textit{sequentially}, for each command in the optimal input-state trajectory to ``sanitize" the sampling-based controller output wherever constraints might be violated,
-    \item \textit{pointwise}, for each command executed by the low-level controller, in order to account for different control rates and ensure passivity, hence stability of the system.
+    \item \textit{pointwise}, for each command executed by the low-level controller, in order to account for different control rates.
 \end{itemize}
+Sequential and pointwise optimizations are denoted as Sequential FILTER-QP and FILTER-QP respectively.
+The full method is amenable to different variants. In particular, by turning on/off filtering in the outer or inner control loop, we can synthesize four possible controller implementations. In the following we define with $\Pi_{*}$ each controller where $*$ can be $N,\ O,\ I,\ IO$:
+\begin{itemize}
+    \item[$\Pi_{N}$:] relies exclusively on a stochastic controller to generate velocity commands, namely the \textit{Trajectory Filtering} block is completely missing and the sampled input trajectory is tracked as is, from the low-level velocity controller,
+    \item[$\Pi_{O}$:] a FILTER-QP is used to filter the instantaneous input command to be tracked by the low-level velocity controller,
+    \item[$\Pi_{I}$:] the Sequential FILTER-QP is used to filter the full optimized command trajectory in a sequential manner but no FILTER-QP is used in the outer control loop,
+    \item[$\Pi_{IO}$:] the full cascaded architecture is deployed, combining the previous two methods.
+\end{itemize}
+The complete high-level schematic of the full framework is depicted in \fig~\ref{fig:block_scheme}.
 
 \begin{figure}[t!]
 \centering
 \hspace*{-1.5cm}
 \includegraphics[width=1.3\columnwidth]{figures/schemes/receding_horizon_paper.pdf}
-\caption{} \label{fig:block_scheme}
+\caption{The figure shows an high-level schematic of the method. The blue variables represent the information available at the new optimization step. Some information is reused from the previous iteration to warm start the sampling procedure as shown in dark green. The cascaded control scheme is composed by a low-rate input sequence generation and an high-rate velocity command tracking blocks. We propose to modify the input sequence in both blocks through the Sequential FILTER-QP and FILTER-QP as a way to add guarantees to the command sequences generated via sampling and stochastic optimization.} \label{fig:block_scheme}
 \end{figure}
 
-We can now summarize as follows all the possible approaches to the mobile manipulation control problem. We denote each controller with $\Pi_{*}$ where $*$ can be $N,\ O,\ I,\ IO$:
-\begin{itemize}
-    \item[$\Pi_{N}$:] relies exclusively on a stochastic controller to generate velocity commands, namely the input is not filtered either by a FILTER-QP or a Sequential FILTER-QP
-    \item[$\Pi_{O}$:] a FILTER-QP is used to optimize the input sequence received by the stochastic controller. The FILTER-QP is solved at the same rate as the low-level controller,
-    \item[$\Pi_{I}$:] the Sequential FILTER-QP is used in the stochastic controller to enforce safety and passivity constraints  as described in \algo \ref{algo:sequential_qp}. No FILTER-QP is solved at higher rate in the low-level controller.
-    \item[$\Pi_{IO}$:] the full cascaded architecture is deployed, combining the previous two methods.
-\end{itemize}
+
+In the following we present our cost formulation for the manipulation task. This is used in the sampling procedure to weight different trajectory samples and drive the robot to a successful task execution. Then, we encode safety requirements in the form of ZBFs. These allow to formulate an optimization problem that ensure forward invariance with respect to the safe set when joint velocities are accurately tracked.
+
+While the safety objectives are here formulated on a kinematic level (obstacle avoidance, joint and cartesian limits), we are also interested to the robustness of the dynamical system during interaction, especially in case of unexpected events that could compromise its stability. For this purpose, we complete the proposed framework with a passivity analysis and use an energy tank to bound the energy dissipated during the manipulation task. Passivity is guaranteed in the form of an additional constraint in the quadratic program and therefore naturally fits the proposed framework.
 
 \subsection{Sampling-based control}
 The sampling-based framework offers the freedom to directly plan in torque space or use position/velocity control and defer tracking to a low-level controller. In fact, directly planning in the joint space allows us to account for objectives which are not in the operational control space such as joint limits and self-collision avoidance. The internal model used to sample trajectory rollouts has the same form as in \eqref{eq:eom}. Joint velocity commands are sampled and then translated to motor torques:
@@ -89,7 +95,7 @@ The manipulation task consists of two phases. In a first phase the manipulator r
 %This approach is in contrast with previous works where manipulation generally follows a prescribed grasping state~\cite{abraham_model-based_2020}. Grasping introduces a kinematic constraint that, while reducing the optimal control search space, does not allow for more flexible, contact-based behaviors to emerge such as pulling, pushing or sliding. 
 
 \subsection{Barrier Functions}
-In the previous subsection a combination of cost components were introduced in order to address both performance and safety. The variety of objectives makes the cost landscape highly complex such that trading off performance against safety objectives can be quite challenging and tedious. Furthermore, sampling does not provide any formal guarantee that constraints encoded in the form of additional cost terms will be satisfied. In the following, we look at how barrier functions can encode safety-critical constraints. We start by deriving the ZBF constraints based on the differential kinematics equation,
+In the previous subsection a combination of cost components were introduced in order to address both performance and safety. The variety of objectives makes the cost landscape highly complex such that trading off performance against safety objectives can be quite challenging and tedious. Furthermore, as already stressed, sampling does not provide any formal guarantee that constraints encoded in the form of additional cost terms will be satisfied. Therefore, we look at how barrier functions can encode safety-critical constraints. We start by deriving the ZBF constraints based on the differential kinematics equation,
 \begin{equation}
     \dot{\state} = \matr{J} \dconfigRobot\;.
 \end{equation}
@@ -108,13 +114,55 @@ where $d_c = r_i + r_j$ is the sum of the radius of the two collision spheres as
 \end{equation}
 The projection matrix $P = \text{diag}(1, 1, 0) \in \nR{3 \times 3}$ makes sure that the reach is only computed in the 2D plane. This prevents the arm to stretch out and reach singular configurations. Each of these ZBFs translates to a constraint of the form in \eqref{eq:cbf-const} which is affine in the commands. 
 
+As described in \sect \ref{sec:theory}, we can formulate a quadratic program to find the command which is the closest to the sampled one while also satisfying the ZBF and passivity constraints previously introduced:
+\begin{mini}|s| 
+{\tilde{\vect{u}}_t, \boldsymbol{\delta}}{||\tilde{\vect{u}}_t - \command_t||^2 + \boldsymbol{\delta}^T \matr{P} \boldsymbol{\delta}\quad \text{(FILTER-QP)}}{}{\label{eq:cbf-qp}}
+\addConstraint{\dot{h}^i_{ql} \geq -{h}_{ql} + \delta^i_{ql} \quad \forall \ i \in [1,  m] }{}{\ \text{(Joint Limits)}}
+\addConstraint{\dot{h}^{ij}_{sc} \geq -{h}_{ij} + \delta^{ij}_{sc} \quad \forall \ (i,j) \in \mathcal{I}}{}{\ \text{(Self Collision)}}
+\addConstraint{\dot{h}^i_{ar} \geq -{h}_{ar} + \delta^i_{ar}}{}{\ \text{(Arm Reach)}}
+\addConstraint{\tilde{\vect{u}}_t \in \mathcal{U}}{}{ \text{\ (Input Limits)}},
+\end{mini}
+where $\boldsymbol{\delta}$ is the vector of slack variables and $\matr{P}$ is a positive definite diagonal matrix weighting the slack variable penalization. Finally, the set denoted by $\mathcal{I}$ is the set of collision link pairs.  We name this problem FILTER-QP as it changes the control input only if it is unsafe or causes a loss of passivity. Instead of simply applying this optimization point-wise, we can \emph{filter} the full input sequence in a sequential manner. After a policy update and for each time step, a FILTER-QP is solved. The newly computed command is applied to advance to the next step in the horizon as shown in \algo \ref{algo:sequential_qp} and obtain the next system state from which the constrain equation can be updated. The resulting filtered optimal input sequence $\bar{U}^*_t$ is then also used to warm-start the nominal policy for the next round of rollout sampling (see \fig \ref{fig:receding_horizon}). 
+
+\begin{algorithm}
+\caption{Sequential FILTER-QP \label{algo:sequential_qp}}
+\KwData{optimal input sequence $U^*_t = \{ \command^*_t, \dots, \command^*_{t+T-1}\} = \{\boldsymbol{\mu}_t, \dots, \boldsymbol{\mu}_{t+T-1}\}$ , current state $\vect{x}_t$, 
+%tank state $x_t$
+}
+\KwResult{filtered input trajectory $\bar{U}^*_t$}
+$\vect{x} \gets \vect{x}_t$\;
+$\command \gets \command^*_t$\;
+$n \gets 0$\;
+\While{$n < T$}{
+  $\bar{\command}_{t+n} \gets \text{FILTER-QP}(\vect{x}, \command, \boldsymbol{\tau}_{ext})$ \hfill (\eqn \ref{eq:cbf-qp}) \\
+  $\vect{x}, \boldsymbol{\tau}_{ext} \gets $Step Simulation \hfill (\eqn \ref{eq:eom})\\
+  %$x_t \gets$ Integrate Tank \hfill (\eqn \ref{eq:tank_dynamics}) \\
+  $\command \gets {\command}^*_{t+n+1}$ \\
+  $n = n + 1$
+}
+\end{algorithm}
+
 \subsection{Energy Tank}
-As described in \sect \ref{sec:theory}, energy tanks can be used to \emph{passify} the system and ensuring so stability. Inspired by the work in \cite{benzi2021optimization} and \cite{shahriari2018valve}, this adaptation naturally fits the control method we have developed so far. After the system model is augmented with a virtual tank, we are left with the task of defining the \emph{power ports} connected to the tank in order to ensure that passivity is preserved. To this end, we perform a passivity analysis of the \emph{real} system. Its 
-velocity controller follows a dynamically compensated PI control law:
+While the optimization in \eqref{eq:cbf-qp} enhances the safety of the system we still lack stability guarantees. As described in \sect \ref{sec:theory}, energy tanks can be used to \emph{passify} the system and thus ensure stability. Inspired by the work in \cite{benzi2021optimization} and \cite{shahriari2018valve}, this adaptation naturally fits the control method we have developed so far. Let us consider the dynamic manipulator as described in \eqref{eq:eom}. Furthermore, the system uses a dynamically compensated PI velocity controller: 
 \begin{equation}
 \commandTorque = \coriolis \dconfigRobotDesired + g(\configRobot) - \matr{K}_D \dconfigRobotError - \matr{K}_I \int_{0}^{\sigma} \dconfigRobotError\ dt,
 \end{equation}
-with the auxiliary error variable $\configRobotError =  \configRobot - \configRobotDesired$. We define the system energy as, 
+with the auxiliary error variable $\configRobotError =  \configRobot - \configRobotDesired$. If we augment the the optimization problem in \eqref{eq:cbf-qp} with the energy constraints:
+\begin{equation}\label{eq:pass_const}
+    \int\limits_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \dconfigRobotDesired \ dt \geq -S(0)
+\end{equation}
+where $S(0)$ is the initial energy stored in the tank, then the following stability result holds:
+\begin{theorem}[System Stability]
+If the controlled system \eqref{eq:eom} satisfies the constraints \eqref{eq:pass_const} $\forall \ t$, then it is passive and therefore stable. 
+\end{theorem}
+
+\begin{corollary}
+When the passivity constraint in \eqref{eq:pass_const} is included in the optimization problem of the FILTER-QP, then the controllers $\Pi_O$ and $\Pi_{IO}$ guarantee the stability of the system.
+\end{corollary}
+
+
+\begin{proof}
+We start augmenting the system model with a virtual tank. We now need to define through which \emph{power ports} the tank exchange energy with the rest of the system. To this end, we perform a passivity analysis of the \emph{real} system. We first define the robot energy as, 
 \begin{equation}
     S_{robot} = \frac{1}{2} \dconfigRobotError^T \massMatrix \dconfigRobotError + \frac{1}{2} \configRobotError^T \matr{K}_P \configRobotError.
 \end{equation}
@@ -130,73 +178,22 @@ The energy tank is finally connected to the system through the power port $(\dco
 \begin{equation} \label{eq:tank_dynamics}
 \dot{S}_{tank} = \dconfigRobot^{*T} \externalTorque. 
 \end{equation}
-The time evolution of the autonomous system's energy is,
+Then, the energy evolution of the autonomous system, composed by robot, tank and environment is,
 \begin{equation}
 \begin{aligned}
     \dot{S}_{tot} &= \dot{S}_{robot} + \dot{S}_{tank} + \dot{S}_{env} \\
     &\leq \dconfigRobotError^T \externalTorque + \dconfigRobot^{*T} \externalTorque - \dconfigRobot^T \externalTorque \leq 0,
 \end{aligned}
 \end{equation}
-showing the system's passivity. The increase of the robot's energy is compensated by a reduction of the tank's energy. Passivity is ensured if,
+showing the system's passivity.
+Intuitively, the increase of the robot's energy is compensated with a reduction of the tank's energy. As the tank energy is limited and bounded from below, passivity is ensured if,
 \begin{equation}
-    \int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \dconfigRobotDesired \ dt = \int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \command \ dt \geq \epsilon - S(0),
+    S(t) = S(0) + \int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \dconfigRobotDesired \ dt  \geq 0
 \end{equation}
-where $\epsilon$ is a positive minimum residual energy to avoid a singularity condition and complete tank depletion and $S(0)$ is the energy initially stored in the tank.
+or equivalently iff
+\begin{equation}
+    \int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \command \ dt \geq \epsilon - S(0),
+\end{equation}
+where $\epsilon$ is a positive minimum residual energy to avoid a singularity condition and complete tank depletion. This concludes the proof. 
+\end{proof}
 
-\subsection{Closing the loop}
-As described in \sect \ref{sec:theory}, we can formulate a quadratic program to find the command which is the closest to the sampled one while also satisfying the ZBF and passivity constraints previously introduced:
-\begin{mini}|s| 
-{\tilde{\vect{u}}_t, \boldsymbol{\delta}}{||\tilde{\vect{u}}_t - \command_t||^2 + \boldsymbol{\delta}^T \matr{P} \boldsymbol{\delta}\quad \text{(FILTER-QP)}}{}{\label{eq:cbf-qp}}
-\addConstraint{\dot{h}^i_{ql} \geq -{h}_{ql} + \delta^i_{ql} \quad \forall \ i \in [1,  m] }{}{\ \text{(Joint Limits)}}
-\addConstraint{\dot{h}^{ij}_{sc} \geq -{h}_{ij} + \delta^{ij}_{sc} \quad \forall \ (i,j) \in \mathcal{I}}{}{\ \text{(Self Collision)}}
-\addConstraint{\dot{h}^i_{ar} \geq -{h}_{ar} + \delta^i_{ar}}{}{\ \text{(Arm Reach)}}
-\addConstraint{\int\limits_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \command \ dt \geq -S(0) + \epsilon + \delta_t}{}{ \text{\ (Passivity)}}
-\addConstraint{\tilde{\vect{u}}_t \in \mathcal{U}}{}{ \text{\ (Input Limits)}},
-\end{mini}
-where $\boldsymbol{\delta}$ is the vector of slack variables and $\matr{P}$ is a positive definite diagonal matrix weighting the slack variable penalization. Finally, the set denoted by $\mathcal{I}$ is the set of collision link pairs.  We name this problem FILTER-QP as it changes the control input only if it is unsafe or causes a loss of passivity. Instead of simply applying this optimization point-wise, we can \emph{filter} the full input sequence in a sequential manner. After a policy update and for each time step, a FILTER-QP is solved. The newly computed command is applied to advance to the next step in the horizon as shown in \algo \ref{algo:sequential_qp}. The resulting filtered input sequence $\bar{U}^*_t$ is then used to warm-start the nominal policy for the next round of rollout sampling (see \fig \ref{fig:receding_horizon}). 
-
-\begin{algorithm}
-\caption{Sequential FILTER-QP \label{algo:sequential_qp}}
-\KwData{optimal input sequence $U^*_t = \{ \command^*_t, \dots, \command^*_{t+T-1}\} = \{\boldsymbol{\mu}_t, \dots, \boldsymbol{\mu}_{t+T-1}\}$ , current state $\vect{x}_t$, 
-tank state $x_t$}
-\KwResult{filtered input trajectory $\bar{U}^*_t$}
-$\vect{x} \gets \vect{x}_t$\;
-$\command \gets \command^*_t$\;
-$n \gets 0$\;
-\While{$n < T$}{
-  $\bar{\command}_{t+n} \gets \text{FILTER-QP}(\vect{x}, \command, x_t, \boldsymbol{\tau}_{ext})$ \hfill (\eqn \ref{eq:cbf-qp}) \\
-  $\vect{x}, \boldsymbol{\tau}_{ext} \gets $Step Simulation \hfill (\eqn \ref{eq:eom})\\
-  $x_t \gets$ Integrate Tank \hfill (\eqn \ref{eq:tank_dynamics}) \\
-  $\command \gets {\command}^*_{t+n+1}$ \\
-  $n = n + 1$
-}
-\end{algorithm}
-
-\subsection{Receding Horizon Control} 
-At the beginning of a new sampling, all the stored rollouts are shifted back by the real-time number of steps elapsed since the last optimization. A subset of the best rollouts are kept to warm start the next iteration. 
-As the sampled control is not sufficiently smooth for a practical application, we filter it using a moving window Savitzky-Golay filter~\cite{gorry1990general} before the Sequential FILTER-QP. The full pipeline is visualized in \fig \ref{fig:receding_horizon}.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\columnwidth]{figures/schemes/receding_horizon.pdf}
-    \vspace{0.1cm}
-    \caption{The figure shows the implementation of the receding horizon scheme. The blue variables represent the information available at the new optimization step. Some information is reused from the previous iteration to warm start the sampling procedure as shown in dark green. All the previous samples and the nominal trajectory are shifted by $\Delta t = t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. The Sequential-QP block, highlighted in purple, is optional and deployed by methods $\Pi_{I}$ and $\Pi_{IO}$.}
-    \label{fig:receding_horizon}
-\end{figure}
-
-The expensive rollout sampling procedure often limits the rate of the controller. Instead, the QP can be efficiently solved at almost the same rate as the low-level controller. We propose a \emph{cascaded control} architecture composed of a low-rate policy update block and a high-rate low-level control loop. The latter solves the FILTER-QP in \eqref{eq:cbf-qp} point-wise to find the best input according to the latest received measurements. The full cascaded control architecture is shown in \fig \ref{fig:cascaded_architecture}.
-
-\begin{figure}[t!]
-\centering
-\hspace*{-0.7cm}
-\includegraphics[width=1.1\columnwidth]{figures/schemes/high_level_architecture.pdf}
-\caption{Cascaded control architecture: the sampling based controller computes a velocity trajectory $\bar{U}$ at approximately 100Hz. The input vector is queried and interpolated at a higher rate of approximately 1000Hz (tick line) and is filtered using the latest odometry.} \label{fig:cascaded_architecture}
-\end{figure}
-
-We can now summarize as follows all the possible approaches to the mobile manipulation control problem. We denote each controller with $\Pi_{*}$ where $*$ can be $N,\ O,\ I,\ IO$:
-\begin{itemize}
-    \item[$\Pi_{N}$:] relies exclusively on a stochastic controller to generate velocity commands, namely the input is not filtered either by a FILTER-QP or a Sequential FILTER-QP
-    \item[$\Pi_{O}$:] a FILTER-QP is used to optimize the input sequence received by the stochastic controller. The FILTER-QP is solved at the same rate as the low-level controller,
-    \item[$\Pi_{I}$:] the Sequential FILTER-QP is used in the stochastic controller to enforce safety and passivity constraints  as described in \algo \ref{algo:sequential_qp}. No FILTER-QP is solved at higher rate in the low-level controller.
-    \item[$\Pi_{IO}$:] the full cascaded architecture is deployed, combining the previous two methods.
-\end{itemize}
