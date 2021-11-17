@@ -1,6 +1,5 @@
-\section{Derivation of policy gradient}\label{sec:app_derivation_policy_gradient}
-Recall that the optimization variables are the parameters of the current policy, namely the mean vector of the normally distributed control sequence $\policyParams = \{\boldsymbol{\mu}_t,  \boldsymbol{\mu}_{t+1}, \dots, \boldsymbol{\mu}_{t+T-1} \}$. For a input command at time $k$ in the horizon, $\command_k \sim \mathcal{N}(\boldsymbol{\mu}_k, \Sigma)$. Recall also that we map costs to \emph{success likelihoods} using the exponential function $\succCondProb = \exp(-\lambda J(X_t, U_t)) = \mathcal{J}_t$ . We show the derivation of the gradient for one nominal input vector $\boldsymbol{\mu}_k$:
-
+\section{Derivation of Policy Gradient}\label{sec:app_derivation_policy_gradient}
+Recall that the optimization variables are the parameters of the current policy, namely the mean vector of the normally distributed control sequence $\policyParams = \{\boldsymbol{\mu}_t,  \boldsymbol{\mu}_{t+\Delta t}, \dots, \boldsymbol{\mu}_{t+T-\Delta t} \}$. With a small abuse of notation, we denote the input command at time index $k$ in the horizon, $\command_k \sim \mathcal{N}(\boldsymbol{\mu}_k, \Sigma)$. Recall also that we map costs to \emph{success likelihoods} using the exponential function $\succCondProb = \exp(-\lambda J(X_t, U_t)) = \mathcal{J}_t$ . We show the derivation of the gradient for one nominal input vector $\boldsymbol{\mu}_k$:
 \begin{align}
     \nabla_{\boldsymbol{\mu}_k} \log \expPolicy{\succCondProb}
     &= \frac{\nabla_{\boldsymbol{\mu}_k} \expPolicy{\succCondProb}}{\expPolicy{\succCondProb}} \\
@@ -15,27 +14,28 @@ Recall that the optimization variables are the parameters of the current policy,
     &= \int \mathcal{J}_t \policy(U_t) \nabla_{\boldsymbol{\mu}_k} \log \policy(U_t) \\
     &= \expectation{\policy} [\mathcal{J}_t \nabla_{\boldsymbol{\mu}_k} \log \policy(U_t)], \label{eq:almost_there}
 \end{align}
-where the step \eqref{eq:param_independence} follows from the independence of the success likelihood from the policy parameters. We now look at the gradient of the policy log-likelihood with respect to the mean vector:
+where step \eqref{eq:param_independence} follows from the independence of the success likelihood from the policy parameters. We now look at the gradient of the policy log-likelihood with respect to the mean vector:
 \begin{align}
     &\nabla_{\boldsymbol{\mu}_k} \log \policy(U_t) \\
-    &= \nabla_{\boldsymbol{\mu}_k} \log \prod_{t}^{t+T-1} \frac{1}{\sqrt{(2\pi)^{n_u}|\variance|}}\exp\left(-\frac{1}{2}||\command_t - \boldsymbol{\mu}_t||_{\variance^{-1}}\right) \\
-    &= \nabla_{\boldsymbol{\mu}_k} \sum_{t}^{t+T-1} \log \frac{1}{\sqrt{(2\pi)^{n_u}|\variance|}} + \left(-\frac{1}{2}||\command_t - \boldsymbol{\mu}_t||_{\variance^{-1}}\right) \\
-    &= \nabla_{\boldsymbol{\mu}_k} \sum_{t}^{t+T-1} -\frac{1}{2}||\command_t - \boldsymbol{\mu}_t||_{\variance^{-1}} \\
+    &= \nabla_{\boldsymbol{\mu}_k} \log \prod_{k'=0}^{K} \frac{1}{\sqrt{(2\pi)^{n_u}|\variance|}}\exp\left(-\frac{1}{2}||\command_{k'} - \boldsymbol{\mu}_{k'}||_{\variance^{-1}}\right) \\
+    &= \nabla_{\boldsymbol{\mu}_k} \sum_{k'=0}^{K} \log \frac{1}{\sqrt{(2\pi)^{n_u}|\variance|}} + \left(-\frac{1}{2}||\command_{k'} - \boldsymbol{\mu}_{k'}||_{\variance^{-1}}\right) \\
+    &= \nabla_{\boldsymbol{\mu}_k} \sum_{k'=0}^{K} -\frac{1}{2}||\command_{k'} - \boldsymbol{\mu}_{k'}||_{\variance^{-1}} \\
     &= \nabla_{\boldsymbol{\mu}_k} -\frac{1}{2}||\command_k - \boldsymbol{\mu}_k||_{\variance^{-1}} \\
     &= \variance^{-1}(\command_k - \boldsymbol{\mu}_k) \\
     &= \variance^{-1} \noise_k
 \end{align}
-Plugging the previous expression in \eqref{eq:almost_there} we obtain:
+with $K$ being the total number of discrete time steps in the time horizon. 
+Plugging the previous expression into \eqref{eq:almost_there} we obtain:
 \begin{align}
     \expectation{\boldsymbol{\mu}_k} [\mathcal{J}_t \nabla_{\boldsymbol{\mu}_k} \log \policy(U_t)]
     &= \expectation{\policy} [\mathcal{J}_t \variance^{-1} \noise_k] \\
-    &= \variance^{-1} \expPolicy{\mathcal{J}_t \noise_k} \label{eq:mean_gradient}
+    &= \variance^{-1} \expPolicy{\mathcal{J}_t \noise_k}. \label{eq:mean_gradient}
 \end{align}
 We finally combine \eqref{eq:mean_gradient} and \eqref{eq:log_gradient} to get the equation which relates the gradient to the cost and input noise:
 \begin{align}
      \nabla_{\boldsymbol{\mu}_k} \log \expPolicy{\succCondProb} 
      &= \variance^{-1} \frac{\expPolicy{\mathcal{J}_t \noise_k}}{\expPolicy{\mathcal{J}_t}} \\
-     &= \variance^{-1} \frac{\expPolicy{\exp(-\lambda J_t) \noise_k}}{\expPolicy{\exp(-\lambda J_t)}}
+     &= \variance^{-1} \frac{\expPolicy{\exp(-\lambda J_t) \noise_k}}{\expPolicy{\exp(-\lambda J_t)}}.
 \end{align}
 
 \section{Passivity Analysis}\label{app:passivity_analysis}
@@ -43,17 +43,17 @@ The manipulator energy is defined as:
 \begin{equation}
     S_{robot} = \frac{1}{2} \dconfigRobotError^T \massMatrix \dconfigRobotError + \frac{1}{2} \configRobotError^T \matr{K}_P \configRobotError.
 \end{equation}
-The energy dynamics can be obtained by computing the time derivative of the previous expression. Plugging in \eqref{eq:eom} and exploiting the fact that $\massMatrix - 2 \coriolis$ is skew symmetric we get:
-\begin{equation*}
+The energy dynamics can be obtained by computing the time derivative of the previous expression. We plug the low level control law in \eqref{eq:low-level-control} into \eqref{eq:eom} and exploiting the fact that $\massMatrix - 2 \coriolis$ is skew symmetric we get:
+\begin{equation}
 \begin{aligned}
     \dot{S}_{robot} &= \dconfigRobotError^T \massMatrix \ddconfigRobotError + \frac{1}{2} \dconfigRobotError^T \dot{\matr{M}}(\configRobot) \dconfigRobotError + \dconfigRobotError^T \matr{K}_P \configRobotError \\
-    &= \dconfigRobotError^T \left[ -\coriolis \dconfigRobotError - \matr{K}_P \configRobotError - \matr{K}_D \dconfigRobotError - \matr{K}_I \int_{0}^{\sigma} \dconfigRobotError + \externalTorque \right] \\
+    &= \dconfigRobotError^T \left[ -\coriolis \dconfigRobotError -  \matr{K}_D \dconfigRobotError - \matr{K}_I \int_{0}^{\sigma} \dconfigRobotError dt + \externalTorque \right] \\
     &\quad + \frac{1}{2} \dconfigRobotError^T \dot{\matr{M}}(\configRobot) \dconfigRobotError + \dconfigRobotError^T \matr{K}_P \configRobotError \\
-    &= -\dconfigRobotError^T \matr{K}_P \configRobotError + \dconfigRobotError^T \externalTorque + \frac{1}{2} \dconfigRobotError^T\left[ \dot{\matr{M}}(\configRobot) - 2\coriolis \right] \dconfigRobotError \\
+    &= \dconfigRobotError^T \matr{K}_P \configRobotError + \dconfigRobotError^T \externalTorque + \frac{1}{2} \dconfigRobotError^T\left[ \dot{\matr{M}}(\configRobot) - 2\coriolis \right] \dconfigRobotError \\
     &\quad - \dconfigRobotError^T \matr{K}_D \dconfigRobotError  - \dconfigRobotError^T \matr{K}_I \int^{\sigma}_{0} \dconfigRobotError\ dt\\
     &= \dconfigRobotError^T \matr{K}_P \configRobotError + \dconfigRobotError^T \externalTorque - \dconfigRobotError^T \matr{K}_D \dconfigRobotError -  \dconfigRobotError^T \matr{K}_I \int^{\sigma}_{0} \dconfigRobotError\ dt.  
 \end{aligned}
-\end{equation*}
+\end{equation}
 As we compute the desired position integrating the desired velocity over time, it holds that $\configRobotError = \int^{\sigma}_{0}
 \dconfigRobotError\ dt$. We choose $\matr{K}_P = \matr{K}_I$, obtaining,
 \begin{equation}
@@ -103,6 +103,6 @@ As we compute the desired position integrating the desired velocity over time, i
  & passivity        &  $10^2$    \\
  \bottomrule
 \end{tabular}
-\caption{The table summarizes the method's most relevant parameters. Note that the same set of parameters have been used for all tested scenarios in simulation and real world experiments.}
+\caption{The table summarizes the method's most relevant parameters. Note that the same set of parameters have been used for all tested scenarios in simulation and real-world experiments.}
 \label{tab:parameters}
 \end{table}
