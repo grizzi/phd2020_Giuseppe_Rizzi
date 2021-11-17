@@ -64,41 +64,41 @@ As we compute the desired position integrating the desired velocity over time, i
 
 \begin{table}[h!]
 \centering
-\begin{tabular}{c | c c}
+\begin{tabular}{c | c c c c}
  \toprule
- \multirow{8}{4em}{Sampling-Based\\Controller} 
- & rollouts       & 40       \\
+ \multirow{5}{4em}{Sampling-based\\Controller} 
+ & rollouts       & 40       
  & $\Delta t$     & 0.015s   \\
- & $T$            & 1s       \\     
+ & $T$            & 1s            
  & $h$            & 10       \\
- & $g_{max}$      & 0.2      \\
+ & $g_{max}$      & 0.2      
  & $\rho$         & 1.0      \\ 
  & caching\tablefootnote{Portion of rollouts reused from the previous iteration}        & 30\%     \\ 
- & $\Sigma$       & $[0.5, 0.5, 0.5, 1.25, \dots, 1.25] \in \nR{11}$ \\
+ & $\Sigma$       & \multicolumn{3}{c}{$[0.5, 0.5, 0.5, 1.25, \dots, 1.25] \in \nR{11}$} \\
  \midrule
- \multirow{9}{4em}{Cost\\Function} 
- & $\bm{W}_t$       & $10^2 \cdot I,\ I \in \nR{6}$\\
+ \multirow{5}{4em}{Cost\\Function} 
+ & $\bm{W}_t$       & $10^2 \cdot I,\ I \in \nR{6}$
  & $w_{\gamma}$     & $10^2$ \\ 
- & $w_{j}$   & $10^3$ \\
+ & $w_{j}$   & $10^3$ 
  & $\bm{W}_{js}$  & $10^2$ \\
- & $w_r$          & $10^3$ \\
+ & $w_r$          & $10^3$ 
  & $w_{rs}$       & $10^2$ \\
- & $\bm{W}_{o}$   & $10^2$ \\
+ & $\bm{W}_{o}$   & $10^2$ 
  & $p_{max}$      & $0$ \\
  & $w_p$          & $10$ \\
  \midrule
  \multirow{2}{4em}{Savitzky-Golay}
- & polynomial order & $3$ \\
- & window size & $30$ \\
+ & \multicolumn{2}{c}{polynomial order} & \multicolumn{2}{c}{$3$} \\
+ & \multicolumn{2}{c}{window size} & \multicolumn{2}{c}{$30$} \\
  \midrule
  \multirow{2}{4em}{Energy Tank}
- & $S(0)$ & $10J$ \\
- & $\epsilon$ & $2J$ \\
+ & \multicolumn{2}{c}{$S(0)$} & \multicolumn{2}{c}{$10J$} \\
+ & \multicolumn{2}{c}{$\epsilon$} & \multicolumn{2}{c}{$2J$} \\
  \midrule
- \multirow{5}{4em}{FILTER-QP \\Slack Penalties}
- & input limits     & hard constraint \\
+ \multirow{3}{4em}{FILTER-QP Slack Penalties}
+ & input limits     & hard constraint 
  & joint limits     &  $10$     \\
- & cartesian limits &  $10^2$    \\
+ & cartesian limits &  $10^2$    
  & self collision   &  $10^2$    \\
  & passivity        &  $10^2$    \\
  \bottomrule

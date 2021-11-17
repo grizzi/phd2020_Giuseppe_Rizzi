@@ -12,7 +12,7 @@ The full method is amenable to different variants. In particular, by turning on/
 \begin{itemize}
     \item[$\Pi_{N}$:] relies exclusively on a stochastic controller to generate velocity commands, namely the \textit{Trajectory Filtering} block is completely missing and the sampled input trajectory is tracked as it is by the low-level velocity controller,
     \item[$\Pi_{O}$:] a FILTER-QP is used to filter the instantaneous input command to be tracked by the low-level velocity controller,
-    \item[$\Pi_{I}$:] the Sequential FILTER-QP is used to filter the full optimized command trajectory in a sequential manner but no FILTER-QP is used in the inner control loop,
+    \item[$\Pi_{I}$:] the Sequential FILTER-QP is used to filter the full optimized command trajectory in a sequential manner but no FILTER-QP is used in the outer control loop,
     \item[$\Pi_{IO}$:] the full cascaded architecture is deployed, combining the previous two methods.
 \end{itemize}
 
@@ -21,7 +21,7 @@ The full method is amenable to different variants. In particular, by turning on/
 \vspace{-0.5cm}
 % \hspace*{-1.5cm}
 \includegraphics[trim=120 0 50 0, clip, width=0.95\columnwidth] {figures/schemes/receding_horizon_paper.pdf}
-\caption{The figure shows an high-level schematic of the method. The blue variables represent the information available at the new optimization step. Some information is reused from the previous iteration to warm start the sampling procedure as shown in dark green. The cascaded control scheme is composed by a low-rate input sequence generation and an high-rate velocity command tracking blocks. We propose to modify the input sequence in both blocks through the Sequential FILTER-QP and FILTER-QP as a way to add guarantees to the command sequences generated via sampling and stochastic optimization.} \label{fig:block_scheme}
+\caption{The figure shows an high-level schematic of the method. The \textcolor{blue}{\textbf{blue}} variables represent the information available at the new optimization step. Some information is reused from the previous iteration to warm start the sampling procedure as shown in \textcolor{darkgreen}{\textbf{dark green}}. The cascaded control scheme is composed by a low-rate input sequence generation and an high-rate velocity command tracking blocks. We propose to modify the input sequence in both blocks through the Sequential FILTER-QP and FILTER-QP as a way to add guarantees to the command sequences generated via sampling and stochastic optimization.} \label{fig:block_scheme}
 \end{figure}
 
 
@@ -118,7 +118,7 @@ where $d_c = r_i + r_j$ is the sum of the radius of the two collision spheres as
 \end{equation}
 The projection matrix $\vect{P} = \text{diag}(1, 1, 0) \in \nR{3 \times 3}$ makes sure that the reach is only computed in the 2D plane. This prevents the arm from stretching out and reaching singular configurations. Each of these ZBFs translates to a constraint of the form in \eqref{eq:cbf-const} which is affine in the commands. 
 
-As described in \sect \ref{sec:theory}, we can formulate a quadratic program to find the command which is the closest to the sampled one while also satisfying the ZBF and passivity constraints previously introduced:
+As described in \sect \ref{sec:theory}, we can formulate a quadratic program to find the command which is the closest to the sampled one while also satisfying the ZBF constraints previously introduced:
 \begin{mini}|s| 
 {\tilde{\vect{u}}_t, \boldsymbol{\delta}}{||\tilde{\vect{u}}_t - \command_t||^2 + \boldsymbol{\delta}^T \matr{\Gamma} \boldsymbol{\delta}\quad \text{(FILTER-QP)}}{}{\label{eq:cbf-qp}}
 \addConstraint{\dot{h}^i_{ql} \geq -{h}_{ql} + \delta^i_{ql} \quad \forall \ i \in [1,  m] }{}{\ \text{(Joint Limits)}}
