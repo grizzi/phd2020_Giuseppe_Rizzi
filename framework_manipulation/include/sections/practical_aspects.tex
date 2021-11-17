@@ -11,7 +11,7 @@ where $g_i$ is the i\textsuperscript{th} component of the stochastic approximati
 
 \subsection{Likelihood Mapping} 
 The coefficient $\lambda$ in \eqref{eq:weighting} determines how ``aggressive" the weighting between different trajectories is. Adopting a constant value would give a numerically zero weight to most of the trajectories. Shifting the trajectory cost by the minimum cost as proposed in~\cite{williams_information_2017} also does not alleviate this issue. 
-Especially in regions of high cost, trajectories that are equivalently good can be assigned very different weights. We instead propose to adopt the same technique as in~\cite{theodorou2010generalized} where the $\lambda$ is scaled to better discriminate between the experienced trajectories. The modified exponential utility is then defined by,
+Especially in regions of high cost, trajectories that are locally near-optimal can be assigned very different weights. We instead propose to adopt the same technique as in~\cite{theodorou2010generalized} where $\lambda$ is scaled to better discriminate between the experienced trajectories. The modified exponential utility is then defined by,
 \begin{equation} \label{eq:scale_invariant_mapping}
     \exp (-\lambda J ) = \exp \left( -h \frac{J - J_{\min}}{J_{\max} - J_{\min}} \right),
 \end{equation}
@@ -61,7 +61,7 @@ As the sampled control is not sufficiently smooth for a practical application, w
     \centering
     \includegraphics[width=\columnwidth]{figures/schemes/receding_horizon.pdf}
     \vspace{0.1cm}
-    \caption{The figure shows the implementation of the receding horizon scheme. Variables depicted in blue and dark green represent the information available at the new optimization step and from the previous iteration respectively. All the previous samples and the nominal trajectory are shifted by $ t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. The Sequential-QP block, highlighted in purple, is optional and deployed by methods $\Pi_{I}$ and $\Pi_{IO}$.}
+    \caption{The figure shows the implementation of the receding horizon scheme. Variables depicted in \textcolor{blue}{\textbf{blue}} and \textcolor{darkgreen}{\textbf{dark green}} represent the information available at the new optimization step and from the previous iteration respectively. All the previous samples and the nominal trajectory are shifted by $ t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. The Sequential-QP block, highlighted in \textcolor{purple}{\textbf{purple}}, is optional and deployed by methods $\Pi_{I}$ and $\Pi_{IO}$.}
     \label{fig:receding_horizon}
 \end{figure}
 
