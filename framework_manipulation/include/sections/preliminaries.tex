@@ -2,7 +2,7 @@
 
 As the proposed method uses a combination of theoretical tools that span different applications and previous works, we present a short summary that can help the reader to better understand the remainder of the paper and build some preliminary background.
 
-\subsection{Sampling-based control}
+\subsection{Sampling-based Control}
 In contrast to deterministic policy optimization, we look at the optimal control problem \eqref{eq:objective} from a Bayesian perspective. This approach has many similarities with policy gradient methods used in reinforcement learning \cite{williams1992simple}. The key difference is that the method is used \emph{online} to iteratively update a parametric policy. While there are several avenues to derive the update equation, for example \emph{Variational Inference} \cite{lambert_stein_2020} or \emph{Free Energy} \cite{williams_information_2017}, here we will refer to \emph{Stochastic Control} (SC) and follow a Bayesian approach similar to \cite{levine2018reinforcement}. 
 
 The control problem is formulated introducing an additional binary random variable $\successState$ whose value is $1$ when a trajectory is optimal, and $0$ when it is not. The optimal control objective is to find the optimal input parameters $\policyParams$ which maximize the success probability $\succProb$. In order to improve convergence, we optimize its logarithm, as it has high gradients in the domain where the probability is low: 
@@ -18,7 +18,7 @@ The success likelihood can be further expanded to make explicit its dependence o
         &= \expectation{\policy} [p(\successState | X_t, U_t)].
         \label{eq:input_to_params}
 \end{align}
-The step in \eqref{eq:deterministic_dynamics} follows from the assumption of deterministic dynamics and we drop the explicit dependence on $\state_t$ as this is already contained in the state sequence $X_t$. Any monotonically decreasing function $g(\cdot): \nR{} \rightarrow \nR{}_{>0}$ can be used to map costs to a \textit{pseudo success likelihood}. Often the exponential function is used as success likelihood function:
+The step in \eqref{eq:deterministic_dynamics} follows from the assumption of deterministic dynamics and we drop the explicit dependence on $\state_t$ as this is already contained in the state sequence $X_t$. Any monotonically decreasing function $g(\cdot): \nR{} \rightarrow \nR{}_{>0}$ can be used to map costs to a \textit{pseudo success likelihood}. Often the exponential function is used as the success likelihood function:
 \begin{align}
     \expectation{\policy} [p(\successState | X_t, U_t)]  
     &\propto \expectation{\policy} \left[ \mathcal{J}(X_t, U_t) \right] \\
@@ -30,18 +30,18 @@ where the higher the $\lambda$, the lower the cost needs to be in order to be ma
     = \policyParams^i + \rho \nabla_{ \policyParams}\log \expectation{\policy} [\mathcal{J}(X_t, U_t)].
 \end{equation}
 
-We choose the exponential function to map costs to likelihoods and model the policy with a Gaussian distribution which is parametric in the mean $U_t \sim \{\mathcal{N}(\meanVector_t, \variance), \mathcal{N}(\meanVector_{t+1}, \variance), \dots, \mathcal{N}(\meanVector_{t+T-1}, \variance)\} = \policy$, with $\policyParams =  \{\meanVector_t, \meanVector_{t+1}, \dots, \meanVector_{t+T-1}\}$ are the mean vectors around which the input is sampled at each time step. $\variance \in \nR{n_u \times n_u}$ is the diagonal covariance matrix of the multinomial distribution. The derivation of the gradient step equation for this particular design choice can be found in Appendix~\ref{sec:app_derivation_policy_gradient}. In the end, we obtain the following update equation for the $k^{\text{th}}$ mean vector:
+We choose the exponential function to map costs to likelihoods and model the policy with a Gaussian distribution which is parametric in the mean $U_t \sim \{\mathcal{N}(\meanVector_t, \variance), \mathcal{N}(\meanVector_{t+\Delta t}, \variance), \dots, \mathcal{N}(\meanVector_{t+T-\Delta t}, \variance)\} = \policy$, where $\policyParams =  \{\meanVector_t, \meanVector_{t+\Delta t}, \dots, \meanVector_{t+T-\Delta t}\}$ are the mean vectors around which the input is sampled at each time step. $\variance \in \nR{n_u \times n_u}$ is the diagonal covariance matrix of the multinomial distribution. The derivation of the gradient step equation for this particular design choice can be found in Appendix~\ref{sec:app_derivation_policy_gradient}. In the end, we obtain the following update equation for the $k^{\text{th}}$ mean vector:
 \begin{equation}
     \meanVector^{i+1}_{k} = \meanVector^{i}_{k} +  \rho \variance^{-1} \frac{\expPolicy{\utility \noise_k }}{\expPolicy{\utility}}  \label{eq:alpha_assumption},
 \end{equation}
 where $\noise_k = \command_k - \boldsymbol{\mu}_k$ is the random policy perturbation at time $k$.
 The step size can be decoupled from the noise variance: $\rho = \alpha \variance $. Finally the expectation can be estimated empirically via Monte Carlo sampling, obtaining the final policy update rule:
 \begin{align} \label{eq:update_rule}
-  \meanVector^{i+1}_{k} &= \meanVector^{i}_{k} + \alpha  \sum \limits_{l=1}^{N}  \omega_l \noise_{k}^{l} \\
-  \omega_l  &\approx \frac{\exp ( -\lambda J_l )}{\sum \limits_{l=1}^{N} \exp ( -\lambda J_l)}, \label{eq:weighting}
+  \meanVector^{i+1}_{k} &= \meanVector^{i}_{k} + \alpha  \sum \limits_{l=1}^{N-1}  \omega_l \noise_{k}^{l} \\
+  \omega_l  &\approx \frac{\exp ( -\lambda J_l )}{\sum \limits_{l=0}^{N-1} \exp ( -\lambda J_l)}, \label{eq:weighting}
 \end{align}
 where $N$ is the number of sampled rollouts. 
-The input sequence applied to the system is then chosen as the \emph{maximum-likelihood-estimator} of the policy. This is given by the mean of each Gaussian, modeling the input distribution for each time step: $U^*_t = \{\boldsymbol{\mu}_t, \dots \boldsymbol{\mu}_{t+T-1}\} = \policyParams$.
+The input sequence applied to the system is then chosen as the \emph{maximum-likelihood-estimator} of the policy. This is given by the mean of each Gaussian, modeling the input distribution for each time step: $U^*_t = \{\boldsymbol{\mu}_t, \dots \boldsymbol{\mu}_{t+T-\Delta t}\} = \policyParams$.
 
 \subsection{Control Barrier Functions}
 It is desirable to design a controller that mediates performance and safety. \emph{Control Barrier Functions} have been recently introduced as a means to unify these objectives. This theory is based on the concept of \emph{forward invariance} of a safe subset $\safeSet$ of the state space, which is where safety conditions are met. A set $\mathcal{S}$ is called \emph{forward invariant} if for every $\vect{x}_0 \in \mathcal{S},\ \vect{x}(t) \in \mathcal{S}$ for every $t$. A differentiable function $\zbf$  characterizes the safe set, such that:
@@ -60,7 +60,7 @@ The existence of a ZBF implies the forward invariance of $\safeSet$ \cite{ames20
     \sup_{\vect{u} \in \mathcal{U}} \left[ \frac{\partial h }{\partial \vect{x}} (f(\vect{x}) + g(\vect{x})\vect{u}) + \gamma \zbf \right] \geq 0, \forall \vect{x} \in \mathcal{D}.
 \end{equation}
 When this inequality is fulfilled by the control input, the system will be made forward invariant. 
-As the constraint is affine in the control input, it can be solved via a quadratic optimization problem (QP). The advantage of a QP is that it allows trading-off performance and safety through ZBF. When a feed-forward control is available from a nominal controller ,a minimum perturbation on the feed-forward command vector $\vect{u}_{ff}$ can be found through the following QP \cite{ames2019control}:
+As the constraint is affine in the control input, it can be solved via a quadratic optimization problem (QP). The advantage of a QP is that it allows trading-off performance and safety through ZBF. When a feed-forward control is available from a nominal controller, a minimum perturbation on the feed-forward command vector $\vect{u}_{ff}$ can be found through the following QP \cite{ames2019control}:
 \begin{argmini}|s| 
 {\vect{u} \in \nR{n}}{\frac{1}{2} ||\vect{u} - \vect{u}_{ff}||}{}{\label{eq:cbf-const}}
 \addConstraint{\dot{h}(\vect{x}) \geq \gamma \zbf}{}{}.
@@ -75,7 +75,7 @@ This system is said to be \emph{passive} w.r.t $(\vect{u},\vect{y})$ if for all 
 \begin{equation}
     S(\vect{x}(\sigma)) - S(\vect{x}(0))\leq \int\limits_{0}^{\sigma} \vect{u}^T \vect{y}\ dt.  
 \end{equation}
-In other words, no additional energy can be produced other than what is flowing to the system through the \textit{power port} $(\vect{u},\vect{y})$.
+In other words, no additional energy can be produced other than what is flowing into the system through the \textit{power port} $(\vect{u},\vect{y})$.
 For an autonomously controlled system (including the environment a robot is interacting with), this condition translates to, 
 \begin{equation}
     \dot{S} \leq P_{in} = 0,
@@ -90,13 +90,13 @@ y_t(t) &= \frac{\partial S}{\partial x_t} = x_t(t),
 where $(u_t(t), y_t(t))$ is the power port through which the tank can exchange energy with the interconnected system. By interconnecting the controlled system with the tank, a passivity-violating control action will result in the depletion of the tank, restoring the passive balance of power flows. When the tank has no energy left, non-passive behaviors cannot be implemented anymore. The interconnection can be implemented as follows:
 \begin{equation}
 \begin{cases}
-    u_t(t) &= \vect{A}^T(t) \vect{u} \\
-    \vect{y} &= \vect{A}(t) y_t(t),
+    u_t(t) &= \vect{a}^T(t) \vect{u} \\
+    \vect{y} &= \vect{a}(t) y_t(t),
 \end{cases}
 \end{equation}
-where $\vect{A}(t) \in \nR{m}$ is defined as,
+where $\vect{a}(t) \in \nR{m}$ is defined as,
 \begin{equation} \label{eq:tank_modulation}
-    \vect{A}(t) = \frac{\boldsymbol{\gamma}(t)}{x_t(t)}.
+    \vect{a}(t) = \frac{\boldsymbol{\gamma}(t)}{x_t(t)}.
 \end{equation}
 The modulation variable $\boldsymbol{\gamma}(t) \in \nR{m}$ can be chosen to implement the desired value of $\vect{y}$. With the above equations one can easily show that $\dot{S} = u_t^T y_t = \vect{u}^T \vect{y}$ and therefore that power is either injected into or extracted from the tank. As visible in \eqref{eq:tank_modulation} there is a singularity when the tank is empty and the desired behavior can no longer be implemented. 
 Therefore it is necessary to ensure that $S(x(t)) \geq \epsilon > 0, \ \forall t$.
