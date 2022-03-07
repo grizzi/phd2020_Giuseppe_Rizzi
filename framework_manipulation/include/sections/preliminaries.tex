@@ -37,8 +37,8 @@ We choose the exponential function to map costs to likelihoods and model the pol
 where $\noise_k = \command_k - \boldsymbol{\mu}_k$ is the random policy perturbation at time $k$.
 The step size can be decoupled from the noise variance: $\rho = \alpha \variance $. Finally the expectation can be estimated empirically via Monte Carlo sampling, obtaining the final policy update rule:
 \begin{align} \label{eq:update_rule}
-  \meanVector^{i+1}_{k} &= \meanVector^{i}_{k} + \alpha  \sum \limits_{l=1}^{N-1}  \omega_l \noise_{k}^{l} \\
-  \omega_l  &\approx \frac{\exp ( -\lambda J_l )}{\sum \limits_{l=0}^{N-1} \exp ( -\lambda J_l)}, \label{eq:weighting}
+  \meanVector^{i+1}_{k} &= \meanVector^{i}_{k} + \alpha  \sum \limits_{l=0}^{N-1}  \omega_l \noise_{k}^{l} \\
+  \omega_l  &\approx \frac{\exp ( -\lambda J_l )}{\sum \limits_{s=0}^{N-1} \exp ( -\lambda J_s)}, \label{eq:weighting}
 \end{align}
 where $N$ is the number of sampled rollouts. 
 The input sequence applied to the system is then chosen as the \emph{maximum-likelihood-estimator} of the policy. This is given by the mean of each Gaussian, modeling the input distribution for each time step: $U^*_t = \{\boldsymbol{\mu}_t, \dots \boldsymbol{\mu}_{t+T-\Delta t}\} = \policyParams$.
@@ -63,7 +63,7 @@ When this inequality is fulfilled by the control input, the system will be made 
 As the constraint is affine in the control input, it can be solved via a quadratic optimization problem (QP). The advantage of a QP is that it allows trading-off performance and safety through ZBF. When a feed-forward control is available from a nominal controller, a minimum perturbation on the feed-forward command vector $\vect{u}_{ff}$ can be found through the following QP \cite{ames2019control}:
 \begin{argmini}|s| 
 {\vect{u} \in \nR{n}}{\frac{1}{2} ||\vect{u} - \vect{u}_{ff}||}{}{\label{eq:cbf-const}}
-\addConstraint{\dot{h}(\vect{x}) \geq \gamma \zbf}{}{}.
+\addConstraint{\dot{h}(\vect{x}) \geq -\gamma \zbf}{}{}.
 \end{argmini}
 
 

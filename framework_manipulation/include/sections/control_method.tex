@@ -1,6 +1,6 @@
 \section{Control Method} \label{sec:control_method}
 
-In this section we combine sampling, barrier functions and energy tank into a novel model-based control framework for robust and safe interaction control. We use the presented sampling method to generate joint velocity command sequences that optimize a task-dependent objective in a receding horizon fashion. We encode a set of tasks and safety-related objectives as different cost terms. Nevertheless, sampling does not inherently provide guarantees and therefore we need a method to enhance safety. We address this problem using an optimization problem as a non-invasive way to change the command sequence when constraints are not fulfilled. In particular, we solve a \textit{sequential} optimization problem (QP), which takes as input a command sequence and the starting state, and returns a modified command-state sequence satisfying all constraints. Nevertheless, as the expensive rollout sampling procedure often limits the rate of the controller, a portion of this input sequence must be executed in \textit{open-loop} which can be unsafe in dynamic environments and for low sampling rates. On the other hand, the QP can be efficiently solved at almost the same rate as the low-level controller. To this end, we propose a \emph{cascaded control} architecture composed of an inner loop where the policy is updated at a low-rate and an outer loop  where the low-level controller tracks the policy commands. In the outer loop a QP is solved for the current state-input pair in order to find the best input according to the latest received measurements. In the inner loop the same QP is solved for each state-input pair of the optimal rollout trajectory.
+In this section we combine sampling, barrier functions and energy tank into a novel model-based control framework for robust and safe interaction control. We use the presented sampling method to generate joint velocity command sequences that optimize a task-dependent objective in a receding horizon fashion. We encode a set of tasks and safety-related objectives as different cost terms. Nevertheless, sampling does not inherently provide guarantees and therefore we need a method to enhance safety. We address this problem using an optimization problem as a \sout{non-invasive}\add{minimally invasive} way to change the command sequence when constraints are not fulfilled. In particular, we solve a \textit{sequential} optimization problem (QP), which takes as input a command sequence and the starting state, and returns a modified command-state sequence satisfying all constraints. Nevertheless, as the expensive rollout sampling procedure often limits the rate of the controller, a portion of this input sequence must be executed in \textit{open-loop} which can be unsafe in dynamic environments and for low sampling rates. On the other hand, the QP can be efficiently solved at almost the same rate as the low-level controller. To this end, we propose a \emph{cascaded control} architecture composed of an \sout{inner}\add{outer} loop where the policy is updated at a low-rate and an \sout{outer}\add{inner} loop  where the low-level controller tracks the policy commands. In the \sout{outer}\add{inner} loop a QP is solved for the current state-input pair in order to find the best input according to the latest received measurements. In the \sout{inner}\add{outer} loop the same QP is solved for each state-input pair of the optimal rollout trajectory.
 In other words, the optimization problem is solved:
 \begin{itemize}
     \item \textit{sequentially}, for each command in the optimal input-state trajectory to ``sanitize" the sampling-based controller output wherever constraints might be violated,
@@ -11,8 +11,8 @@ The complete high-level schematic of the full framework is depicted in \fig~\ref
 The full method is amenable to different variants. In particular, by turning on/off filtering in the outer or inner control loop, we can synthesize four possible controller implementations. In the following we define with $\Pi_{*}$ each controller where $*$ can be $N,\ O,\ I,\ IO$:
 \begin{itemize}
     \item[$\Pi_{N}$:] relies exclusively on a stochastic controller to generate velocity commands, namely the \textit{Trajectory Filtering} block is completely missing and the sampled input trajectory is tracked as it is by the low-level velocity controller,
-    \item[$\Pi_{O}$:] a FILTER-QP is used to filter the instantaneous input command to be tracked by the low-level velocity controller,
-    \item[$\Pi_{I}$:] the Sequential FILTER-QP is used to filter the full optimized command trajectory in a sequential manner but no FILTER-QP is used in the outer control loop,
+    \item[$\Pi_{O}$:] a FILTER-QP is used \add{\emph{outside} of the sampling controller, to only }filter the instantaneous input command to be tracked by the low-level velocity controller,
+    \item[$\Pi_{I}$:] the Sequential FILTER-QP is used \add{\emph{inside} of the sampling controller} to filter the full optimized command trajectory in a sequential manner\sout{ but no FILTER-QP is used in the in control loop},
     \item[$\Pi_{IO}$:] the full cascaded architecture is deployed, combining the previous two methods.
 \end{itemize}
 
@@ -21,7 +21,7 @@ The full method is amenable to different variants. In particular, by turning on/
 \vspace{-0.5cm}
 % \hspace*{-1.5cm}
 \includegraphics[trim=120 0 50 0, clip, width=0.95\columnwidth] {figures/schemes/receding_horizon_paper.pdf}
-\caption{The figure shows an high-level schematic of the method. The \textcolor{blue}{\textbf{blue}} variables represent the information available at the new optimization step. Some information is reused from the previous iteration to warm start the sampling procedure as shown in \textcolor{darkgreen}{\textbf{dark green}}. The cascaded control scheme is composed by a low-rate input sequence generation and an high-rate velocity command tracking blocks. We propose to modify the input sequence in both blocks through the Sequential FILTER-QP and FILTER-QP as a way to add guarantees to the command sequences generated via sampling and stochastic optimization.} \label{fig:block_scheme}
+\caption{The figure shows an high-level schematic of the method. The \textcolor{blue}{\textbf{blue}} variables represent the information available at the new optimization step. Some information is reused from the previous iteration to warm start the sampling procedure as shown in \textcolor{darkgreen}{\textbf{dark green}}. The cascaded control scheme is composed by a low-rate input sequence generation and a high-rate velocity command tracking blocks. We propose to modify the input sequence in both blocks through the Sequential FILTER-QP and FILTER-QP as a way to add guarantees to the command sequences generated via sampling and stochastic optimization.} \label{fig:block_scheme}
 \end{figure}
 
 
@@ -31,7 +31,7 @@ While the safety objectives here are formulated on a kinematic level (obstacle a
 
 \subsection{Sampling-based Control}
 The sampling-based framework offers the freedom to directly plan in torque space or use position/velocity control and defer tracking to a low-level controller. In fact, directly planning in the joint space allows us to account for objectives which are not in the operational control space such as joint limits and self-collision avoidance. The internal model used to sample trajectory rollouts has the same form as in \eqref{eq:eom}. Joint velocity commands are sampled and then translated to motor torques:
-\begin{equation}
+\begin{equation} \label{eq:cmd_sim}
     \vect{\tau}_{cmd} = \matr{K}_{D} (\command - \dconfigRobot) + \robotCoriolis,
 \end{equation}
 with an appropriate choice of the positive-definite diagonal gain matrix $\matr{K}_{D} \in \nR{\robotDoF\times\robotDoF}$. 
@@ -149,9 +149,10 @@ $k \gets 0$\;
 \subsection{Energy Tank}
 While the optimization in \eqref{eq:cbf-qp} enhances the safety of the system we still lack stability guarantees. As described in \sect \ref{sec:theory}, energy tanks can be used to make the system \emph{passive} and thus ensure stability. Inspired by the work in \cite{benzi2021optimization} and \cite{shahriari2018valve}, this adaptation naturally fits the control method we have developed so far. Let us consider the dynamic manipulator as described in \eqref{eq:eom}. Furthermore, the system uses a dynamically compensated PI velocity controller: 
 \begin{equation} \label{eq:low-level-control}
-\commandTorque = \coriolis \dconfigRobotDesired + g(\configRobot) - \matr{K}_D \dconfigRobotError - \matr{K}_I \int_{0}^{\sigma} \dconfigRobotError\ dt,
+\commandTorque = \add{\massMatrix \dconfigRobotDesired} + \coriolis \dconfigRobotDesired + g(\configRobot) - \matr{K}_D \dconfigRobotError - \matr{K}_I \int_{0}^{\sigma} \dconfigRobotError\ dt,
 \end{equation}
-with the auxiliary error variable $\configRobotError =  \configRobot - \configRobotDesired$. If we augment the the optimization problem in \eqref{eq:cbf-qp} with the energy constraint:
+with the auxiliary error variable $\configRobotError =  \configRobot - \configRobotDesired$. \add{Note that this control law differs from the one in \eqref{eq:cmd_sim}. The additional dynamic compensation terms can be noisy and degrade the quality of the rollouts.} 
+If we augment the the optimization problem in \eqref{eq:cbf-qp} with the energy constraint:
 \begin{equation}\label{eq:pass_const}
     \int\limits_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \dconfigRobotDesired \ dt \geq -S(0),
 \end{equation}

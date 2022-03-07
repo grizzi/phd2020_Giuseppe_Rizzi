@@ -55,7 +55,7 @@ This effect is also shown in \fig \ref{fig:tank_as_zbf} in the experiment sectio
 At each control step, it is desirable to sample a zero input trajectory, meaning that all velocity commands are $\command_t = \bm{0}\ \forall\ t$, as this would allow the robot to stop when the goal is reached. Similarly, we would like to keep sampling the unperturbed nominal command trajectory. In fact, if we assume this to be optimal for a time instant, re-sampling would perturb it and very likely increase its associated cost. With these motivations in mind, we modify the sampling procedure such that there is always an unperturbed and zero velocity input sequences in the batch of samples.
 
 Furthermore, at the beginning of a new sampling, a subset of the best rollouts are kept and shifted back in time by the real-time number of steps elapsed since the last optimization to warm start the next iteration. 
-As the sampled control is not sufficiently smooth for a practical application, we filter it using a moving window Savitzky-Golay filter~\cite{gorry1990general} before the Sequential FILTER-QP. The full pipeline is visualized in \fig \ref{fig:receding_horizon}.
+As the sampled control is not sufficiently smooth for a practical application, we filter it using a moving window Savitzky-Golay filter~\cite{gorry1990general} before the Sequential FILTER-QP. \add{In fact, the Savitzky-Golay filter computes efficiently the optimal local polinomyal approximation of the input sequence, without the need to explicitly solve an optimization problem, as it has been shown in \cite{williams_information-theoretic_2018}.} The full pipeline is visualized in \fig \ref{fig:receding_horizon}.
 
 \begin{figure}[t]
     \centering
