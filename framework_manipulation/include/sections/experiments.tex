@@ -38,8 +38,8 @@ The control methods are deployed on the RoyalPanda mobile manipulator and evalua
 \subsection{Comparison of Methods}
 We design the following experimental scenarios:
 \begin{enumerate}
-    \item \textit{Object manipulation}: we validate the applicability of the method on the task of manipulating each of the four articulated objects.   
-    \item \textit{Target reaching and obstacle avoidance}: we further investigate the validity of the constraints formulation for a target reaching task in a confined environment when an obstacle is suddenly placed in the workspace.
+    \item \textit{Object manipulation}: we validate the applicability of the method on the task of manipulating each of the four articulated objects. \add{In each environment there is an handle that the robot can use to move the articulated object. In a first step the end effector reaches the handle and then tries to make contact and move the articulation to the desired position. The switch between hand reaching and object manipulation is triggered turning on the object reference cost as described in \sect\ref{sec:control_method}}. 
+    \item \textit{Target reaching and obstacle avoidance}: we further investigate the validity of the constraints formulation for a target reaching task in a confined environment. \add{The end effector must reach a target goal while the base is constrained in a narrow corridor. Furthermore, the robot must avoid an obstacle represented as red sphere in \ref{fig:obstacle_avoidance}. The obstacle is not immediately visible but appears all of a sudden, challenging the reactive response of the sampling-based controller.} \sout{when an obstacle is suddenly placed in the workspace.}
     \item \textit{Robust interaction}: we construct a challenging manipulation scenario where robust interaction is needed; in this case, the articulated object is fixed rigidly and is not able to move for a short period of time.
     \item \textit{Real-world experiments}: we further test the methods on the real robot for a door opening task. 
 \end{enumerate}
