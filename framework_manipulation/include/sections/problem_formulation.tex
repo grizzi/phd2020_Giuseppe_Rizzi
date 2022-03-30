@@ -27,9 +27,9 @@ The system input $\command  \in \nR{\robotDoF}$ are the desired robot joint velo
 
 The control trajectory is defined as a sequence of control inputs over a time horizon $T$ and starting at time $t$: $U_t = \{\command_t, \command_{t+\Delta t}, \dots, \command_{t+T-\Delta t}\}$. Each command sequence is sampled from a feedback policy distribution $U_t \sim \policy$ where $\policyParams$ are the distribution parameters. We denote with $X_t = \{\state_t, \state_{t+\Delta t}, \dots, \state_{t+T}\}$ the state sequence obtained by rolling out a policy sample $U_t$ when starting at the current state $\state_t$. 
 
-The control objective is to find the feedback policy $\policy(\state_t)$ that minimizes some statistics over an objective metric $h : \mathcal{X} \times \mathcal{X} \times \mathcal{U} \rightarrow \nR{}$ that maps for each time $t$, the system state $\state_t$, the desired state $\state^*_t$ and command $\command_t$ to a scalar value. We can now formulate the control objective as an optimization problem: 
+The control objective is to find the feedback policy $\policy(\state_t)$ that minimizes some statistics over an objective metric $l : \mathcal{X} \times \mathcal{X} \times \mathcal{U} \rightarrow \nR{}$ that maps for each time $t$, the system state $\state_t$, the desired state $\state^*_t$ and command $\command_t$ to a scalar value. We can now formulate the control objective as an optimization problem: 
 \begin{mini}|s| 
-{\policyParams}{\expectation{\policy}  \int\limits_{t}^{\infty} h(\state^*_t, \state_t, \command_t)\  dt }{}{\label{eq:objective}}
+{\policyParams}{\expectation{\policy}  \int\limits_{t}^{\infty} l(\state^*_t, \state_t, \command_t)\  dt }{}{\label{eq:objective}}
 \addConstraint{\dstate_t=f(\state_t, \command_t) \quad \forall \ t}{}{}
 \addConstraint{\command_t \sim \policy(\state_t) \quad \forall \ t}{}{}
 \addConstraint{\state_t  \in \mathcal{X}         \quad \forall \ t}{}{}
@@ -38,7 +38,7 @@ The control objective is to find the feedback policy $\policy(\state_t)$ that mi
 
 Commonly, the objective in \eqref{eq:objective} is simplified to the sum of a finite horizon and final cost term that approximates the infinite horizon. In the discrete time setting we have:
 \begin{align} \label{eq:value_function}
-    &\underset{\policy}{\expectation{}} \left[\int\limits_t^{\infty} h(\state^*, \state_t, \command_t)dt \right]\nonumber\\&\quad\quad \approx
+    &\underset{\policy}{\expectation{}} \left[\int\limits_t^{\infty} l(\state^*, \state_t, \command_t)dt \right]\nonumber\\&\quad\quad \approx
     \underset{\policy}{\expectation{}} \underbrace{\left[ 
     c_{\text{term}}(\state_{t + T}) + \sum\limits_{k=0}^{K} c(\state_{t+k\Delta t}, \command_{t+k\Delta t}) \right]}_{J(X_t, U_t)}.
 \end{align}

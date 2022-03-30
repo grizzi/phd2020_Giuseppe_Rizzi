@@ -54,7 +54,7 @@ In the following we drop from the notation the dependence on the current state. 
  \end{equation}
  
  \paragraph{Collision avoidance} let $\contact \in \{0, 1\}$ represent an auxiliary variable which is equal to 1 when the manipulator is in contact with the environment. The value of $\contact$ can be computed searching for collisions between bodies. 
- $\contact$ is used to avoid collisions during contact-free motions of the end-effector. 
+ \add{This cost term  is activated when we want to execute a contact-free motion of the end-effector}\sout{is used to avoid collisions during contact-free motions of the end-effector}. 
  The \textit{contact cost} is defined as,
  \begin{equation}
      c_{\contact}= \weightScalar{\contact} \contact(\state).
@@ -65,7 +65,7 @@ In the following we drop from the notation the dependence on the current state. 
      &c_{j} = \mathds{1}[\configRobot > \upperLimits](\weightScalar{j} + ||\upperLimits - \configRobot||^2_{\weightMatrix{js}}) + \nonumber\\ 
      &\qquad\mathds{1}[\configRobot < \lowerLimits](\weightScalar{j} +  || \configRobot - \lowerLimits||^2_{\weightMatrix{js}}), 
  \end{align}
- where the scalar $\weightScalar{j}$ is a constant cost added when the limit is violated. The matrix $\weightMatrix{js}$ adds a quadratic term in the limit violation. This was shown in~\cite{williams_information-theoretic_2018} to help the controller find its way back if poor sampling brings the system outside of the joint position limits.
+ where the scalar $\weightScalar{j}$ is a constant cost added when the limit is violated, \add{and $ \mathds{1}[\cdot]$ should be interpreted coefficient-wise}. The matrix $\weightMatrix{js}$ adds a quadratic term in the limit violation. This was shown in~\cite{williams_information-theoretic_2018} to help the controller find its way back if poor sampling brings the system outside of the joint position limits.
  
  \paragraph{Arm reach} we introduce an additional term that penalizes configurations where the arm's end-effector moves excessively relative to the base 2D placement. This helps to bias solutions where base motion is preferred over stretching the arm which can lead to singular configurations. The translation vector from the end-effector frame $\mathcal{E}$ to the arm base frame $\mathcal{B}$ is defined with the vector $\vect{p}_{\mathcal{B}\mathcal{E}} \in \nR{3}$. The current reach is then $r_{\text{curr}} =  \vect{p}_{\mathcal{B}\mathcal{E}}^T \matr{P} \vect{p}_{\mathcal{B}\mathcal{E}}$. The projection matrix $\matr{P} = \text{diag}(1, 1, 0) \in \nR{3 \times 3}$ makes sure that the reach is only computed in the 2D plane. Given a maximum reach $r_{\text{max}} \in \nR{}_{\geq 0}$, the \textit{reach cost} is then defined by:
  \begin{equation}
@@ -149,9 +149,17 @@ $k \gets 0$\;
 \subsection{Energy Tank}
 While the optimization in \eqref{eq:cbf-qp} enhances the safety of the system we still lack stability guarantees. As described in \sect \ref{sec:theory}, energy tanks can be used to make the system \emph{passive} and thus ensure stability. Inspired by the work in \cite{benzi2021optimization} and \cite{shahriari2018valve}, this adaptation naturally fits the control method we have developed so far. Let us consider the dynamic manipulator as described in \eqref{eq:eom}. Furthermore, the system uses a dynamically compensated PI velocity controller: 
 \begin{equation} \label{eq:low-level-control}
-\commandTorque = \add{\massMatrix \dconfigRobotDesired} + \coriolis \dconfigRobotDesired + g(\configRobot) - \matr{K}_D \dconfigRobotError - \matr{K}_I \int_{0}^{\sigma} \dconfigRobotError\ dt,
+\commandTorque = \add{\massMatrix \ddconfigRobotDesired} + \coriolis \dconfigRobotDesired + g(\configRobot) - \matr{K}_D \dconfigRobotError - \matr{K}_I \int_{0}^{\sigma} \dconfigRobotError\ dt,
 \end{equation}
-with the auxiliary error variable $\configRobotError =  \configRobot - \configRobotDesired$. \add{Note that this control law differs from the one in \eqref{eq:cmd_sim}. The additional dynamic compensation terms can be noisy and degrade the quality of the rollouts.} 
+with the auxiliary error variable $\configRobotError =  \configRobot - \configRobotDesired$. \add{Note that this control law differs from the one in \eqref{eq:cmd_sim}. 
+While the low level controller described in \eqref{eq:cmd_sim} is deployed in the simulated digital twin for generating and sampling interaction trajectories, law \eqref{eq:low-level-control} is deployed as a low-level controller on the real robot. There are some substantial differences between the simulated and real robot that require a modification of the low-level control laws:
+\begin{itemize}
+    \item In simulation gravity and coriolis compensation is perfect. 
+    \item A full inverse dynamics controller relies on second order derivatives. As we use large simulation timesteps to improve sampling efficiency, these terms are very noisy and cause simulation instability.
+\end{itemize}
+ As a consequence in practice \eqref{eq:cmd_sim} suffices in the simulated physics for trajectory generation. 
+On the real robot instead, gravity compensation are non negligible. Therefore the need for an additional integral term. Furthermore, dynamic compensation allows to guarantee the system passivity.  
+These modifications generate a discrepancy between the real robot and simulated robot response. Note that these will never be the same, since a model is always a simplification of reality. In ultimate analysis we want the simulated model to be close to the real one, as long as it is still usable, meaning that we can efficiently generate rollout and that feasible solutions in simulation correspond to feasible solutions on the real robot.} 
 If we augment the the optimization problem in \eqref{eq:cbf-qp} with the energy constraint:
 \begin{equation}\label{eq:pass_const}
     \int\limits_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \dconfigRobotDesired \ dt \geq -S(0),
@@ -166,7 +174,7 @@ If the optimization problem FILTER-QP satisfies constraint \eqref{eq:pass_const}
 \begin{proof}
 We start by augmenting the system model with a virtual tank. We now need to define through which \emph{power ports} the tank exchanges energy with the rest of the system. To this end, we perform a passivity analysis of the \emph{real} system. We first define the robot energy as, 
 \begin{equation}
-    S_{robot} = \frac{1}{2} \dconfigRobotError^T \massMatrix \dconfigRobotError + \frac{1}{2} \configRobotError^T \matr{K}_P \configRobotError.
+    S_{robot} = \frac{1}{2} \dconfigRobotError^T \massMatrix \dconfigRobotError + \frac{1}{2} \configRobotError^T \matr{K}_I \configRobotError.
 \end{equation}
 In order to study the passivity of the system, we need to derive the robot energy dynamics $\dot{S}_{robot}$. A complete derivation can be found in the Appendix~\ref{app:passivity_analysis}. It turns out that:
 \begin{equation}
@@ -188,7 +196,7 @@ Then, the energy evolution of the autonomous system, composed of robot, tank and
 \end{aligned}
 \end{equation}
 showing the system's passivity.
-Intuitively, the increase of the robot's energy is compensated with a reduction of the tank's energy. As the tank energy is limited and bounded from below, passivity is ensured if,
+Intuitively, the increase of the robot's energy is compensated with a reduction of the tank's energy. \sout{As the tank energy is limited and bounded from below, passivity is ensured if,}\add{Therefore we need to ensure that the tank is never completely depleted:}
 \begin{equation}
     S(t) = S(0) + \int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \dconfigRobotDesired \ dt  \geq 0
 \end{equation}

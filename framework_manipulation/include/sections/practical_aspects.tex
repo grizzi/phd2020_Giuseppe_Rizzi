@@ -42,7 +42,7 @@ where we defined the residual energy $E_{res} = S(x_t(t))-\epsilon$. The above i
 \end{equation*}
 The passivity can therefore be seen as a ZBF and consequently inherits its properties. A smaller value for $\alpha$ makes the constraint more conservative and improves its performance at the boundary. 
 
-In order to gain a better intuitive understanding of this tuning parameter, consider the the worst case scenario. In this scenario, the power flow is always equal to the maximal dissipated power allowed by the passivity constraint: $\dot{E}_{res} = - \alpha E_{res}$. Then $E_{res}(t) = E_{res}(0) e^{-\alpha t}$. A smaller $\alpha$ reduces the energy tank deplation rate  (as shown in \fig \ref{fig:worst_case_energy_profile}) at the cost of making the system more conservative.
+In order to gain a better intuitive understanding of this tuning parameter, consider the worst case scenario. In this scenario, the power flow is always equal to the maximal dissipated power allowed by the passivity constraint: $\dot{E}_{res} = - \alpha E_{res}$. Then $E_{res}(t) = E_{res}(0) e^{-\alpha t}$. A smaller $\alpha$ reduces the energy tank deplation rate  (as shown in \fig \ref{fig:worst_case_energy_profile}) at the cost of making the system more conservative.
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.8\columnwidth]{figures/worst_case_energy_profile.pdf}
@@ -88,7 +88,7 @@ A large proportion of simulation time is spent on collision detection. We reduce
     \caption{Hook finger}\label{fig:hook_finger}
 \end{subfigure}
 
-\caption{Original collision meshes (a) provided by the robot manufacturer are often approximated by convex hulls, which are inaccurate while also more complex representations. In contrast, a simplified mesh (shown in (b) and (c)) can bring more accuracy as well as a computational performance gain in terms of simulation rate.}\label{fig:1}
+\caption{Original collision meshes (a) provided by the robot manufacturer are often approximated by convex hulls, which are inaccurate while also more complex representations. \add{The mesh in b is an exact collision shape for the original gripper made of simple boxes primitives. We reduce the end effector complexity designing a simple single-finger gripper (c) made of only 2 boxes obtaining}\sout{In contrast, a simplified mesh (shown in (b) and (c)) can bring more accuracy as well as} a computational performance gain in terms of simulation rate.\label{fig:1}}
 
 \end{figure}
 
