@@ -6,9 +6,9 @@ In other words, the optimization problem is solved:
     \item \textit{sequentially}, for each command in the optimal input-state trajectory to ``sanitize" the sampling-based controller output wherever constraints might be violated,
     \item \textit{point-wise}, for each command executed by the low-level controller, in order to account for different control rates.
 \end{itemize}
-The complete high-level schematic of the full framework is depicted in \fig~\ref{fig:block_scheme}. Sequential and point-wise optimizations are denoted as Sequential FILTER-QP and FILTER-QP respectively and belong to the \textit{Trajectory Filtering} block of \fig~\ref{fig:block_scheme}. 
+The complete high-level schematic of the full framework is depicted in \fig~\ref{fig:block_scheme}.  \remove{Sequential and point-wise optimizations are denoted as Sequential FILTER-QP and FILTER-QP respectively and belong to the \textit{Trajectory Filtering} block of \fig~\ref{fig:block_scheme}.} 
 
-The full method is amenable to different variants. In particular, by turning on/off filtering in the outer or inner control loop, we can synthesize four possible controller implementations. In the following we define with $\Pi_{*}$ each controller where $*$ can be $N,\ O,\ I,\ IO$:
+The full method is amenable to different variants. In particular, by turning on/off filtering in the outer or inner control loop, we can synthesize four possible controller implementations. In the following we define with $\Pi_{*}$ each controller where $*$ can be $N,\ I,\ O,\ IO$:
 \begin{itemize}
     \item $\Pi_{N}$: relies exclusively on a stochastic controller to generate velocity commands, namely the \textit{Trajectory Filtering} block is completely missing and the sampled input trajectory is tracked as it is by the low-level velocity controller,
     \item \ctrlInner: a FILTER-QP is deployed \add{in the inner control loop to }filter the instantaneous input command to be tracked by the low-level velocity controller,
@@ -16,12 +16,21 @@ The full method is amenable to different variants. In particular, by turning on/
     \item $\Pi_{IO}$: the full cascaded architecture is deployed, combining the previous two methods.
 \end{itemize}
 
+\ifreview
 \begin{figure}[t!]
 \centering
 \vspace{-0.5cm}
 % \hspace*{-1.5cm}
-\includegraphics[trim=120 0 50 0, clip, width=0.95\columnwidth] {figures/schemes/receding_horizon_paper.pdf}
-\caption{The figure shows an high-level schematic of the method. The \textcolor{blue}{\textbf{blue}} variables represent the information available at the new optimization step. Some information is reused from the previous iteration to warm start the sampling procedure as shown in \textcolor{darkgreen}{\textbf{dark green}}. The cascaded control scheme is composed by a low-rate input sequence generation and a high-rate velocity command tracking blocks. We propose to modify the input sequence in both blocks through the Sequential FILTER-QP and FILTER-QP as a way to add guarantees to the command sequences generated via sampling and stochastic optimization.} \label{fig:block_scheme}
+\includegraphics[width=0.95\columnwidth] {figures/schemes/receding_horizon_new_paper_sout.pdf}
+\end{figure}
+\fi
+
+\begin{figure}[t!]
+\centering
+\vspace{-0.5cm}
+% \hspace*{-1.5cm}
+\includegraphics[width=0.95\columnwidth] {figures/schemes/receding_horizon_new_paper2.pdf}
+\caption{The figure shows an high-level schematic of the method. \remove{The \textcolor{blue}{\textbf{blue}} variables represent the information available at the new optimization step. Some information is reused from the previous iteration to warm start the sampling procedure as shown in \textcolor{darkgreen}{\textbf{dark green}}. }The cascaded control scheme is composed by a low-rate input sequence generation and a high-rate velocity command tracking blocks. We propose to modify the input sequence in both blocks through the Sequential FILTER-QP and FILTER-QP as a way to add guarantees to the command sequences generated via sampling and stochastic optimization.} \label{fig:block_scheme}
 \end{figure}
 
 

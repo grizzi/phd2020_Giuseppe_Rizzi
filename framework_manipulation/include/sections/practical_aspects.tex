@@ -59,9 +59,9 @@ As the sampled control is not sufficiently smooth for a practical application, w
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/schemes/receding_horizon.pdf}
+    \includegraphics[width=\columnwidth]{figures/schemes/receding_horizon2.pdf}
     \vspace{0.1cm}
-    \caption{The figure shows the implementation of the receding horizon scheme. Variables depicted in \textcolor{blue}{\textbf{blue}} and \textcolor{darkgreen}{\textbf{dark green}} represent the information available at the new optimization step and from the previous iteration respectively. All the previous samples and the nominal trajectory are shifted by $ t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. The Sequential-QP block, highlighted in \textcolor{purple}{\textbf{purple}}, is optional and deployed by methods $\Pi_{I}$ and $\Pi_{IO}$.}
+    \caption{The figure shows the implementation of the receding horizon scheme. Variables depicted in \textcolor{blue}{\textbf{blue}} and \textcolor{darkgreen}{\textbf{dark green}} represent the information available at the new optimization step and from the previous iteration respectively. All the previous samples and the nominal trajectory are shifted by $ t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. The Sequential-QP block, highlighted in \textcolor{purple}{\textbf{purple}}, is optional and deployed by methods \ctrlOuter and $\Pi_{IO}$.}
     \label{fig:receding_horizon}
 \end{figure}
 
