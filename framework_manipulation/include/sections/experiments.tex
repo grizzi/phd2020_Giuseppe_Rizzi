@@ -63,7 +63,11 @@ Overall, the simulated experiments confirm the validity of the full framework (a
 \hspace*{-0.2cm}
 \vspace*{0.15cm}
 \begin{subfigure}{1\columnwidth}
-    \includegraphics[width=\linewidth]{figures/methods_comparison/average_stage_cost.pdf}
+    \includegraphics[width=\linewidth]{figures/methods_comparison/average_stage_cost_sout.pdf}
+\end{subfigure}%
+\hfill
+\begin{subfigure}{1\columnwidth}
+    \includegraphics[width=\linewidth]{figures/methods_comparison/legend.pdf}
 \end{subfigure}%
 \hfill
 \hspace*{-0.2cm}
@@ -112,10 +116,16 @@ While the first issue can be addressed by tuning the cost with a trial-and-error
 
 We repeat the simulation for 10 runs for each of the methods. The results are summarized in \fig \ref{fig:obstacle_avoidance}. As expected, $\Pi_{IO}$ attains the best performance. We further observe that the presence of a FILTER-QP in the outer high-rate loop additionally improves robustness as it enforces constraints during the open-loop execution of the optimized trajectory received by the stochastic controller. 
 \begin{figure}[t]
-    \centering
+\begin{subfigure}{1\columnwidth}
+    \includegraphics[width=\linewidth]{figures/methods_comparison/legend.pdf}
+\end{subfigure}%
+\hfill
+
+\begin{subfigure}{1\columnwidth}
     \includegraphics[width=0.7\columnwidth]{figures/obstacle_avoidance/obstacle_avoidance_test.pdf}
     \caption{The barplot shows the cumulative cartesian limits violation for the target reaching and obstacle avoidance task. $\Pi_{I}$ already outperforms $\Pi_{N}$ and $\Pi_{O}$. A further small performance boost is achieved by $\Pi_{IO}$.}
     \label{fig:obstacle_avoidance}
+\end{subfigure}
 \end{figure}
 
 \vspace{0.3cm}
