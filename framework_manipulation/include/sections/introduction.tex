@@ -54,6 +54,7 @@ This new framework for mobile manipulation combines tools from stochastic optimi
 To demonstrate the applicability and effectiveness of this approach, we perform several numerical and experimental studies where we deploy the algorithms on our \textit{RoyalPanda} platform (a 7-DOF Franka Emika Panda arm mounted on the holonomic Clearpath Ridgeback base, shown in \fig\ref{fig:royal_panda}) for a target reaching and door opening task. An open source implementation of our solution is provided at \url{https://git.io/JXi4d}.
 
 In summary, the contributions of the present work are summarized as follows:
+\ifreview
 \red{
 \begin{enumerate}
     \item A review of the main theoretical background introducing receding horizon sampling-based control, the concept of barrier functions and energy tanks;
@@ -63,9 +64,10 @@ In summary, the contributions of the present work are summarized as follows:
     
     \item a simulation evaluation of the effectiveness of the approach with in-depth analysis of the contributions of each algorithmic component;
     \item real hardware experiments showing its applicability on a real platform;
-
     \end{enumerate}
 }
+\fi
+
 \add{
 \begin{enumerate}
     \item a new framework that combines sampling-based receding horizon control and barrier methods for mobile manipulation control. A stability study provides theoretical guarantees on the overall control architecture;
