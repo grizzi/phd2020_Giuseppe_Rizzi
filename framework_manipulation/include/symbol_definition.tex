@@ -1,8 +1,6 @@
 % ---------- Standard Commands -------------
 %\newcommand{\red}[1]{\textcolor{red}{#1}}
 
-% utilities
-\newcommand{\add}[1]{\textcolor{blue}{#1}}
 % comments
 \newcommand{\MT}[1]{\red{(MT: #1)}}
 
@@ -134,3 +132,19 @@
 
 
 \definecolor{darkgreen}{RGB}{0, 100, 0}
+
+% review
+\newif\ifreview
+\reviewtrue % comment out to hide review and get final version
+
+\ifreview
+\newcommand{\remove}[1]{\sout{#1}}
+\newcommand{\add}[1]{\textcolor{blue}{#1}}
+\newcommand{\ctrlInner}{\sout{$\Pi_{O}$}\add{$\Pi_{I}$}}
+\newcommand{\ctrlOuter}{\sout{$\Pi_{I}$}\add{$\Pi_{O}$}}
+\else
+\newcommand{\remove}[1]{}
+\newcommand{\add}[1]{#1}
+\newcommand{\ctrlInner}{$\Pi_{I}$}
+\newcommand{\ctrlOuter}{$\Pi_{O}$}
+\fi

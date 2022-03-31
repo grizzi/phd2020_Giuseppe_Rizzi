@@ -2,7 +2,9 @@
 
 The goal of this section is to evaluate the proposed control methods. To this end, we define the following metrics:
 \begin{itemize}
-    \item \sout{\textit{Average stage cost}: this performance metric is computed by averaging the stage cost evaluated at each time step. Task duration and cost scheduling is kept fixed among all the experiments.}  
+    \ifreview
+    \item \remove{\textit{Average stage cost}: this performance metric is computed by averaging the stage cost evaluated at each time step. Task duration and cost scheduling is kept fixed among all the experiments.}  
+    \fi
     \item \textit{Cumulative constraints violation}: as each barrier function is, by definition, negative outside of the safe set, we define the following metric as a proxy for the size of the constraint violation along the duration of an experiment:
     \begin{equation*}
         \Delta^{i}_{tot} = \sum\limits_{k=0}^{K_{exp}} \max(0, -h^i(\vect{x}_{k \Delta t})),
@@ -23,7 +25,7 @@ The simulation experiments are conducted on a dynamic manipulator model as descr
 \end{figure}
 
 
-The control methods are deployed on the RoyalPanda mobile manipulator and evaluated through simulated and hardware experiments. The platform consists of an holonomic mobile base equipped with a 7-DOF manipulator. The robot's wrist mounts a 6 axis force-torque sensor and a custom set of fingers as shown in \fig\ref{fig:hook_finger}.  The omnidirectional base is controlled by sending velocity commands to the mecanum wheel controller. The arm's low-level controller runs at 1KHz while the base mecanum controller runs at 50Hz. \sout{In order to reduce the sim-to-real gap, in all the simulated experiments, imperfect velocity control is modeled by compensating only 90\% of the gravity terms. }In both the real and simulated robot, the arm velocity commands are converted to joint torques using a PI low-level velocity controller running at 1KHz. 
+The control methods are deployed on the RoyalPanda mobile manipulator and evaluated through simulated and hardware experiments. The platform consists of an holonomic mobile base equipped with a 7-DOF manipulator. The robot's wrist mounts a 6 axis force-torque sensor and a custom set of fingers as shown in \fig\ref{fig:hook_finger}.  The omnidirectional base is controlled by sending velocity commands to the mecanum wheel controller. The arm's low-level controller runs at 1KHz while the base mecanum controller runs at 50Hz. \remove{In order to reduce the sim-to-real gap, in all the simulated experiments, imperfect velocity control is modeled by compensating only 90\% of the gravity terms. }In both the real and simulated robot, the arm velocity commands are converted to joint torques using a PI low-level velocity controller running at 1KHz. 
 
 %\subsection{Power consumption}
 %In this experiment we look at the effect of the power term in the task execution. As we can see in \fig \ref{fig:power_cost_comparison}, the power cost is effective in decreasing the energy dissipation during the manipulation task. For each of the experiments where the power cost is active we set $w_p=10$ and $p_{max} = 0.0$. For all experiments we use $50$ samples as they are a good trade-off between control-frequency and performance. We observe that in all experiments the robot is able to accomplish the task (fully open the articulated object). 
@@ -39,7 +41,7 @@ The control methods are deployed on the RoyalPanda mobile manipulator and evalua
 We design the following experimental scenarios:
 \begin{enumerate}
     \item \textit{Object manipulation}: we validate the applicability of the method on the task of manipulating each of the four articulated objects. \add{In each environment there is an handle that the robot can use to move the articulated object. In a first step the end effector reaches the handle and then tries to make contact and move the articulation to the desired position. The switch between hand reaching and object manipulation is triggered turning on the object reference cost as described in \sect\ref{sec:control_method}}. 
-    \item \textit{Target reaching and obstacle avoidance}: we further investigate the validity of the constraints formulation for a target reaching task in a confined environment. \add{The end effector must reach a target goal while the base is constrained in a narrow corridor. Furthermore, the robot must avoid an obstacle represented as red sphere in \ref{fig:obstacle_avoidance}. The obstacle is not immediately visible but appears all of a sudden, challenging the reactive response of the sampling-based controller.} \sout{when an obstacle is suddenly placed in the workspace.}
+    \item \textit{Target reaching and obstacle avoidance}: we further investigate the validity of the constraints formulation for a target reaching task in a confined environment. \add{The end effector must reach a target goal while the base is constrained in a narrow corridor. Furthermore, the robot must avoid an obstacle represented as red sphere in \ref{fig:obstacle_avoidance}. The obstacle is not immediately visible but appears all of a sudden, challenging the reactive response of the sampling-based controller.} \remove{when an obstacle is suddenly placed in the workspace.}
     \item \textit{Robust interaction}: we construct a challenging manipulation scenario where robust interaction is needed; in this case, the articulated object is fixed rigidly and is not able to move for a short period of time.
     \item \textit{Real-world experiments}: we further test the methods on the real robot for a door opening task. 
 \end{enumerate}
@@ -51,7 +53,7 @@ We run the presented algorithms on a Intel Core i7-8550U quad-core processor (1.
 \subsubsection{Object manipulation}
 We would like to investigate the performance of the algorithms when working close or outside the safety boundaries. To this end, in all the simulated experiments the robot starts in a configuration that is near the arm's joint limits and self-collision. The base of the robot is at $(-3.0, -3.0)$, outside of the prescribed position limits of $[(2.0, 2.0), (-2.0, -2.0)]$. The task of the robot is to open an articulated object moving from its starting location. We perform 20 runs for each articulated object and for each control method.
 
-The results of the experiments are summarized in \fig \ref{fig:methods_comparison}. We observe a reduction of cumulative joint limit violations as well as self-collision violations. We deduce that filtering the input sequence has a beneficial effect. $\Pi_{I}$ and $\Pi_{IO}$ attain the best performance suggesting that in a low sampling regime, the optimization problem helps to adapt the input sequence to quickly reduce the amount of constraint violation. The third row of \fig \ref{fig:methods_comparison} also shows that the naive controller $\Pi_{N}$ even experiences a dramatic failure which is not visible because of plot limits. This edge case never happens for the other methods. 
+The results of the experiments are summarized in \fig \ref{fig:methods_comparison}. We observe a reduction of cumulative joint limit violations as well as self-collision violations. We deduce that filtering the input sequence has a beneficial effect. \ctrlOuter and $\Pi_{IO}$ attain the best performance suggesting that in a low sampling regime, the optimization problem helps to adapt the input sequence to quickly reduce the amount of constraint violation. The third row of \fig \ref{fig:methods_comparison} also shows that the naive controller $\Pi_{N}$ even experiences a dramatic failure which is not visible because of plot limits. This edge case never happens for the other methods. 
 
 The dissipated power is similar across the proposed methods although filtering seems to also have a positive effect in this aspect. A qualitative analysis has shown that the interaction wrench measured during a simulated rollout can be inaccurate, especially when the rollouts use big time steps (0.015 s) in order to trade-off simulation accuracy with speed. As the wrench information is used to evaluate the system passivity, we activate the passivity enforcing constraint only in the outer-loop FILTER-QP since this optimization problem consumes real wrench measurements at high rates. This choice is additionally justified by the fact that passivity is mainly a mechanism designed to react to unforeseen events. As these are not modeled, the simulated rollouts are not able to predict the true evolution of the interaction wrench and therefore when passivity is enforced throughout the rollouts it could lead to detrimental effects, namely an implementation of a non-passive behavior on the real robot.
 
@@ -59,6 +61,7 @@ The dissipated power is similar across the proposed methods although filtering s
 Overall, the simulated experiments confirm the validity of the full framework (as implemented in $\Pi_{IO}$). Nevertheless the performance differences are not striking. We think that this is due to the low chance of hitting the constraints during the task, especially when the sampling-based controller is aware of dangerous configurations through a well-engineered cost function. In fact, high cost on safety-related objectives has the effect of ``trimming" bad trajectories, removing the need for the post-processing performed by the constrained optimization problem. For this reason, in the following we present a second simulation experiment which represents a challenge for a purely sampling-based controller. 
 
 \begin{figure}[t]
+\ifreview
 \centering
 \hspace*{-0.2cm}
 \vspace*{0.15cm}
@@ -66,6 +69,7 @@ Overall, the simulated experiments confirm the validity of the full framework (a
     \includegraphics[width=\linewidth]{figures/methods_comparison/average_stage_cost_sout.pdf}
 \end{subfigure}%
 \hfill
+\fi
 \begin{subfigure}{1\columnwidth}
     \includegraphics[width=\linewidth]{figures/methods_comparison/legend.pdf}
 \end{subfigure}%
@@ -115,17 +119,19 @@ While the first issue can be addressed by tuning the cost with a trial-and-error
 \end{figure}
 
 We repeat the simulation for 10 runs for each of the methods. The results are summarized in \fig \ref{fig:obstacle_avoidance}. As expected, $\Pi_{IO}$ attains the best performance. We further observe that the presence of a FILTER-QP in the outer high-rate loop additionally improves robustness as it enforces constraints during the open-loop execution of the optimized trajectory received by the stochastic controller. 
-\begin{figure}[t]
+\begin{figure}[t] \label{fig:obstacle_avoidance}
 \begin{subfigure}{1\columnwidth}
     \includegraphics[width=\linewidth]{figures/methods_comparison/legend.pdf}
 \end{subfigure}%
 \hfill
 
 \begin{subfigure}{1\columnwidth}
-    \includegraphics[width=0.7\columnwidth]{figures/obstacle_avoidance/obstacle_avoidance_test_no_legend.pdf}
-    \caption{The barplot shows the cumulative cartesian limits violation for the target reaching and obstacle avoidance task. $\Pi_{I}$ already outperforms $\Pi_{N}$ and $\Pi_{O}$. A further small performance boost is achieved by $\Pi_{IO}$.}
-    \label{fig:obstacle_avoidance}
+    \centering
+    \hspace*{-0.2cm} 
+    \includegraphics[width=0.6\columnwidth]{figures/obstacle_avoidance/obstacle_avoidance_test_no_legend.pdf}
 \end{subfigure}
+\caption{The barplot shows the cumulative cartesian limits violation for the target reaching and obstacle avoidance task. \ctrlOuter already outperforms $\Pi_{N}$ and \ctrlInner. A further small performance boost is achieved by $\Pi_{IO}$.}
+
 \end{figure}
 
 \vspace{0.3cm}

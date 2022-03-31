@@ -1,6 +1,6 @@
 \section{Control Method} \label{sec:control_method}
 
-In this section we combine sampling, barrier functions and energy tank into a novel model-based control framework for robust and safe interaction control. We use the presented sampling method to generate joint velocity command sequences that optimize a task-dependent objective in a receding horizon fashion. We encode a set of tasks and safety-related objectives as different cost terms. Nevertheless, sampling does not inherently provide guarantees and therefore we need a method to enhance safety. We address this problem using an optimization problem as a \sout{non-invasive}\add{minimally invasive} way to change the command sequence when constraints are not fulfilled. In particular, we solve a \textit{sequential} optimization problem (QP), which takes as input a command sequence and the starting state, and returns a modified command-state sequence satisfying all constraints. Nevertheless, as the expensive rollout sampling procedure often limits the rate of the controller, a portion of this input sequence must be executed in \textit{open-loop} which can be unsafe in dynamic environments and for low sampling rates. On the other hand, the QP can be efficiently solved at almost the same rate as the low-level controller. To this end, we propose a \emph{cascaded control} architecture composed of an \sout{inner}\add{outer} loop where the policy is updated at a low-rate and an \sout{outer}\add{inner} loop  where the low-level controller tracks the policy commands. In the \sout{outer}\add{inner} loop a QP is solved for the current state-input pair in order to find the best input according to the latest received measurements. In the \sout{inner}\add{outer} loop the same QP is solved for each state-input pair of the optimal rollout trajectory.
+In this section we combine sampling, barrier functions and energy tank into a novel model-based control framework for robust and safe interaction control. We use the presented sampling method to generate joint velocity command sequences that optimize a task-dependent objective in a receding horizon fashion. We encode a set of tasks and safety-related objectives as different cost terms. Nevertheless, sampling does not inherently provide guarantees and therefore we need a method to enhance safety. We address this problem using an optimization problem as a \remove{non-invasive}\add{minimally invasive} way to change the command sequence when constraints are not fulfilled. In particular, we solve a \textit{sequential} optimization problem (QP), which takes as input a command sequence and the starting state, and returns a modified command-state sequence satisfying all constraints. Nevertheless, as the expensive rollout sampling procedure often limits the rate of the controller, a portion of this input sequence must be executed in \textit{open-loop} which can be unsafe in dynamic environments and for low sampling rates. On the other hand, the QP can be efficiently solved at almost the same rate as the low-level controller. To this end, we propose a \emph{cascaded control} architecture composed of an \remove{inner}\add{outer} loop where the policy is updated at a low-rate and an \remove{outer}\add{inner} loop  where the low-level controller tracks the policy commands. In the \remove{outer}\add{inner} loop a QP is solved for the current state-input pair in order to find the best input according to the latest received measurements. In the \remove{inner}\add{outer} loop the same QP is solved for each state-input pair of the optimal rollout trajectory.
 In other words, the optimization problem is solved:
 \begin{itemize}
     \item \textit{sequentially}, for each command in the optimal input-state trajectory to ``sanitize" the sampling-based controller output wherever constraints might be violated,
@@ -10,10 +10,10 @@ The complete high-level schematic of the full framework is depicted in \fig~\ref
 
 The full method is amenable to different variants. In particular, by turning on/off filtering in the outer or inner control loop, we can synthesize four possible controller implementations. In the following we define with $\Pi_{*}$ each controller where $*$ can be $N,\ O,\ I,\ IO$:
 \begin{itemize}
-    \item[$\Pi_{N}$:] relies exclusively on a stochastic controller to generate velocity commands, namely the \textit{Trajectory Filtering} block is completely missing and the sampled input trajectory is tracked as it is by the low-level velocity controller,
-    \item[$\Pi_{O}$:] a FILTER-QP is used \add{\emph{outside} of the sampling controller, to only }filter the instantaneous input command to be tracked by the low-level velocity controller,
-    \item[$\Pi_{I}$:] the Sequential FILTER-QP is used \add{\emph{inside} of the sampling controller} to filter the full optimized command trajectory in a sequential manner\sout{ but no FILTER-QP is used in the in control loop},
-    \item[$\Pi_{IO}$:] the full cascaded architecture is deployed, combining the previous two methods.
+    \item $\Pi_{N}$: relies exclusively on a stochastic controller to generate velocity commands, namely the \textit{Trajectory Filtering} block is completely missing and the sampled input trajectory is tracked as it is by the low-level velocity controller,
+    \item \ctrlInner: a FILTER-QP is deployed \add{in the inner control loop to }filter the instantaneous input command to be tracked by the low-level velocity controller,
+    \item \ctrlOuter:  the Sequential FILTER-QP is used \add{in the outer loop sampling controller} to filter the full optimized command trajectory in a sequential manner\remove{ but no FILTER-QP is used in the in control loop},
+    \item $\Pi_{IO}$: the full cascaded architecture is deployed, combining the previous two methods.
 \end{itemize}
 
 \begin{figure}[t!]
@@ -54,7 +54,7 @@ In the following we drop from the notation the dependence on the current state. 
  \end{equation}
  
  \paragraph{Collision avoidance} let $\contact \in \{0, 1\}$ represent an auxiliary variable which is equal to 1 when the manipulator is in contact with the environment. The value of $\contact$ can be computed searching for collisions between bodies. 
- \add{This cost term  is activated when we want to execute a contact-free motion of the end-effector}\sout{is used to avoid collisions during contact-free motions of the end-effector}. 
+ \add{This cost term  is activated when we want to execute a contact-free motion of the end-effector}\remove{is used to avoid collisions during contact-free motions of the end-effector}. 
  The \textit{contact cost} is defined as,
  \begin{equation}
      c_{\contact}= \weightScalar{\contact} \contact(\state).
@@ -196,7 +196,7 @@ Then, the energy evolution of the autonomous system, composed of robot, tank and
 \end{aligned}
 \end{equation}
 showing the system's passivity.
-Intuitively, the increase of the robot's energy is compensated with a reduction of the tank's energy. \sout{As the tank energy is limited and bounded from below, passivity is ensured if,}\add{Therefore we need to ensure that the tank is never completely depleted:}
+Intuitively, the increase of the robot's energy is compensated with a reduction of the tank's energy. \remove{As the tank energy is limited and bounded from below, passivity is ensured if,}\add{Therefore we need to ensure that the tank is never completely depleted:}
 \begin{equation}
     S(t) = S(0) + \int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \dconfigRobotDesired \ dt  \geq 0
 \end{equation}
