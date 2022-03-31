@@ -2,7 +2,7 @@
 
 The goal of this section is to evaluate the proposed control methods. To this end, we define the following metrics:
 \begin{itemize}
-    \item \textit{Average stage cost}: this performance metric is computed by averaging the stage cost evaluated at each time step. Task duration and cost scheduling is kept fixed among all the experiments.  
+    \item \sout{\textit{Average stage cost}: this performance metric is computed by averaging the stage cost evaluated at each time step. Task duration and cost scheduling is kept fixed among all the experiments.}  
     \item \textit{Cumulative constraints violation}: as each barrier function is, by definition, negative outside of the safe set, we define the following metric as a proxy for the size of the constraint violation along the duration of an experiment:
     \begin{equation*}
         \Delta^{i}_{tot} = \sum\limits_{k=0}^{K_{exp}} \max(0, -h^i(\vect{x}_{k \Delta t})),
