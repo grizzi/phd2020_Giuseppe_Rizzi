@@ -167,7 +167,7 @@ While the low level controller described in \eqref{eq:cmd_sim} is deployed in th
     \item A full inverse dynamics controller relies on second order derivatives. As we use large simulation timesteps to improve sampling efficiency, these terms are very noisy and cause simulation instability.
 \end{itemize}
  As a consequence in practice \eqref{eq:cmd_sim} suffices in the simulated physics for trajectory generation. 
-On the real robot instead, gravity compensation are non negligible. Therefore the need for an additional integral term. Furthermore, dynamic compensation allows to guarantee the system passivity.  
+On the real robot instead, gravity compensation errors are non negligible. Therefore the need for an additional integral term. Furthermore, dynamic compensation allows to guarantee the system passivity.  
 These modifications generate a discrepancy between the real robot and simulated robot response. Note that these will never be the same, since a model is always a simplification of reality. In ultimate analysis we want the simulated model to be close to the real one, as long as it is still usable, meaning that we can efficiently generate rollout and that feasible solutions in simulation correspond to feasible solutions on the real robot.} 
 If we augment the the optimization problem in \eqref{eq:cbf-qp} with the energy constraint:
 \begin{equation}\label{eq:pass_const}
