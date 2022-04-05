@@ -106,16 +106,16 @@ While the first issue can be addressed by tuning the cost with a trial-and-error
 \begin{figure}[t]
 \centering
 \begin{subfigure}{0.48\columnwidth}
-    \includegraphics[width=\linewidth]{figures/obstacle_avoidance/rollouts_no_filter.pdf}
+    \includegraphics[width=\linewidth]{figures/obstacle_avoidance/rollouts_no_filter_labeled.pdf}
     \caption{Example rollout of $\Pi_{N}$}
 \end{subfigure}%
 \hfill
 \begin{subfigure}{0.48\columnwidth}
-    \includegraphics[width=\linewidth]{figures/obstacle_avoidance/rollouts_filter.pdf}
+    \includegraphics[width=\linewidth]{figures/obstacle_avoidance/rollouts_filter_labeled.pdf}
     \caption{Example rollout of $\Pi_{IO}$}
 \end{subfigure}%
 \hfill
-\caption{In the figure we visualize the optimized end-effector trajectory by rolling out the optimized command. The naive controller $\Pi_{N}$ is trapped in a high cost region while $\Pi_{IO}$ immediately reacts to the unexpected cost change.}\label{fig:rollouts_comparison}
+\caption{In the figure we visualize the optimized end-effector trajectory \add{when the task is to reach a target beyond an obstacle}.  \remove{by rolling out the optimized command}. \add{Note that the base is also constrained to move into a narrow corridor, visualized by the red markers on each side of the robot.}  The naive controller $\Pi_{N}$ is trapped in a high cost region while $\Pi_{IO}$ immediately reacts to the unexpected cost change.}\label{fig:rollouts_comparison}
 \end{figure}
 
 We repeat the simulation for 10 runs for each of the methods. The results are summarized in \fig \ref{fig:obstacle_avoidance}. As expected, $\Pi_{IO}$ attains the best performance. We further observe that the presence of a FILTER-QP in the outer high-rate loop additionally improves robustness as it enforces constraints during the open-loop execution of the optimized trajectory received by the stochastic controller. 
