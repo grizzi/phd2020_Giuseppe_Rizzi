@@ -38,23 +38,28 @@ In the following we present our cost formulation for the manipulation task. This
 
 While the safety objectives here are formulated on a kinematic level (obstacle avoidance, joint and cartesian limits), we are also interested in the robustness of the dynamical system during interaction, especially in cases of unexpected events that could compromise its stability. For this purpose, we complete the proposed framework with a passivity analysis and use an energy tank to bound the energy dissipated during the manipulation task. Passivity is guaranteed in the form of an additional constraint in the quadratic program and therefore naturally fits the proposed framework.
 
-\subsection{Sampling-based Control}
-The sampling-based framework offers the freedom to directly plan in torque space or use position/velocity control and defer tracking to a low-level controller. In fact, directly planning in the joint space allows us to account for objectives which are not in the operational control space such as joint limits and self-collision avoidance. The internal model used to sample trajectory rollouts has the same form as in \eqref{eq:eom}. Joint velocity commands are sampled and then translated to motor torques:
-\begin{equation} \label{eq:cmd_sim}
-    \vect{\tau}_{cmd} = \matr{K}_{D} (\command - \dconfigRobot) + \robotCoriolis,
+\subsection{\add{Reference Tracking}}
+\add{Let us consider the dynamic manipulator as described in \eqref{eq:eom}. Furthermore, the system uses a dynamically compensated velocity controller:}
+\begin{equation} \label{eq:low-level-control}
+\commandTorque = \add{\massMatrix \ddconfigRobotDesired} + \coriolis \dconfigRobotDesired + g(\configRobot) - \matr{K}_D \dconfigRobotError - \matr{K}_I \int_{0}^{\sigma} \dconfigRobotError\ dt,
 \end{equation}
-with an appropriate choice of the positive-definite diagonal gain matrix $\matr{K}_{D} \in \nR{\robotDoF\times\robotDoF}$. 
+\add{with the auxiliary error variable $\configRobotError =  \configRobot - \configRobotDesired$ \add{and $\matr{K}_D$ and $\matr{K}_I$ being positive diagonal gain matrices}.}
 
-\subsection{Cost Shaping}
+\subsection{\remove{Sampling-based Control} \add{Reference Generation}}
+The sampling-based \add{controller samples reference commands for the low-level reference tracking controller. We decide to directly sample in the joint velocity space}\remove{ framework offers the freedom to directly plan in torque space or use position/velocity control and defer tracking to a low-level controller. In fact, directly planning in the joint space allows us}to account for objectives which are not in the operational control space such as joint limits and self-collision avoidance. The internal model used to sample trajectory rollouts has the same form as in \eqref{eq:eom}.\remove{ Joint velocity commands are sampled and then translated to motor torques. Let us consider the dynamic manipulator as described in \eqref{eq:eom}. Furthermore, the system uses a dynamically compensated PI velocity controller: }
+\remove{with the auxiliary error variable $\configRobotError =  \configRobot - \configRobotDesired$ \add{and $\matr{K}_D$ and $\matr{K}_I$ being positive diagonal gain matrices}.}
+
+\remove{\subsubsection{Cost Shaping}}
 As described in Section~\ref{sec:formulation}, the control objective is to drive the system to minimize a task-dependent cost function over time. Furthermore, as state constraints are not explicitly taken into account by the formulation, a common heuristic is to penalize deviations from feasible states in the cost function. In the following we define several cost components associated with the different high-level objectives and constraints.
-We denote by $\mathds{1}[\cdot]$ the \textit{indicator function} such that,
+We denote by $\mathds{1}[\vect{x}]$ the \textit{indicator function} such that,
 \begin{equation}
-    \mathds{1}[x] = 
+    \mathds{1}[\vect{x}]_i = 
     \begin{cases}
-    1 & \text{if } x \text{ is True} \\
+    1 & \text{if } x_i \text{ is True} \\
     0 & \text{otherwise}.
     \end{cases}
 \end{equation}
+\add{with $x_i$ the i\textsuperscript{th} element of vector $\vect{x} \in \nR{n}$.}
 In the following we drop from the notation the dependence on the current state. We use $\weightMatrix{}$ to denote positive semidefinite weight matrices and $\weightScalar{}$ for non-negative scalar parameters. Note that input constraints are not treated here as additional cost terms as the non-linear dynamics can be augmented with a function that projects the sampled inputs into the feasible set $\mathcal{U}$.
 
 \paragraph{Target reaching} in the target reaching task, the goal is to bring a frame attached to the robot (generally the end-effector frame) to a desired pose. We define with $\matr{T} \in SE(3)$ and $\matr{T}^* \in SE(3)$ the current and desired target frame pose, respectively. The \textit{tracking cost} is computed as a weighted distance in the tangent space to $SE(3)$ using the logarithmic mapping~\cite{blanco2010tutorial}:
@@ -71,10 +76,10 @@ In the following we drop from the notation the dependence on the current state. 
 
  \paragraph{Joint position limits} the manipulator is subject to physical joint limits. These can be addressed by introducing a cost component that penalizes violation of the constraints. We define the \textit{joint limits cost} with:
  \begin{align}
-     &c_{j} = \mathds{1}[\configRobot > \upperLimits](\weightScalar{j} + ||\upperLimits - \configRobot||^2_{\weightMatrix{js}}) + \nonumber\\ 
-     &\qquad\mathds{1}[\configRobot < \lowerLimits](\weightScalar{j} +  || \configRobot - \lowerLimits||^2_{\weightMatrix{js}}), 
+     &c_{j} = \mathds{1}[\configRobot > \upperLimits]^T(\weightScalar{j} + ||\upperLimits - \configRobot||^2_{\weightMatrix{js}}) + \nonumber\\ 
+     &\qquad\mathds{1}[\configRobot < \lowerLimits]^T(\weightScalar{j} +  || \configRobot - \lowerLimits||^2_{\weightMatrix{js}}), 
  \end{align}
- where the scalar $\weightScalar{j}$ is a constant cost added when the limit is violated, \add{and $ \mathds{1}[\cdot]$ should be interpreted coefficient-wise}. The matrix $\weightMatrix{js}$ adds a quadratic term in the limit violation. This was shown in~\cite{williams_information-theoretic_2018} to help the controller find its way back if poor sampling brings the system outside of the joint position limits.
+ where the scalar $\weightScalar{j}$ is a constant cost added when the limit is violated. The matrix $\weightMatrix{js}$ adds a quadratic term in the limit violation. This was shown in~\cite{williams_information-theoretic_2018} to help the controller find its way back if poor sampling brings the system outside of the joint position limits.
  
  \paragraph{Arm reach} we introduce an additional term that penalizes configurations where the arm's end-effector moves excessively relative to the base 2D placement. This helps to bias solutions where base motion is preferred over stretching the arm which can lead to singular configurations. The translation vector from the end-effector frame $\mathcal{E}$ to the arm base frame $\mathcal{B}$ is defined with the vector $\vect{p}_{\mathcal{B}\mathcal{E}} \in \nR{3}$. The current reach is then $r_{\text{curr}} =  \vect{p}_{\mathcal{B}\mathcal{E}}^T \matr{P} \vect{p}_{\mathcal{B}\mathcal{E}}$. The projection matrix $\matr{P} = \text{diag}(1, 1, 0) \in \nR{3 \times 3}$ makes sure that the reach is only computed in the 2D plane. Given a maximum reach $r_{\text{max}} \in \nR{}_{\geq 0}$, the \textit{reach cost} is then defined by:
  \begin{equation}
@@ -100,12 +105,12 @@ where $\matr{J}_c$ is the contact Jacobian. The power dissipated during the task
  \end{equation}
 where $p_{max}$ is the maximum power that can be dissipated during the task.
 
-\subsection{Cost Scheduling}
+\subsubsection{Cost Scheduling}
 The manipulation task consists of two phases. In a first phase the manipulator reaches an estimated contact point, allowing for a fast and successful exploration in the following interaction phase. In the second phase, the goal is to bring the object to the desired state while keeping the end-effector close to the contact location. This switch is manually enabled by turning on the object manipulation cost $c_o$ after a successful approach. Reducing the end-effector position penalty during the manipulation phase allows the controller to choose a trajectory that fully exploits the contact dynamics by changing the hand pose.
 
 %This approach is in contrast with previous works where manipulation generally follows a prescribed grasping state~\cite{abraham_model-based_2020}. Grasping introduces a kinematic constraint that, while reducing the optimal control search space, does not allow for more flexible, contact-based behaviors to emerge such as pulling, pushing or sliding. 
 
-\subsection{Barrier Functions}
+\subsection{\remove{Barrier Functions} \add{Safety Constraints}}
 In the previous subsection a combination of cost components were introduced in order to address both performance and safety. The variety of objectives makes the cost landscape highly complex such that trading off performance against safety objectives can be quite challenging and tedious. Furthermore, as already stressed, sampling does not provide any formal guarantee that constraints encoded in the form of additional cost terms will be satisfied. Therefore, we look at how barrier functions can encode safety-critical constraints. As described in \cite{benzi2021optimization}, a simple ZBF can be derived for each joint to keep it between its lower and upper bounds, $q_i^-$ and $q_i^+$, respectively:
 \begin{equation}
 h_{ql}^i = \frac{(q_i^+ - q)(q - q_i^-)}{(q_i^+ - q_i^-)}\;.
@@ -135,6 +140,7 @@ As described in \sect \ref{sec:theory}, we can formulate a quadratic program to 
 \addConstraint{\dot{h}^i_{ar} \geq -{h}_{ar} + \delta^i_{ar}}{}{\ \text{(Arm Reach)}}
 \addConstraint{\tilde{\vect{u}}_t \in \mathcal{U}}{}{ \text{\ (Input Limits)}},
 \end{mini}
+\add{REMARK ABOUT SLACK VARIABLES}
 where $\boldsymbol{\delta}$ is the vector of slack variables and $\matr{\Gamma}$ is a positive definite diagonal matrix weighting the slack variable penalization whose dimensions depend on the number of implemented soft constraints. Finally, the set denoted by $\mathcal{I}$ is the set of collision link pairs.  We name this problem FILTER-QP as it changes the control input only if it is unsafe. Instead of simply applying this optimization point-wise, we can \emph{filter} the full input sequence in a sequential manner. After a policy update and for each time step, a FILTER-QP is solved. The newly computed command is applied to advance to the next step in the horizon and obtain the next system state from which the constraint equation can be updated. We call this procedure Sequential FILTER-QP and describe it in \algo \ref{algo:sequential_qp}. The resulting filtered optimal input sequence $\bar{U}^*_t$ is then also used to warm-start the nominal policy for the next round of rollout sampling (see \fig \ref{fig:receding_horizon}). The reader can also refer to \fig~\ref{fig:block_scheme} for a schematic representation of the complete feedback control loop.
 
 \begin{algorithm}
@@ -155,30 +161,18 @@ $k \gets 0$\;
 }
 \end{algorithm}
 
-\subsection{Energy Tank}
-While the optimization in \eqref{eq:cbf-qp} enhances the safety of the system we still lack stability guarantees. As described in \sect \ref{sec:theory}, energy tanks can be used to make the system \emph{passive} and thus ensure stability. Inspired by the work in \cite{benzi2021optimization} and \cite{shahriari2018valve}, this adaptation naturally fits the control method we have developed so far. Let us consider the dynamic manipulator as described in \eqref{eq:eom}. Furthermore, the system uses a dynamically compensated PI velocity controller: 
-\begin{equation} \label{eq:low-level-control}
-\commandTorque = \add{\massMatrix \ddconfigRobotDesired} + \coriolis \dconfigRobotDesired + g(\configRobot) - \matr{K}_D \dconfigRobotError - \matr{K}_I \int_{0}^{\sigma} \dconfigRobotError\ dt,
-\end{equation}
-with the auxiliary error variable $\configRobotError =  \configRobot - \configRobotDesired$. \add{Note that this control law differs from the one in \eqref{eq:cmd_sim}. 
-While the low level controller described in \eqref{eq:cmd_sim} is deployed in the simulated digital twin for generating and sampling interaction trajectories, law \eqref{eq:low-level-control} is deployed as a low-level controller on the real robot. There are some substantial differences between the simulated and real robot that require a modification of the low-level control laws:
-\begin{itemize}
-    \item In simulation gravity and coriolis compensation is perfect. 
-    \item A full inverse dynamics controller relies on second order derivatives. As we use large simulation timesteps to improve sampling efficiency, these terms are very noisy and cause simulation instability.
-\end{itemize}
- As a consequence in practice \eqref{eq:cmd_sim} suffices in the simulated physics for trajectory generation. 
-On the real robot instead, gravity compensation errors are non negligible. Therefore the need for an additional integral term. Furthermore, dynamic compensation allows to guarantee the system passivity.  
-These modifications generate a discrepancy between the real robot and simulated robot response. Note that these will never be the same, since a model is always a simplification of reality. In ultimate analysis we want the simulated model to be close to the real one, as long as it is still usable, meaning that we can efficiently generate rollout and that feasible solutions in simulation correspond to feasible solutions on the real robot.} 
+\subsection{\remove{Energy Tank} \add{System Stability}}
+While the optimization in \eqref{eq:cbf-qp} enhances the safety of the system we still lack stability guarantees. As described in \sect \ref{sec:theory}, energy tanks can be used to make the system \emph{passive} and thus ensure stability. Inspired by the work in \cite{benzi2021optimization} and \cite{shahriari2018valve}, this adaptation naturally fits the control method we have developed so far. \remove{Let us consider the dynamic manipulator as described in \eqref{eq:eom}}. \remove{Furthermore, the system uses a dynamically compensated PI velocity controller: }
+\remove{with the auxiliary error variable $\configRobotError =  \configRobot - \configRobotDesired$ \add{and $\matr{K}_D$ and $\matr{K}_I$ being positive diagonal gain matrices}.} 
 If we augment the the optimization problem in \eqref{eq:cbf-qp} with the energy constraint:
 \begin{equation}\label{eq:pass_const}
-    \int\limits_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \dconfigRobotDesired \ dt \geq -S(0),
+    \int\limits_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \dconfigRobotDesired \ dt \geq -S_{tank}(0),
 \end{equation}
 where $S(0)$ is the initial energy stored in the tank, then the following stability result holds:
 
 \begin{theorem}[Controlled System Stability]
 If the optimization problem FILTER-QP satisfies constraint \eqref{eq:pass_const}, then the controllers $\Pi_O$ and $\Pi_{IO}$ make the system \eqref{eq:eom} passive and therefore stable. 
 \end{theorem}
-
 
 \begin{proof}
 We start by augmenting the system model with a virtual tank. We now need to define through which \emph{power ports} the tank exchanges energy with the rest of the system. To this end, we perform a passivity analysis of the \emph{real} system. We first define the robot energy as, 
@@ -198,18 +192,20 @@ The energy tank is finally connected to the system through the power port $(\dco
 \dot{S}_{tank} = \dconfigRobot^{*T} \externalTorque. 
 \end{equation}
 Then, the energy evolution of the autonomous system, composed of robot, tank and environment is,
-\begin{equation}
-\begin{aligned}
+\begin{equation} 
+\begin{aligned} \label{eq:autonomous_sys_energy}
     \dot{S}_{tot} &= \dot{S}_{robot} + \dot{S}_{tank} + \dot{S}_{env} \\
     &\leq \dconfigRobotError^T \externalTorque + \dconfigRobot^{*T} \externalTorque - \dconfigRobot^T \externalTorque \leq 0,
 \end{aligned}
 \end{equation}
 showing the system's passivity.
-Intuitively, the increase of the robot's energy is compensated with a reduction of the tank's energy. \remove{As the tank energy is limited and bounded from below, passivity is ensured if,}\add{Therefore we need to ensure that the tank is never completely depleted:}
-\begin{equation}
+Intuitively, the increase of the robot's energy is compensated with a reduction of the tank's energy. 
+add{Therefore the total energy stored in the system is bound by $S_{tank}(0) + \Gamma$ with $
+\Gamma$ some positive constant.} \add{In order for \eqref{eq:autonomous_sys_energy} to be valid we are relying on the silent assumption that the robot is able to exchange energy with the tank at any time. As the tank energy is a positive definite quantity and therefore bounded from below, we need to ensure that it is never completely depleted, imposing:}\remove{As the tank energy is limited and bounded from below, passivity is ensured if,}\add{}
+\begin{equation} \label{eq:pass_cond}
     S(t) = S(0) + \int_{0}^{\sigma} \boldsymbol{\tau}_{ext}^T \dconfigRobotDesired \ dt  \geq 0
 \end{equation}
-recovering the constraint in \eqref{eq:pass_const} and therefore concluding the proof.
+recovering the constraint in \eqref{eq:pass_const} therefore concluding the proof. \add{In other words \eqref{eq:pass_cond} is condition that is required for \eqref{eq:autonomous_sys_energy} to hold at any time.}
 \end{proof}
 In practice, the constraint in \eqref{eq:pass_const} is formulated as
 \begin{equation}

@@ -61,15 +61,31 @@ As the sampled control is not sufficiently smooth for a practical application, w
     \centering
     \includegraphics[width=\columnwidth]{figures/schemes/receding_horizon2.pdf}
     \vspace{0.1cm}
-    \caption{The figure shows the implementation of the receding horizon scheme. Variables depicted in \textcolor{blue}{\textbf{blue}} and \textcolor{darkgreen}{\textbf{dark green}} represent the information available at the new optimization step and from the previous iteration respectively. All the previous samples and the nominal trajectory are shifted by $ t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. The Sequential-QP block, highlighted in \textcolor{purple}{\textbf{purple}}, is optional and deployed by methods \ctrlOuter and $\Pi_{IO}$.}
+    \caption{The figure shows the implementation of the receding horizon scheme. Variables depicted in \textcolor{blue}{\textbf{blue}} and \textcolor{darkgreen}{\textbf{dark green}} represent the information available at the new optimization step and from the previous iteration respectively. All the previous samples and the nominal trajectory are shifted by $ t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. The Sequential-QP block, highlighted in \textcolor{purple}{\textbf{purple}}, is optional and deployed by methods \ctrlOuter and $\Pi_{IO}$. \add{REFERENCE BACK TO FIGURE 2}}
     \label{fig:receding_horizon}
 \end{figure}
 
 \subsection{Simulator Tuning}
 Crucial to the overall performance is the accuracy of the simulation environment (implementing \eqref{eq:eom}). Unfortunately the discrepancy between the simulator and the real physical model known as the \emph{sim-to-real} gap is unavoidable. A typical failure case consists of an over-estimation of an object's friction. In such cases, we have often observed a ``scratching" emergent behavior where the robot would rely on friction to move the object. In practice friction is hard to measure and depends on the contact patch between surfaces. On the other hand, kinematic constraints between contact points depends on the system geometry which can be accurately measured (e.g from CAD models). Therefore solutions that exploit the latter are more likely to succeed on the real platform. One can bias the controller towards these solutions by setting, for example, a very low friction coefficient between contact bodies.
 
+\add{WE USE A DIFFERENT CONTROL LAW BLA BLA BLA}
+\begin{equation} \label{eq:cmd_sim}
+    \vect{\tau}_{cmd} = \coriolis \dconfigRobot + g(\configRobot) - \matr{K}_{D} \dconfigRobotError,
+\end{equation}
+with an appropriate choice of the positive-definite diagonal gain matrix $\matr{K}_{D} \in \nR{\robotDoF\times\robotDoF}$. 
+
+\add{BETTER REPHRASE: WAS ADDED SOMEWHERE ELSE IN THE TEXT. ALSO ADD \cite{raisim_pd} WHICH IS REFERENCE TO RAISIM INTEGRATION SCHEME. Note that this control law differs from the one in \eqref{eq:cmd_sim}. 
+While the low level controller described in \eqref{eq:cmd_sim} is deployed in the simulated digital twin for generating and sampling interaction trajectories, law \eqref{eq:low-level-control} is deployed as a low-level controller on the real robot. There are some substantial differences between the simulated and real robot that require a modification of the low-level control laws:
+\begin{itemize}
+    \item In simulation gravity and coriolis compensation is perfect. 
+    \item A full inverse dynamics controller relies on second order derivatives. As we use large simulation timesteps to improve sampling efficiency, these terms are very noisy and cause simulation instability.
+\end{itemize}
+ As a consequence in practice \eqref{eq:cmd_sim} suffices in the simulated physics for trajectory generation. 
+On the real robot instead, gravity compensation errors are non negligible. Therefore the need for an additional integral term. Furthermore, dynamic compensation allows to guarantee the system passivity.  
+These modifications generate a discrepancy between the real robot and simulated robot response. Note that these will never be the same, since a model is always a simplification of reality. In ultimate analysis we want the simulated model to be close to the real one, as long as it is still usable, meaning that we can efficiently generate rollout and that feasible solutions in simulation correspond to feasible solutions on the real robot.} 
+
 \subsection{Contact-mesh Simplification}
-A large proportion of simulation time is spent on collision detection. We reduce the component meshes to the relevant ones and simplify to primitive shapes, as shown in \fig\ref{fig:1}. We are especially interested in the collision objects belonging to the robot end-effector and the object. This adaptation tremendously reduces computation especially during the contact phase. In our following evaluations we observed that using the original mesh shown in \fig\ref{fig:original_mesh} results in a mean simulation rate of 0.98kHz. In contrast, the two finger mesh and hook finger mesh in \fig\ref{fig:two_fingers}-\ref{fig:hook_finger} allow mean simulation rates of 2.13kHz and 2.94kHz, respectively.
+A large proportion of simulation time is spent on collision detection. We reduce the component meshes to the relevant ones and simplify to primitive shapes, as shown in \fig\ref{fig:1}. We are especially interested in the collision objects belonging to the robot end-effector and the object. This adaptation tremendously reduces computation especially during the contact phase. \add{The original finger design and vendor mesh is shown in \fig\ref{fig:original_mesh}. Often, as well as in this case, the vendor mesh is a convex hull of the actual finger geometry. In our evaluation we have replaced the convex hull with the real mesh, building it with a set of 9 primitive box primitives as shown in \fig\ref{fig:two_fingers}. Finally we redesigned the hand with a single finger hook setup for non-prehensile manipulation and further reduced the needed box primitives to 3.} We observed that using the original mesh shown in \fig\ref{fig:original_mesh} results in a mean simulation rate of 0.98kHz. In contrast, the two finger mesh and hook finger mesh in \fig\ref{fig:two_fingers}-\ref{fig:hook_finger} allow mean simulation rates of 2.13kHz and 2.94kHz, respectively.
 
 \begin{figure}[t]
 \centering
@@ -88,7 +104,7 @@ A large proportion of simulation time is spent on collision detection. We reduce
     \caption{Hook finger}\label{fig:hook_finger}
 \end{subfigure}
 
-\caption{Original collision meshes (a) provided by the robot manufacturer are often approximated by convex hulls, which are inaccurate while also more complex representations. \add{The mesh in b is an exact collision shape for the original gripper made of simple boxes primitives. We reduce the end effector complexity designing a simple single-finger gripper (c) made of only 2 boxes obtaining}\remove{In contrast, a simplified mesh (shown in (b) and (c)) can bring more accuracy as well as} a computational performance gain in terms of simulation rate.\label{fig:1}}
+\caption{Original collision meshes (a) provided by the robot manufacturer are often approximated by convex hulls, which are inaccurate while also more complex representations. \add{The mesh in (b) is an exact collision shape for the original gripper made of simple boxes primitives. We reduce the end effector complexity designing a simple single-finger gripper (c) made of only 2 boxes obtaining}\remove{In contrast, a simplified mesh (shown in (b) and (c)) can bring more accuracy as well as} a computational performance gain in terms of simulation rate.\label{fig:1}}
 
 \end{figure}
 
