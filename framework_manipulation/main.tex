@@ -28,7 +28,7 @@
 \begin{document}
 
 \title{
-\remove{A Framework for Interaction Control of Mobile Manipulators}\add{Robust Sampling-Based Control of Mobile Manipulators for Interaction with Articulated Objects}
+\add{Robust Sampling-based Control of Mobile Manipulators for Interaction with Articulated Objects}
 }
 
 
@@ -38,7 +38,7 @@
 }
 
 % The paper headers                                                                                  
-\markboth{IEEE Transactions on Robotics,~Vol.~X, No.~X, November~2021}%                              
+\markboth{IEEE Transactions on Robotics,~Vol.~X, No.~X, May~2022}%                              
 {Rizzi \MakeLowercase{\textit{et al.}}: \remove{A Framework for Interaction Control of Mobile Manipulators} \add{Robust Sampling-Based Control of Mobile Manipulators for Interaction with Articulated Objects}}
 
 % \IEEEpubid{0000--0000/00\$00.00~\copyright~2021 IEEE}
@@ -55,7 +55,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
 
-In this work we investigate and deploy stochastic control techniques for the challenging task of mobile manipulation. By their nature, manipulation tasks necessitate environment interactions which require the handling of non-differentiable switching contact dynamics. These dynamics represent a strong limitation for traditional gradient-based optimization methods such as Model Predictive Control (MPC) and Differential Dynamic Programming (DDP). \emph{Sampling-based} techniques alleviate these constraints but do not ensure that the robot will be stable and constraints will not be violated. On the other hand, real-world applications in human environment require safety and robustness to unexpected events. For this reason, we propose a novel framework for safe robotic manipulation of movable objects which combines sampling-based control together with \emph{Control Barrier Functions} and \emph{Passivity Theory} that, thanks to formal stability guarantees, enhance the safety and robustness of the method. The proposed controller enables robust deployment of stochastic control using a conventional CPU. We deploy the algorithm on a 10-DOF mobile manipulator robot. A video of the experiments can be found at \url{https://youtu.be/nd_ggrwHi8g}. We make our efficient and multi-threaded implementation of the proposed algorithms available as open-source at \url{https://git.io/JXi4d}.
+In this work we investigate and deploy sampling-based control techniques for the challenging task of mobile manipulation \add{of articulated objects.} By their nature, manipulation tasks necessitate environment interactions which require the handling of non-differentiable switching contact dynamics. These dynamics represent a strong limitation for traditional gradient-based optimization methods such as Model Predictive Control (MPC) and Differential Dynamic Programming (DDP) \add{which often rely on heuristics for trajectory generation.} \emph{Sampling-based} techniques alleviate these constraints but do not ensure \add{robots' stability and input/state constraints either.} On the other hand, real-world applications in human environments require safety and robustness to unexpected events. For this reason, we propose a novel framework for safe robotic manipulation of movable \add{articulated} objects. \add{The framework} combines sampling-based control together with \emph{Control Barrier Functions} and \emph{Passivity Theory} that, thanks to formal stability guarantees, enhance the safety and robustness of the method. 
+\add{We also provide the practical insights that} enables robust deployment of stochastic control using a conventional CPU. We deploy the algorithm on a 10-DOF mobile manipulator robot. Finally, we open-source our generic and multi-threaded implementation.
 \end{abstract}
 
 
@@ -107,18 +108,18 @@ Motion Control of Manipulators, Mobile Manipulation, Optimization and Optimal Co
 
 % References are important to the reader; therefore, each citation must be complete and correct. If at all possible, references should be commonly available publications.
 \vspace{-1cm}
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/grizzi.jpg}}]{Giuseppe Rizzi}
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{figures/biographies/grizzi.jpg}}]{Giuseppe Rizzi}
 is a PhD student in the Autonomous System Lab at ETH Zürich. He received a B.Sc in Mechanical Engineering at Politecnico di Milano in 2016 and a M.Sc in Robotics, Systems and Control at ETH Zürich in 2019. He joined the Robotic Systems Lab (RSL) as a Research Assistant and worked on autonomous navigation and manipulation for the MBZIRC competition in 2019. In 2020 he started is PhD program and joined the Mobile Manipulation Team. His research interests include control and perception for robotic manipulation.  
 \end{IEEEbiography}
 
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/jjchung.jpg}}]{Jen Jen Chung}
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{figures/biographies/jjchung.jpg}}]{Jen Jen Chung}
 (Member, IEEE) is a Senior Researcher in the Autonomous Systems Lab (ASL) at ETH Zürich. Her current research interests include perception and learning for mobile manipulation, algorithms for robot navigation through crowds, informative path planning and adaptive sampling. Prior to working at ASL, Jen Jen was a postdoctoral scholar at Oregon State University researching multiagent learning methods and she completed her Ph.D. on information-based exploration-exploitation strategies for autonomous soaring platforms at the Australian Centre for Field Robotics in the University of Sydney. She received her Ph.D. (2014) and B.E. (2010) from the University of Sydney.
 \end{IEEEbiography}
 \vspace{-1cm}
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/gawela.jpg}}]{Abel Gawel} is currently a Senior Researcher in Computer Vision and Machine Learning with the Huawei European Research Center. Before that he was a Senior Scientist at the Autonomous Systems Lab of ETH Zurich. He received the PhD from ETH Zurich in 2018 and was a visiting Postdoctoral Fellow in the CRI group at NTU Singapore in 2019. His research interests include SLAM, high-accuracy localization, object recognition, and semantic scene understanding with application in construction robotics, industrial inspection, and search and rescue robotics. Prior to joining ETH in 2014, he worked for Bosch Corporate Research and the BMW group.
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{figures/biographies/gawela.jpg}}]{Abel Gawel} is currently a Senior Researcher in Computer Vision and Machine Learning with the Huawei European Research Center. Before that he was a Senior Scientist at the Autonomous Systems Lab of ETH Zurich. He received the PhD from ETH Zurich in 2018 and was a visiting Postdoctoral Fellow in the CRI group at NTU Singapore in 2019. His research interests include SLAM, high-accuracy localization, object recognition, and semantic scene understanding with application in construction robotics, industrial inspection, and search and rescue robotics. Prior to joining ETH in 2014, he worked for Bosch Corporate Research and the BMW group.
 \end{IEEEbiography}
 \vspace{-1cm}
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/mtognon.jpg}}]{Marco Tognon}
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{figures/biographies/2020_Marco_Tognon_3.jpg}}]{Marco Tognon}
 (S'15-M'18) is a postdoctoral researcher in the Autonomous System Lab (ASL) at ETH Zurich, Switzerland.
 He received the Ph.D.~degree in Robotics in 2018, from INSA Toulouse, France, developing his thesis at LAAS-CNRS.
 His thesis has been awarded with three prizes. 
@@ -128,10 +129,10 @@ From 2018 to 2020 he has been postdoctoral researcher at LAAS-CNRS, Toulouse, Fr
 His current research interests include robotics, aerial physical interaction, multi-robot systems, and human-robot physical interaction.
 \end{IEEEbiography}
 \vspace{-1cm}
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/lott.jpg}}]{Lionel Ott} is a Senior Researcher in the Autonomous Systems Lab (ASL) at ETH Zurich. His research focuses on the intersection between machine learning and robotics with the goal to develop methods, techniques, and systems that allow an autonomous agent to build and maintain a representation of the ever-changing world in which robotics systems operate to achieve their given task. His interests are in model learning and decision making, taking uncertainty into account. Before working at ASL, Lionel was a senior research fellow in the School of Computer Science at the University of Sydney. He received his Ph.D. in 2014 from the University of Sydney.
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{figures/biographies/lott.jpg}}]{Lionel Ott} is a Senior Researcher in the Autonomous Systems Lab (ASL) at ETH Zurich. His research focuses on the intersection between machine learning and robotics with the goal to develop methods, techniques, and systems that allow an autonomous agent to build and maintain a representation of the ever-changing world in which robotics systems operate to achieve their given task. His interests are in model learning and decision making, taking uncertainty into account. Before working at ASL, Lionel was a senior research fellow in the School of Computer Science at the University of Sydney. He received his Ph.D. in 2014 from the University of Sydney.
 \end{IEEEbiography}
 \vspace{-1cm}
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{framework_manipulation/figures/biographies/rsiegwart.jpg}}]{Roland Siegwart}
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{figures/biographies/rsiegwart.jpg}}]{Roland Siegwart}
 (Fellow, IEEE) is a Professor for autonomous mobile robots with ETH Zurich, Founding Co-Director of the Technology Transfer Center, Wyss Zurich and Board Member of multiple high-tech companies. From 1996 to 2006, he was a Professor with EPFL Lausanne, held visiting positions with Stanford University and NASA Ames and was Vice President of ETH Zurich from 2010 to 2014. His research interest include the design, control, and navigation of flying, and wheeled and walking robots operating in complex and highly dynamical environments.
 
 Prof. Siegwart received the IEEE RAS Pioneer Award and IEEE RAS Inaba Technical Award. He is among the most cited scientist in robots world-wide, Co-Founder of more than half a dozen spin-off companies, and a strong promoter of innovation and entrepreneurship in Switzerland.

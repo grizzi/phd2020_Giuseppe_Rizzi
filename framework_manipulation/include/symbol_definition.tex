@@ -72,7 +72,8 @@
 \newcommand{\desired}[1]{#1^*}
 \newcommand{\configRobotError}{\error{\vect{q}}} % Robot configuration
 \newcommand{\dconfigRobotError}{\dot{\error{\vect{q}}}} % Robot configuration
-\newcommand{\ddconfigRobotError}{\ddot{\error{\vect{q}}}} % Robot configuration
+\newcommand{\ddconfigRobotError}{\ddot{\error{\vect{q}}}} % 
+%Robot configuration
 \newcommand{\configRobotDesired}{\desired{\configRobot}} % Robot configuration
 \newcommand{\dconfigRobotDesired}{\desired{\dconfigRobot}} % Robot configuration
 \newcommand{\ddconfigRobotDesired}{\desired{\ddconfigRobot}} % Robot configuration
@@ -131,17 +132,27 @@
 \newcommand{\zbf}{h(\vect{x})}
 
 
-\definecolor{darkgreen}{RGB}{0, 100, 0}
+\definecolor{darkgreen}{RGB}{0, 80, 0}
 
 % review
 \newif\ifreview
 \reviewtrue % comment out to hide review and get final version
 
 \ifreview
-\newcommand{\remove}[1]{\sout{#1}}
-\newcommand{\add}[1]{\textcolor{blue}{#1}}
-\newcommand{\ctrlInner}{\sout{$\Pi_{O}$}\add{$\Pi_{I}$}}
-\newcommand{\ctrlOuter}{\sout{$\Pi_{I}$}\add{$\Pi_{O}$}}
+%\newcommand{\remove}[1]{\sout{#1}}
+\newcommand{\remove}[1]{\sout{}}
+\newcommand{\add}[1]{\color{blue}{#1} \color{black}}
+
+\newcommand{\final}[1]{ 
+\begin{minipage}[t]{0.95\textwidth}
+    \color{darkgreen} #1
+\end{minipage}}
+
+\newcommand{\ctrlInner}{$\Pi_{I}$}
+\newcommand{\ctrlOuter}{$\Pi_{O}$}
+
+% \newcommand{\ctrlInner}{\sout{$\Pi_{O}$}$\Pi_{I}$}
+% \newcommand{\ctrlOuter}{\sout{$\Pi_{I}$}$\Pi_{O}$}
 \else
 \newcommand{\remove}[1]{}
 \newcommand{\add}[1]{#1}

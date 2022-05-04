@@ -57,7 +57,7 @@ The function $\zbf$ is a \emph{Zeroing Barrier Function} (ZBF) for the set $ \sa
 \end{equation}
 The existence of a ZBF implies the forward invariance of $\safeSet$ \cite{ames2016control}. Furthermore, defining the ZBF on a larger set than $\safeSet$ allows the system to be more robust to model perturbations\footnote{As shown in \cite{ames2016control}, CBFs induce an asymptotically stable behavior towards the safe set $\safeSet$. This property is particularly useful when disturbances bring the system outside the constraints.}. The condition in \eqref{eq:zbf_constraint} can be rewritten for a controlled affine system as,
 \begin{equation}
-    \sup_{\vect{u} \in \mathcal{U}} \left[ \frac{\partial h }{\partial \vect{x}} (f(\vect{x}) + g(\vect{x})\vect{u}) + \gamma \zbf \right] \geq 0, \forall \vect{x} \in \mathcal{D}.
+    \sup_{\vect{u} \in \mathcal{U}} \left[ \frac{\partial h }{\partial \vect{x}} (\vect{f}(\vect{x}) + \vect{g}(\vect{x})\vect{u}) + \gamma \zbf \right] \geq 0, \forall \vect{x} \in \mathcal{D}.
 \end{equation}
 When this inequality is fulfilled by the control input, the system will be made forward invariant. 
 As the constraint is affine in the control input, it can be solved via a quadratic optimization problem (QP). The advantage of a QP is that it allows trading-off performance and safety through ZBF. When a feed-forward control is available from a nominal controller, a minimum perturbation on the feed-forward command vector $\vect{u}_{ff}$ can be found through the following QP \cite{ames2019control}:
@@ -70,10 +70,10 @@ As the constraint is affine in the control input, it can be solved via a quadrat
 In practice the control input is constrained to the feasible set and therefore controlled invariance cannot generally be guaranteed for the real system. As a remedy, we add input limits as hard constraints while softening CBF constraints with the use of slack variables\footnote{In comparison, \cite{gurriet2018towards} addresses this issue by finding \emph{viable sets}. A set is said to be \emph{viable} if there exists a feasible input which makes the set forward invariant at all times. Efficient computation of viable sets is still an open research area and is mostly applied to simpler systems due to the high computational requirements.}.
 
 \subsection{Passivity and Energy Tank}
-It is important that the autonomous system preserves passive behavior during interaction, which in turns implies stability. Consider a system with state $\state \in \nR{n}$, input $\vect{u} \in \nR{m}$ and output $\vect{y} \in \nR{m}$. 
-This system is said to be \emph{passive} w.r.t $(\vect{u},\vect{y})$ if for all inputs and initial states, there exists a positive semidefinite \emph{storage function} $S: \nR{n} \rightarrow \nR{}_+$ such that for any time $\sigma$,
+It is important that the autonomous system preserves passive behavior during interaction, which in turn implies stability. Consider a system with state $\state \in \nR{n}$, input $\vect{u} \in \nR{m}$ and output $\vect{y} \in \nR{m}$. 
+This system is said to be \emph{passive} w.r.t $(\vect{u},\vect{y})$ if for all inputs and initial states, there exists a positive semidefinite \emph{storage function} $S: \nR{n} \rightarrow \nR{}_+$ such that for any time t,
 \begin{equation}
-    S(\vect{x}(\sigma)) - S(\vect{x}(0))\leq \int\limits_{0}^{\sigma} \vect{u}^T \vect{y}\ dt.  
+    S(\vect{x}(t)) - S(\vect{x}(0))\leq \int\limits_{0}^{t} \vect{u}^T \vect{y}\ d\tau.  
 \end{equation}
 In other words, no additional energy can be produced other than what is flowing into the system through the \textit{power port} $(\vect{u},\vect{y})$.
 For an autonomously controlled system (including the environment a robot is interacting with), this condition translates to, 
@@ -99,4 +99,7 @@ where $\vect{a}(t) \in \nR{m}$ is defined as,
     \vect{a}(t) = \frac{\boldsymbol{\gamma}(t)}{x_t(t)}.
 \end{equation}
 The modulation variable $\boldsymbol{\gamma}(t) \in \nR{m}$ can be chosen to implement the desired value of $\vect{y}$. With the above equations one can easily show that $\dot{S} = u_t^T y_t = \vect{u}^T \vect{y}$ and therefore that power is either injected into or extracted from the tank. As visible in \eqref{eq:tank_modulation} there is a singularity when the tank is empty and the desired behavior can no longer be implemented. 
-Therefore it is necessary to ensure that $S(t) \geq \epsilon > 0, \ \forall t$.
+Therefore it is necessary to ensure that 
+\begin{equation}
+ S(t) \geq \epsilon > 0, \ \forall t   
+\end{equation}

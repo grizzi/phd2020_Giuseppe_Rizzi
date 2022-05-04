@@ -43,19 +43,19 @@ The manipulator energy is defined as:
 \begin{equation}
     S_{robot} = \frac{1}{2} \dconfigRobotError^T \massMatrix \dconfigRobotError + \frac{1}{2} \configRobotError^T \matr{K}_I \configRobotError.
 \end{equation}
-The energy dynamics can be obtained by computing the time derivative of the previous expression. We plug the low level control law in \eqref{eq:low-level-control} into \eqref{eq:eom} and exploiting the fact that $\massMatrix - 2 \coriolis$ is skew symmetric we get:
+The energy dynamics can be obtained by computing the time derivative of the previous expression. We plug the low-level control law in \eqref{eq:low-level-control} into \eqref{eq:eom} and exploiting the fact that $\massMatrix - 2 \coriolis$ is skew symmetric we get:
 \begin{equation}
 \begin{aligned}
     \dot{S}_{robot} &= \dconfigRobotError^T \massMatrix \ddconfigRobotError + \frac{1}{2} \dconfigRobotError^T \dot{\matr{M}}(\configRobot) \dconfigRobotError + \dconfigRobotError^T \matr{K}_I \configRobotError \\
-    &= \dconfigRobotError^T \left[ -\coriolis \dconfigRobotError -  \matr{K}_D \dconfigRobotError - \matr{K}_I \int_{0}^{\sigma} \dconfigRobotError dt + \externalTorque \right] \\
+    &= \dconfigRobotError^T \left[ -\coriolis \dconfigRobotError -  \matr{K}_D \dconfigRobotError - \matr{K}_I \int_{0}^{t} \dconfigRobotError d\tau + \externalTorque \right] \\
     &\quad + \frac{1}{2} \dconfigRobotError^T \dot{\matr{M}}(\configRobot) \dconfigRobotError + \dconfigRobotError^T \matr{K}_I \configRobotError \\
     &= \dconfigRobotError^T \matr{K}_I \configRobotError + \dconfigRobotError^T \externalTorque + \frac{1}{2} \dconfigRobotError^T\left[ \dot{\matr{M}}(\configRobot) - 2\coriolis \right] \dconfigRobotError \\
-    &\quad - \dconfigRobotError^T \matr{K}_D \dconfigRobotError  - \dconfigRobotError^T \matr{K}_I \int^{\sigma}_{0} \dconfigRobotError\ dt\\
-    &= \dconfigRobotError^T \matr{K}_I \configRobotError + \dconfigRobotError^T \externalTorque - \dconfigRobotError^T \matr{K}_D \dconfigRobotError -  \dconfigRobotError^T \matr{K}_I \int^{\sigma}_{0} \dconfigRobotError\ dt.  
+    &\quad - \dconfigRobotError^T \matr{K}_D \dconfigRobotError  - \dconfigRobotError^T \matr{K}_I \int^{t}_{0} \dconfigRobotError\ d\tau\\
+    &= \dconfigRobotError^T \matr{K}_I \configRobotError + \dconfigRobotError^T \externalTorque - \dconfigRobotError^T \matr{K}_D \dconfigRobotError -  \dconfigRobotError^T \matr{K}_I \int^{t}_{0} \dconfigRobotError\ d\tau.  
 \end{aligned}
 \end{equation}
-As we compute the desired position integrating the desired velocity over time, it holds that $\configRobotError = \int^{\sigma}_{0}
-\dconfigRobotError\ dt$, obtaining,
+As we compute the desired position integrating the desired velocity over time, it holds that $\configRobotError = \int^{t}_{0}
+\dconfigRobotError\ d\tau$, obtaining,
 \begin{equation}
     \dot{S}_{robot} = \dconfigRobotError^T \externalTorque - \dconfigRobotError^T \matr{K}_D \dconfigRobotError \leq \dconfigRobotError^T \externalTorque. 
 \end{equation}

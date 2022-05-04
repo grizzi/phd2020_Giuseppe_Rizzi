@@ -7,7 +7,7 @@ The policy update rule in \eqref{eq:update_rule} consists of a receding horizon 
 \begin{equation}
     g_i = \text{sign}(g_i) \cdot \min(|g_i|, g_{max}) 
 \end{equation}
-where $g_i$ is the i\textsuperscript{th} component of the stochastic approximation of the gradient vector and $g_{max} \in \nR{}_{>0}$ is the gradient threshold.
+where $g_i$ is the $i$\textsuperscript{th} component of the stochastic approximation of the gradient vector and $g_{max} \in \nR{}_{>0}$ is the gradient threshold.
 
 \subsection{Likelihood Mapping} 
 The coefficient $\lambda$ in \eqref{eq:weighting} determines how ``aggressive" the weighting between different trajectories is. Adopting a constant value would give a numerically zero weight to most of the trajectories. Shifting the trajectory cost by the minimum cost as proposed in~\cite{williams_information_2017} also does not alleviate this issue. 
@@ -24,12 +24,12 @@ which has the nice property of being invariant to the cost scale. Assume for exa
     \label{fig:exponential_mapping_comparison}
 \end{figure}
 
-When the cost is high, the first two methods collapse all the weight to a single sample and in practice, other samples are assigned a value which is numerically zero. As a consequence, the gradient estimate in \eqref{eq:update_rule} can show a high variance. The mapping in \eqref{eq:scale_invariant_mapping} instead, assigns a non-zero weight to more samples independently from the current cost scale and helps to stabilize the gradient estimate.
+When the cost is high, the first two methods collapse all the weight to a single sample and in practice, other samples are assigned a value which is numerically zero. As a consequence, the gradient estimate in \eqref{eq:update_rule} can show a high variance. The mapping in \eqref{eq:scale_invariant_mapping} instead assigns a non-zero weight to more samples independently from the current cost scale and helps to stabilize the gradient estimate.
 
 \subsection{Chattering}
 We observed that a naive implementation of the passivity constraint leads to a chattering behavior at the constraint boundary. We start discretizing the constraint inequality to obtain a constraint that is affine in the input $\command$:
 \begin{equation*}
-    \int_{0}^{t + dt} \boldsymbol{\tau}_{ext}^T \command \ dt \approx \underbrace{\boldsymbol{\tau}_{ext}(t)^T \command(t) }_{-P_{diss}}dt + S(x_t(t)) \geq \epsilon,
+    \int_{0}^{t + dt} \boldsymbol{\tau}_{ext}^T \command \ d\tau \approx \underbrace{\boldsymbol{\tau}_{ext}(t)^T \command(t) }_{-P_{diss}}dt + S(x_t(t)) \geq \epsilon,
 \end{equation*}
 which is equivalent to 
 \begin{equation} \label{eq:passivity_simple}
@@ -52,59 +52,56 @@ In order to gain a better intuitive understanding of this tuning parameter, cons
 This effect is also shown in \fig \ref{fig:tank_as_zbf} in the experiment section.
 
 \subsection{Sampling Strategy}
-At each control step, it is desirable to sample a zero input trajectory, meaning that all velocity commands are $\command_t = \bm{0}\ \forall\ t$, as this would allow the robot to stop when the goal is reached. Similarly, we would like to keep sampling the unperturbed nominal command trajectory. In fact, if we assume this to be optimal for a time instant, re-sampling would perturb it and very likely increase its associated cost. With these motivations in mind, we modify the sampling procedure such that there is always an unperturbed and zero velocity input sequences in the batch of samples.
+At each control step, it is desirable to sample a zero input trajectory, meaning that all velocity commands are $\command_t = \bm{0}\ \forall\ t$, as this would allow the robot to stop when the goal is reached. Similarly, we would like to keep sampling the unperturbed nominal command trajectory. In fact, if we assume this to be optimal for a time instant, re-sampling would perturb it and very likely increase its associated cost. With these motivations in mind, we modify the sampling procedure such that the unperturbed and zero velocity input sequences are always in the batch of samples.
 
 Furthermore, at the beginning of a new sampling, a subset of the best rollouts are kept and shifted back in time by the real-time number of steps elapsed since the last optimization to warm start the next iteration. 
-As the sampled control is not sufficiently smooth for a practical application, we filter it using a moving window Savitzky-Golay filter~\cite{gorry1990general} before the Sequential FILTER-QP. \add{In fact, the Savitzky-Golay filter computes efficiently the optimal local polinomyal approximation of the input sequence, without the need to explicitly solve an optimization problem, as it has been shown in \cite{williams_information-theoretic_2018}.} The full pipeline is visualized in \fig \ref{fig:receding_horizon}.
+As the sampled control is not sufficiently smooth for a practical application, we filter it using a moving window Savitzky-Golay filter~\cite{gorry1990general} before the Sequential FILTER-QP. \add{In fact, the Savitzky-Golay filter efficiently computes the optimal local polynomial approximation of the input sequence, without the need to explicitly solve an optimization problem, as it has been shown in \cite{williams_information-theoretic_2018}.} The full pipeline is visualized in \fig \ref{fig:receding_horizon}.
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=\columnwidth]{figures/schemes/receding_horizon2.pdf}
     \vspace{0.1cm}
-    \caption{The figure shows the implementation of the receding horizon scheme. Variables depicted in \textcolor{blue}{\textbf{blue}} and \textcolor{darkgreen}{\textbf{dark green}} represent the information available at the new optimization step and from the previous iteration respectively. All the previous samples and the nominal trajectory are shifted by $ t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. The Sequential-QP block, highlighted in \textcolor{purple}{\textbf{purple}}, is optional and deployed by methods \ctrlOuter and $\Pi_{IO}$. \add{REFERENCE BACK TO FIGURE 2}}
+    \caption{The figure shows the implementation of the receding horizon scheme \add{(\emph{Reference Generation}, see \fig\ref{fig:block_scheme})}. Variables depicted in \textcolor{blue}{\textbf{blue}} and \textcolor{darkgreen}{\textbf{dark green}} represent the information available at the new optimization step and from the previous iteration, respectively. All the previous samples and the nominal trajectory are shifted by $ t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. The Sequential-QP block, highlighted in \textcolor{purple}{\textbf{purple}}, is optional and deployed by methods \ctrlOuter and $\Pi_{IO}$.}
     \label{fig:receding_horizon}
 \end{figure}
 
-\subsection{Simulator Tuning}
-Crucial to the overall performance is the accuracy of the simulation environment (implementing \eqref{eq:eom}). Unfortunately the discrepancy between the simulator and the real physical model known as the \emph{sim-to-real} gap is unavoidable. A typical failure case consists of an over-estimation of an object's friction. In such cases, we have often observed a ``scratching" emergent behavior where the robot would rely on friction to move the object. In practice friction is hard to measure and depends on the contact patch between surfaces. On the other hand, kinematic constraints between contact points depends on the system geometry which can be accurately measured (e.g from CAD models). Therefore solutions that exploit the latter are more likely to succeed on the real platform. One can bias the controller towards these solutions by setting, for example, a very low friction coefficient between contact bodies.
-
-\add{WE USE A DIFFERENT CONTROL LAW BLA BLA BLA}
-\begin{equation} \label{eq:cmd_sim}
-    \vect{\tau}_{cmd} = \coriolis \dconfigRobot + g(\configRobot) - \matr{K}_{D} \dconfigRobotError,
-\end{equation}
-with an appropriate choice of the positive-definite diagonal gain matrix $\matr{K}_{D} \in \nR{\robotDoF\times\robotDoF}$. 
-
-\add{BETTER REPHRASE: WAS ADDED SOMEWHERE ELSE IN THE TEXT. ALSO ADD \cite{raisim_pd} WHICH IS REFERENCE TO RAISIM INTEGRATION SCHEME. Note that this control law differs from the one in \eqref{eq:cmd_sim}. 
-While the low level controller described in \eqref{eq:cmd_sim} is deployed in the simulated digital twin for generating and sampling interaction trajectories, law \eqref{eq:low-level-control} is deployed as a low-level controller on the real robot. There are some substantial differences between the simulated and real robot that require a modification of the low-level control laws:
-\begin{itemize}
-    \item In simulation gravity and coriolis compensation is perfect. 
-    \item A full inverse dynamics controller relies on second order derivatives. As we use large simulation timesteps to improve sampling efficiency, these terms are very noisy and cause simulation instability.
-\end{itemize}
- As a consequence in practice \eqref{eq:cmd_sim} suffices in the simulated physics for trajectory generation. 
-On the real robot instead, gravity compensation errors are non negligible. Therefore the need for an additional integral term. Furthermore, dynamic compensation allows to guarantee the system passivity.  
-These modifications generate a discrepancy between the real robot and simulated robot response. Note that these will never be the same, since a model is always a simplification of reality. In ultimate analysis we want the simulated model to be close to the real one, as long as it is still usable, meaning that we can efficiently generate rollout and that feasible solutions in simulation correspond to feasible solutions on the real robot.} 
-
 \subsection{Contact-mesh Simplification}
-A large proportion of simulation time is spent on collision detection. We reduce the component meshes to the relevant ones and simplify to primitive shapes, as shown in \fig\ref{fig:1}. We are especially interested in the collision objects belonging to the robot end-effector and the object. This adaptation tremendously reduces computation especially during the contact phase. \add{The original finger design and vendor mesh is shown in \fig\ref{fig:original_mesh}. Often, as well as in this case, the vendor mesh is a convex hull of the actual finger geometry. In our evaluation we have replaced the convex hull with the real mesh, building it with a set of 9 primitive box primitives as shown in \fig\ref{fig:two_fingers}. Finally we redesigned the hand with a single finger hook setup for non-prehensile manipulation and further reduced the needed box primitives to 3.} We observed that using the original mesh shown in \fig\ref{fig:original_mesh} results in a mean simulation rate of 0.98kHz. In contrast, the two finger mesh and hook finger mesh in \fig\ref{fig:two_fingers}-\ref{fig:hook_finger} allow mean simulation rates of 2.13kHz and 2.94kHz, respectively.
+A large proportion of simulation time is spent on collision detection. We reduce the component meshes to the relevant ones and simplify to primitive shapes, as shown in \fig\ref{fig:1}. We are especially interested in the collision objects belonging to the robot end-effector and the object. This adaptation tremendously reduces computation especially during the contact phase. \add{The original finger design and vendor mesh is shown in \fig\ref{fig:original_mesh}. Often, as well as in this case, the vendor mesh is a convex hull of the actual finger geometry. In our evaluation we have replaced the convex hull with the real mesh, building it with a set of 9 box primitives as shown in \fig\ref{fig:two_fingers}. Finally, to further reduce simulation time, we redesigned the hand with a single finger hook setup for non-prehensile manipulation, further reducing the needed box primitives to 3.} We observed that using the original mesh shown in \fig\ref{fig:original_mesh} results in a mean simulation rate of 0.98kHz. In contrast, the two finger mesh and hook finger mesh in \fig\ref{fig:two_fingers}-\ref{fig:hook_finger} allow mean simulation rates of 2.13kHz and 2.94kHz, respectively.
 
 \begin{figure}[t]
 \centering
 \begin{subfigure}{0.3\columnwidth}
-    \includegraphics[width=\linewidth]{framework_manipulation/figures/hardware/mesh_cropped.pdf}
+    \includegraphics[width=\linewidth]{figures/hardware/mesh_cropped.pdf}
     \caption{Original mesh}\label{fig:original_mesh}
 \end{subfigure}%
 \hfill
 \begin{subfigure}{0.3\columnwidth}
-    \includegraphics[width=\linewidth]{framework_manipulation/figures/hardware/doulbe_simple_cropped.pdf}
+    \includegraphics[width=\linewidth]{figures/hardware/doulbe_simple_cropped.pdf}
     \caption{Two fingers}\label{fig:two_fingers}
 \end{subfigure}%
 \hfill
 \begin{subfigure}{0.3\columnwidth}
-    \includegraphics[width=\linewidth]{framework_manipulation/figures/hardware/single_hook_cropped.pdf}
+    \includegraphics[width=\linewidth]{figures/hardware/single_hook_cropped.pdf}
     \caption{Hook finger}\label{fig:hook_finger}
 \end{subfigure}
 
-\caption{Original collision meshes (a) provided by the robot manufacturer are often approximated by convex hulls, which are inaccurate while also more complex representations. \add{The mesh in (b) is an exact collision shape for the original gripper made of simple boxes primitives. We reduce the end effector complexity designing a simple single-finger gripper (c) made of only 2 boxes obtaining}\remove{In contrast, a simplified mesh (shown in (b) and (c)) can bring more accuracy as well as} a computational performance gain in terms of simulation rate.\label{fig:1}}
+\caption{Original collision meshes (a) provided by the robot manufacturer are often approximated by convex hulls, which are inaccurate while also more complex representations. \add{The mesh in (b) is an exact collision shape for the original gripper made of simple box primitives. We reduce the end-effector complexity by designing a simple single-finger gripper (c) made of only 2 boxes obtaining}\remove{In contrast, a simplified mesh (shown in (b) and (c)) can bring more accuracy as well as} a computational performance gain in terms of simulation rate.\label{fig:1}}
 
 \end{figure}
+
+\subsection{Simulator Tuning}
+\subsubsection{\add{Contact-Mesh Simplification}}
+Crucial to the overall performance is the accuracy of the simulation environment (implementing \eqref{eq:eom}). Unfortunately the discrepancy between the simulator and the real physical model known as the \emph{sim-to-real} gap is unavoidable. A typical failure case consists of an over-estimation of an object's friction. In such cases, we have often observed a ``scratching" emergent behavior where the robot would rely on friction to move the object. In practice friction is hard to measure and depends on the contact patch between surfaces. On the other hand, kinematic constraints between contact points depends on the system geometry which can be accurately measured (e.g. from CAD models). Therefore solutions that exploit the latter are more likely to succeed on the real platform. One can bias the controller towards these solutions by setting, for example, a very low friction coefficient between contact bodies.
+
+\subsubsection{\add{Simulator Stability}}
+
+\add{A big bottleneck of the proposed approach is the computation required to forward simulate multiple samples of the system dynamics in the physics engine. The time complexity is linear in the number of rollouts, the time steps, and horizon. In order to keep a sufficiently long horizon (1s) and a good amount of samples, we increase the time discretization for forward integrating the simulated dynamics. However, simulators suffer instability issues when the time steps are large \cite{erez2015simulation}. A direct implementation of \eqref{eq:low-level-control} in the physics engine would often cause instability during the 1 second time horizon. Fortunately, the efficient simulator provides an internal PD controller \cite{raisim_pd} that allows it to track joint position and velocities with big time steps (0.015 seconds in this work) without suffering instability. The control law is then a simple P velocity controller with compensation of Coriolis and gravity terms:}
+\begin{equation} \label{eq:cmd_sim}
+    \vect{\tau}_{cmd} = \coriolis \dconfigRobot + \vect{g}(\configRobot) - \matr{K}_{D} \dconfigRobotError,
+\end{equation}
+\add{with an appropriate choice of the positive-definite diagonal gain matrix $\matr{K}_{D} \in \nR{\robotDoF\times\robotDoF}$.}
+
+\add{Using a different low-level controller to simulate interaction trajectories inevitably introduces a model mismatch. We argue that if the real and simulated robot can track the joint velocities well, namely they have similar closed loop velocity dynamics, then we can abstract away the low-level control layer and look at the two as robots that can be directly commanded in joint velocity.}
+
+\add{Furthermore, even when the two low-level control laws would be identical, a mismatch is still potentially possible because of numerical and model errors \cite{erez2015simulation}. Addressing these errors requires a comparative study of many simulators and involves system identification, generally a harder problem than simulation, and is outside the scope of our work. Qualitatively, our approach is a good compromise between theoretical guarantees (deploying \eqref{eq:low-level-control} on the real robot), feasibility and simulation stability (deploying \eqref{eq:cmd_sim}) on the simulated robot.}
 

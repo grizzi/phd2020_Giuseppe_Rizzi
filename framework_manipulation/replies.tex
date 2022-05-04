@@ -1,0 +1,1001 @@
+\documentclass[10pt]{article}
+\usepackage{graphicx,color}
+\usepackage{amsmath,amssymb,mathrsfs}
+\usepackage{mathtools}
+\usepackage{graphicx,subfig}
+\usepackage{amsthm}
+
+\newcommand{\qln}{\bar{q}^-}
+\newcommand{\qun}{\bar{q}^+}
+
+%\usepackage[hidelinks]{hyperref}
+%\usepackage{bibentry}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\renewcommand{\baselinestretch}{1.02} %1.05
+\parskip = \medskipamount
+
+\usepackage{vmargin}
+\setpapersize{USletter}
+\setmarginsrb{2.25cm}{2.25cm}{2.25cm}{2.25cm}
+                 {12pt}{20pt}{12pt}{36pt}
+
+\renewcommand{\theenumi}{(\roman{enumi})}
+\renewcommand{\labelenumi}{\theenumi}
+
+
+% Reference to external documents
+
+%\usepackage{xspace}
+%\usepackage{xr}
+%\IfFileExists{./build/main.pdf}{%
+%	\externaldocument[paper-]{./../build/main}
+%	}
+%{%
+%	\externaldocument[paper-]{./main}
+%	}
+	
+%%% HELPER CODE FOR DEALING WITH EXTERNAL REFERENCES
+\usepackage{xr}
+\makeatletter
+\newcommand*{\addFileDependency}[1]{
+  \typeout{(#1)}
+  \@addtofilelist{#1}
+  \IfFileExists{#1}{}{\typeout{No file #1.}}
+}
+\makeatother
+
+\newcommand*{\myexternaldocument}[1]{
+    \externaldocument{#1}
+    \addFileDependency{#1.tex}
+    \addFileDependency{#1.aux}
+}
+%%% END HELPER CODE
+
+% put all the external documents here!
+\myexternaldocument{main}
+
+
+
+% -----------------My Packages----------------------------------------
+
+\usepackage{paralist}
+\usepackage[inline]{enumitem}
+\graphicspath{{images/}}
+\usepackage{bm}
+\usepackage{multicol}
+\usepackage{hyperref}
+
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+%%% Todos and comments
+\definecolor{mygreen}{rgb}{.4,.4,0}
+\newcommand{\todo}[1]{\par\noindent{\color{mygreen}\raggedright\textsc{#1}\par\marginpar{\Large$\star\star$}}}
+\newcommand{\margin}[1]{\marginpar{\color{blue}\tiny\ttfamily#1}}
+
+\newcommand{\referee}[1]{\;
+  \begin{minipage}[t]{.95\textwidth}
+    ``{\small\color{red} \textsc{#1}}''
+  \end{minipage}\medskip
+  }
+
+\newcommand{\refereebit}[1]{\; ``{\small\color{blue} \textsc{#1}}'' }
+
+\usepackage{color}
+\usepackage[dvipsnames]{xcolor}
+
+
+\usepackage{cleveref}
+
+% For the replay
+\newcommand{\version}[1]{\textit{version #1}}
+\renewcommand{\theequation}{R.\arabic{equation}}
+\renewcommand\thefigure{R.\arabic{figure}}
+\renewcommand\thetable{R.\arabic{table}}
+
+
+
+
+
+% My commands --------------------------------------------------------
+
+%% revision commands
+\newenvironment{version2}{\color{blue}}{\ignorespacesafterend}
+\newcommand{\versionTwo}[1]{{\color{blue} #1}}
+
+
+% For the replay
+%\newcommand{\version}[1]{\textit{version #1}}
+\renewcommand{\theequation}{R.\arabic{equation}}
+\newcommand{\modification}[1]{\textit{``#1''}}
+
+
+% ---------- New Symbols and Commands -------------------------
+\input{include/symbol_definition}
+
+
+%% Document info
+\newcommand{\journal}{IEEE Transactions on Robotics}
+\newcommand{\journalRef}{IEEE T-RO 21-0881}
+\newcommand{\editor}{Prof. Eiichi Yoshida}
+\newcommand{\editorEmail}{e.yoshida@aist.go.jp}
+\newcommand{\paperTitle}{A Framework for Interaction Control of Mobile Manipulators}
+\newcommand{\paperStatus}{Revise and resubmit}
+\newcommand{\paperStatusAbr}{[STATUS-ABBREVIATION]}
+\newcommand{\versionNum}{version 1}
+
+
+% ====================================================================
+\begin{document}
+
+%\nobibliography{alias,Main,New,FB}
+\bibliographystyle{apalike}
+
+
+\pagestyle{myheadings}
+\thispagestyle{empty}
+
+\markright{Re: \journalRef: {\sl \paperTitle \ldots}}
+
+\headsep 0.5cm
+
+\bigskip\bigskip
+
+	
+\noindent{\editor\\
+Editor \\
+\journal \\
+{email: \texttt{\editorEmail}}}
+
+\bigskip\bigskip
+
+\begin{flushright}
+
+  
+  Giuseppe Rizzi \\
+  email: \texttt{grizzi@ethz.ch} \\
+  \vspace{1em}
+  
+  Jen Jen Chung\\
+  email: \texttt{jenjen.chung@mavt.ethz.ch} \\
+  \vspace{1em}
+ 
+  Abel Roman Gawel\\
+  email: \texttt{abel.gawel@mavt.ethz.ch} \\
+  \vspace{1em}
+ 
+  Lionel Ott\\
+  email: \texttt{lionel.ott@mavt.ethz.ch} \\
+  \vspace{1em}
+ 
+  Marco Tognon\\
+  email: \texttt{mtognon@ethz.ch} \\
+  \vspace{1em}
+  
+  Roland Siegwart\\
+  email: \texttt{rsiegwart@ethz.ch} \\
+  \vspace{1em}
+  Autonomous Systems Lab, ETH Zurich, 8092 Switzerland \\
+  
+\end{flushright}
+
+\vspace*{2cm}
+
+\noindent
+Zurich, \today%%
+\medskip
+
+\noindent \textbf{\journalRef, \versionNum: \paperStatus. {\sl \paperTitle}}
+
+\bigskip
+
+
+%%%%%%%%%%%%%%%%%%%%%%%% First Page %%%%%%%%%%%%%%%%%%%%%%%%
+
+\noindent
+Dear \editor,
+
+\noindent
+Please find enclosed the revision of our manuscript \journalRef{} submitted
+as a regular paper to the \textit{\journal}.
+
+\noindent
+We would like to thank you, the associate editor, and the reviewers for the patience and effort in reviewing our paper. We appreciated the thoughtful and
+constructive comments on how to improve the paper. In the following pages, we provide detailed replies and a list of the changes that have been made in the revised version according to the associate editor requests and to the reviewers' observations.
+
+\noindent
+We look forward to hearing from you.\\
+Sincerely yours,
+
+%\vspace*{0.25cm}
+
+%\hspace*{0cm} 
+\begin{flushright}
+Giuseppe Rizzi, Jen Jen Chung, Abel Roman Gawel, Lionel Ott, Marco Tognon, Roland Siegwart
+\end{flushright}
+\clearpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% Statement of revision %%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%\setcounter{page}{1}
+%\parindent=0pt
+%
+%\begin{center}
+%  {\bf \LARGE Statement of Changes and Revision}
+%\end{center}
+%\bigskip
+%
+%We would like to thank the reviewers and the Editor for their thoughtful and constructive remarks. Following these comments, we
+%modified the manuscript in a revised version that we hope is now in a better shape.
+%
+%%\todo{To be modified}
+%
+%The major changes we made in the revised version are the following:
+%\begin{enumerate}
+%\item \red{TODO}
+%\end{enumerate}
+%
+%Additionally, we have made a number of minor changes in the text
+%(typos, wordings, etc) and we have also updated the bibliography.
+%
+%In the following, we provide a detailed account of the actions undertaken
+%and answers given in relation to comments and suggestions made by the
+%Editor and the Referees. 
+%
+%\clearpage
+%\bigskip
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% Editor %%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcounter{saveenum}
+%% \setcounter{saveenum}{\value{enumi}}
+%% \setcounter{enumi}{\value{saveenum}}
+
+\bigskip
+%%
+\hspace*{-25pt} \textbf{\large Comments of the Associate Editor}
+
+%%
+\begin{enumerate}[label={[E:\,\arabic{enumi}]}]
+  %\renewcommand{\labelenumi}{[E:\,\arabic{enumi}]}
+
+\item\label{reply:E1:1}
+\referee{On the basis of the reviewers' ratings and comments, we regret to inform you that your paper in the present form cannot be published in the Transactions. However, you are encouraged to submit a revised version of your work addressing the reviewers' concerns. The revised paper will be handled as a new submission that will be reviewed accordingly while keeping track of the previous review material. The paper addresses a relevant topic for the robotics community, it is well written and of good technical quality in general. However, the current state of the manuscript requires a thorough revision. Beside numerous technical comments and helpful recommendations provided by the reviewers, the following points require special attention, particularly because of their critical nature and the fact that they have been criticized by several of the reviewers simultaneously.}
+
+We want to thank the Associate Editor and the Reviewers for the time devoted in the revision of the paper. We are also glad to hear the kind words and the interest in the topic. The provided comments have been carefully analyzed to improve the manuscript according to the reviewers' indications. Thanks to the insightful comments provided by the Associate Editor and Reviewers, we believe that we have significantly improved the new version of the manuscript, called \version{2} from now on.
+
+In the following, we reply to each comment in detail, presenting the works and modifications done to address the Associate Editor and Reviewers' observations. We notice a big overlap of comments among the reviewers. Therefore, for these specifics comments, we provide an extended response in the form of an answer to the associate editor and we refer reviewers to it.
+
+All the modifications done in \version{2} with respect to the previous version of the manuscript (called \version{1}) are highlighted in blue. Furthermore, the accompanying video has been modified to adhere to \version{2} of the paper and include a new experiment. The links have been updated accordingly.
+
+\item\label{reply:E1:2}  \label{reply:ext:contributions}
+\referee{The description of the contributions and the motivation of the work have to be significantly improved and clarified better. This also requires establishing a closer connection to the state of the art to justify the authors’ contributions. Moreover, the seven “contributions” listed in Section I-B are rather a summary of the contents of the paper than a list of actual contributions. Please carefully revise that part and summarise the scientific contributions in a concise way. Please note that all of the four reviewers have emphasised this aspect, which clearly shows the critical nature of this concern!}
+
+We thank the Associate Editor for this comment which has helped us improve the quality and strength of the paper. We are aware that the contributions should guide the reader and if better formulated can help us to convey the right message. To this end, we have summarised the number of contributions to three and updated the list in the paper. 
+
+\begin{enumerate}
+\item[1.] The first and more relevant contribution is a new framework for mobile manipulation of articulated objects. This is also reflected in the updated title that should more closely reflect the paper's main topic. We agree with the reviewers and Associate Editor on the fact that a combination of a planner and tracking controller is not new to the field. Nevertheless, the combination of sampling-based methods, as an interaction-aware planner and barrier methods as a safety layer is a valuable and new contribution. This framework has the great potential to replace the traditional combination of a hard-coded or heuristic-based trajectory generation and trajectory tracking controllers. A formal proof of stability completes the approach and provides that missing safety requirement which is strongly demanded in real world applications. 
+
+\item[2.] The practical insights make a second big contribution as these aspects are often hidden and/or given a minor importance in similar literature. Some reviewers have in fact appreciated this section. In other works it is often unclear what are the practical challenges that one faces when moving to real resource-constrained experiments. Aspects such as contact-mesh simplification, chattering due to the passivity constraints and simulator tuning are fundamental for a successful application and therefore account for a second contribution. To the best of the authors' knowledge, no previous work has applied these techniques to mobile manipulation control and consequently disclosed implementation details which are essential for real-world robot experiments.
+
+\item[3.] Last but not least, the presented work is available in the form of an efficient open-source implementation, which makes up the third and last contribution, in this refined list. To the best of our knowledge, no similar open-source libraries, which are multi-threaded and extensible to different robotic problems are currently available.  
+\end{enumerate}
+
+
+\item\label{reply:E1:3} \label{reply:ext:comparison} \referee{The reviewers found a thorough comparison with state-of-the-art approaches was missing, both in the experimental section and in the literature review. This point is partially related to the one above since a thorough comparison will also help to highlight the authors’ contributions. Please note that three of the reviewers have criticised this point.}
+
+
+We totally see the point of view of the reviewers. In particular, they mention a lack of comparison with traditional model predictive control (MPC) methods. Considering the more concise contribution list, it should now be clear that the paper’s main goal is to introduce an alternative framework to interaction planning and control which is not directly comparable with any of the frameworks generally adopted in the literature. 
+
+The authors are aware that the cascaded architecture that we propose in this paper is not new and is widely used, and more references have been added to the introduction also thanks to the suggestions of Reviewer 2. 
+
+As an example, quadrupedal locomotion is a research field that addresses very similar problems and often deploys a high-level reference generator and low-level tracking controller \cite{bjelonic2019keep}. Nevertheless the application of such methods to manipulation control is not so mature. Often the methodology is to derive the equations of motion for a lumped system with single point contacts and a static environment. 
+
+On the other hand, the proposed method and practical insights allows:
+\begin{itemize}
+    \item the generation of kino-dynamic trajectories that account for more complex collision bodies, through physics simulation;
+    \item interaction with a dynamic environment;
+    \item high scalability, since high-level reference generation is not derived from first principles but all the computation is off-loaded to an accurate physics engine.
+\end{itemize}
+This is in direct contrast to \cite{minniti2021model, bjelonic2019keep}. 
+
+Also, in the referenced state-of-the-art literature \cite{minniti2021model}, the model is simplified to a single point mass with point contacts and MPC is endowed with the task to track a predefined heuristic-based trajectory, assuming additional simplifications as a good initial and rigid grasp. In other words, traditional MPC methods often use MPC to track a reference trajectory during interaction and not to come up with a continuous interaction reference itself. 
+For example, the authors in the recent work \cite{minniti2021model} use an extended Kalman Filter to generate a circular trajectory and a fixed grasp is assumed allowing for combined and simplified robot-environment dynamics  where the environment becomes a 1D spring-mass-damper system. 
+
+We do not employ any of these simplifications and the stability guarantee is formulated from an energetic standpoint, making it valid also in more complex scenarios. We have included these considerations and references in the paper in Section I.
+
+In other words, we designed a novel combination of tools that allows us to generate dynamically consistent trajectories and provide stability guarantees on the real system. The simplifications that we introduce are only on the robot hand geometry and are meant to reduce the computational load of the sampling controller (as also detailed in the paper, \sect V). Given the uniqueness of the proposed method, the authors struggle to see what metric should be used to then compare the new method with any other already available in the literature. 
+
+In order to better highlight the aspects previously mentioned, we have performed an additional experiment where a human operator heavily disturbs the robot leading to losing the grasp. A video of the experiment is available has been added to the supplementary material (see \emph{replanning\textunderscore experiment.mp4}). We have added this experiment to the video accompanying the paper and reference it in the experiments section of \version{2}. We are convinced that this highly dynamic behaviour and re-planning capabilities are not possible with more traditional methods.
+
+Finally, we are also aware that the field of manipulation control is rapidly increasing and that several works already address similar problems. Nevertheless, results are often presented on different platforms deploying algorithms/software which is either not available or require non-negligible in-house knowledge. A benchmark for real-robot mobile manipulation interaction control is still missing in the literature and is probably an aspect on which we, as the scientific community, should devote more energy.
+
+
+\item\label{reply:E1:4} \label{reply:ext:task_description} \referee{Please improve the descriptions of the tasks, as highlighted by R2. Moreover, a higher complexity of the tasks would help to show the capabilities of the proposed approach. As the reviewer mentioned, the current scenarios can probably be successfully accomplished with way
+simpler planners and controllers. Also R5 asks for extended Experiments.
+}
+
+We thank the reviewer and associate editor for the opportunity to highlight this aspect. We have considered this feedback to improve the description of the tasks in subsection VI.A in \version{2} of the manuscript. 
+
+We believe that manipulation of articulated objects with a redundant 10-DoF mobile manipulator is indeed a complex problem as highlighted from the fact that similar robots are yet to be seen and deployed in household environments. We therefore believe that our experiment sufficiently highlights the capabilities of the method.
+
+The opening task requires a big motion range that has to cope with the limited robot workspace induced by its joint limits. It is important to notice that the sampling-based controller is deployed as an interaction-aware and closed-loop reference generator. That means that if the robot hand loses contact or if the robot reaches its limits, the sampling-based method will still try to achieve the task. The additional experiment (see \emph{replanning\textunderscore experiment.mp4} in the supplementary material) clearly shows this capability, as the  user heavily disturbs the robot leading to a loss of the grasp. It is evident that the approach is able to quickly re-plan and execute the task. We have added this experiment to the video accompanying the paper and reference it in the experiments section of \version{2}. Other planners/controllers often generate a trajectory offline based on common heuristics (following an arc). Even re-planning might fail since heuristics do not scale to most complex robot configurations where it is often counter-intuitive to think of the type of interaction that achieves the task. Other approaches would require the robot to stop, wait few seconds to re-plan and finally act, but this is completely not efficient. 
+
+For example, we have observed that the controller was able to exploit the hand collision body (as visualized in the figure 6c, Section V) to interact with the door. For example, in the attached simulated experiment (see \emph{dishwasher\textunderscore opening.mp4} in the supplementary material). In other words, the controller is able to exploit the contact between the hand geometry and the door (at a different point than at the finger) to achieve the task. These and additional considerations have been added in Section I to better highlight the complexity and uniqueness of the approach.
+
+%%%%%%%%%%%%%%%%%
+
+Reviewer 2 mentioned that the experiment would not represent a recurrent situation and that a hinge with higher friction is what we encounter more often. It is quite difficult for our setup and shelf prototype to simulate this type of dynamics. With a rope, instead, we bring interaction to the limit case of extreme force applied to the articulation. This is a sort of worst case interaction scenario that definitely challenges our method more than a high-stiffness of friction articulation. Also, this situation might happen when a joint is stuck (stiction, wear, rust) and more force is required than usual. This way we can better highlight the contribution of the passivity component. 
+
+%%%%%%%%%%%%%%%%
+
+Reviewer 7 additionally raised the question of whether non-prehensile manipulation is justified in this setup. All the shown experiments (manipulation of household furniture) hopefully show that this is a realistic and relevant problem and that indeed non-prehensile manipulation is sufficient. With non prehensile manipulation we can manipulate articulated objects without imposing hard kinematic constraints between the manipulator and the manipulated object. This is purely a design choice that does not sacrifice the capabilities of the controller but rather increases the control envelope and allows for more dynamic behaviour.
+
+\item\label{reply:E1:5} \label{reply:ext:equations}
+\referee{Please address R5’s and R7’s comments concerning the different formulations of the motor commands (57) and (53) and their implications, e.g., on stability and the validity of the passivity
+considerations in the appendix.
+}
+
+We agree with all reviewers that the difference between the two low-level control laws is not sufficiently addressed in \version{1} of the manuscript. Equation (27) and (42) in \version{1} are now equation (57) and (53) in \version{2}, respectively. From now on, to avoid any major confusion, we will use the same numbering as in \version{2} and report here the equations as an additional quick reference for the reviewers. 
+\begin{align*}
+    \commandTorque &= \add{\massMatrix \ddconfigRobotDesired} + \coriolis \dconfigRobotDesired + \vect{g}(\configRobot) - \matr{K}_D \dconfigRobotError - \matr{K}_I \int_{0}^{t} \dconfigRobotError\ d\tau \tag{53} \label{reply:eq:tau_rob} \\
+\commandTorque &= \coriolis \dconfigRobot + \vect{g}(\configRobot) - \matr{K}_{D} \dconfigRobotError \label{reply:eq:tau_sim} \tag{57}
+\end{align*}
+
+We would like to highlight the following points
+\begin{itemize}
+    \item thanks to Reviewer 3 we realized that the term $\massMatrix\ddconfigRobotDesired$ was missing in \eqref{reply:eq:tau_rob}. 
+    \item \eqref{reply:eq:tau_rob} is deployed on the real robot. The derivation in the Appendix shows that this formulation implies system passivity.
+    \item \eqref{reply:eq:tau_sim} is deployed in the physics engine during rollouts sampling to allow the robot to track sampled joint velocity commands. 
+    \item  In simulation, gravity and Coriolis effects can be perfectly compensated and therefore an additional integrator term is not necessary for good tracking performance.
+\end{itemize}
+
+The reason why we deploy a simpler low-level control law in the simulated "digital twin" of the robot is purely practical, as explained in the following and also in the revised \version{2} of the manuscript. As a consequence, it makes more sense to first introduce \eqref{reply:eq:tau_rob} and then in \sect V we explain why a different law is needed in the physics engine to control the robot. 
+
+A big bottleneck of the proposed approach is the computation required to forward simulate multiple samples of the system dynamics in the physics engine. The time complexity is linear in the number of rollouts, the time steps, and horizon. In order to keep a sufficiently long horizon (1s) and a good amount of samples, we increase the time discretization for forward integrating the simulated dynamics. However, the simulator suffers instability issues when the time steps are large \cite{erez2015simulation}. A direct implementation of \eqref{reply:eq:tau_rob} in the physics engine would often cause instability during the 1 second time horizon for large time steps (0.015 seconds in this work). Note that here we are talking about numerical instability rather than control instability. Fortunately, the efficient simulator that we use (Raisim \cite{raisim}) provides an internal PD controller \cite{raisim_pd} that allows us to track joint position and velocities with big time steps without suffering instability. The control law in \eqref{reply:eq:tau_sim} is then exactly the equation describing the internal implementation of the simulation's low-level controller. 
+
+As Reviewer 4 correctly commented, using a different low-level controller to simulate interaction trajectories inevitably introduces a model mismatch. We argue that we care about the closed-loop dynamics, namely that both the real and simulated robot can track the joint velocities well.
+
+Furthermore, even when the two low-level control laws would be identical, still a mismatch is potentially possible because of numerical and model errors \cite{erez2015simulation}. Addressing these errors require a comparative study of many simulators and involves system identification; this is generally a harder problem than simulation, and outside the scope of our work. 
+
+In conclusion, we want the simulated model to be close to the real one, as long as the generated trajectory rollouts are still usable. By \emph{usable} we mean that the kino-dynamic trajectories are \emph{close} to what the real robot is also able to achieve. The additional terms in \eqref{reply:eq:tau_rob} ensure stability, and when these might cause a model mismatch, we rely on the reactive nature of the framework to compute a new reference. Qualitatively, this approach is a good compromise between theoretical guarantees (through \eqref{reply:eq:tau_rob} for the real robot) and feasibility (through \eqref{reply:eq:tau_sim} for the simulated robot).
+
+All these considerations have been added to \version{2} of the manuscript. 
+
+\item\label{reply:E1:6} \label{reply:ext:inner_outer}
+\referee{Please improve the technical descriptions of the FILTER components (R5/R2) and revise confusing parts such as the descriptions of the inner and outer loops (R2/R5).}
+
+The reviewer feedback has been very helpful to improve this confusing part of the manuscript. We have accidentally swapped \emph{inner} with \emph{outer} loop. When using \emph{outer} we figuratively meant that the filter is used \emph{outside} the sampling-based controller. This choice caused this understandable confusion. We have now fixed the nomenclature to match with the conventional outer/inner loop scheme. As a consequence, in \version{2} we have revised symbols and definitions, changing them according to the following scheme:
+\begin{itemize}
+    \item $\Pi_I$ (controller with Sequential FILTER-QP) has been renamed as $\Pi_O$ (outer loop)
+    \item $\Pi_O$ (controller with only FILTER-QP) has been renamed as $\Pi_I$ (inner loop)
+    \item $\Pi_{N}$ unchanged
+    \item $\Pi_{IO}$ unchanged
+\end{itemize}
+The labels in Fig.8 and Fig.10 have been changed accordingly as well as the references in the text.
+
+Secondly, Reviewer~7 also pointed to the fact that the QP deployed in this work is usually called CBF-QP. Often different works present some modifications to the original QP. In our case, in contrast to \cite{ames2019control}, we add slack variables to allow feasibility at all times. We like to call this QP problem \emph{Safety Filter} as in \cite{wabersich2021predictive} to stress the fact that we are not optimising for performance but rather safety. We think that this terminology will be adopted more and more in the future when referencing these types of methods.
+
+\end{enumerate}
+
+
+
+
+\clearpage
+\bigskip
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% REFEREE 1 %%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+\hspace*{-25pt} \textbf{\large Comments by Referee \# 2}
+%%
+
+\begin{enumerate}[label={[R2:\,\arabic{enumi}]}]
+
+\item\label{reply:R2:0}
+\referee{This paper proposes a unified control framework that enables mobile manipulators to execute safe and robust interaction. The framework is built on combining three main techniques: sampling-based control, control barrier functions (CBF), and energy tank. The sampling-based control addresses the optimal control problem from a Bayesian approach, which alleviates the differentiability required in traditional MPC. The CBF is utilized to formulate the constraints such as joint limit or collision in forms of inequality bounds. Lastly, a concept of the energy tank is used to ensure the safety of the system by regulating the input below the maximum energy to execute the task. By integrating these techniques the framework updated the input sequence in an inner loop at a low rate by the sampling-based control and computed the current input in an outer loop at a high rate. To validate the proposed framework, several comparative experiments including object manipulation, obstacle avoidance, and interaction were conducted in simulation and real-world environments.
+\begin{enumerate}
+\item Overall, the paper is well described and well laid-out. Section II(Modeling and problem formulation section) and III(Preliminaries) introduce the problem and the methods that will be used for the proposed formulation very well. Section IV(Control Method) explains each component in detail. It is quite interesting and helpful to have Section V(Practical Aspect) for providing more detailed information about the implementation of the algorithms. Section VI(Numerical and experimental Evaluation) demonstrates and evaluates the performance of the proposed framework. Section VII(Method Limitations and Future Work) is also very helpful to understand the proposed work more in depth.
+\item The supplementary video supports and helps to understand the validation of the proposed framework.
+\end{enumerate}}
+
+We thank the Reviewer for the positive assessment. In \version{2}, we carefully considered the following comments that we believe helped us to significantly improve the contribution and quality of the paper.
+
+\item\label{reply:R2:1} \referee{Figure 7 and 9 are not enough to understand the experiments.}
+
+We incorporated this feedback in \version{2} and improved the experiment description in \sect VI. The images in Figure 7 are meant to show what type of objects we use for evaluation. We have updated the figures, increased their size and used a dashed red arrow to show the expected end-effector trajectory so to better understand the type of task that is visualised.
+
+\item\label{reply:R2:2} \referee{Figures in Figure 7 are too small.}
+
+We increased the figure size to the extent allowed by the paper format.
+
+\item\label{reply:R2:3} 
+\referee{Also, the description of the tasks is better to be provided in more detail. It would be nice if we can understand the tasks without watching the videos.}
+
+The answer to comment \ref{reply:R2:1} should address this concern.
+
+\item\label{reply:R2:4} 
+\referee{The cascade structure combining MPC-like trajectory generator and tracking controller is not novel and actively researched in the field of locomotion (1-2). It is recommended to mention these works, and state the theoretical differences over them if there is any.}
+
+We thank the reviewer not only for pointing out a lack of a thorough comparison but also for suggesting additional interesting references. 
+We hope that the extended answer to the Associate Editor \ref{reply:E1:3} properly addresses this concern. We have extended \sect I (Introduction) to include these new considerations and additional literature.
+
+\item\label{reply:R2:5} 
+\referee{Additionally, there are several recent approaches which combine reinforcement learning, control barrier function, and passivity. Please refer to (3,4). These are also worth to be cited.}
+
+We were happy to deepen our knowledge of the field with the suggested literature. In these works we have found similar ideas and concepts that can be a great inspiration for extending and building on top of the current method. The introduction section of \version{2} extends the literature review with \cite{cheng2019end, choi2020reinforcement}.
+
+\item\label{reply:R2:6} 
+\referee{While the authors propose the framework combining three components, the introduction of sampling-based control seems to be the main part. However, the motivation to exploit sampling-based control rather than MPC is not convincing in the Introduction. What is the advantage of adopting sampling-based control over the recent MPC framework \cite{minniti2019whole}?
+}
+
+We believe that the power of sampling-based control lies in the possibility of simulating arbitrary complex dynamics. This is an unsurpassable limitation of traditional optimization-based approaches. The latter, as in \cite{minniti2019whole}, rely on a first-principles approach which fails to scale and fails to cope with non-continuous dynamics, which is ubiquitous when dealing with switching contacts during an interaction task. 
+
+\item\label{reply:R2:7} 
+\referee{MPC is actively studied in the field of locomotion which includes "contact" dynamics. Please clarify it by referring to other related works.}
+
+We hope that the extended answer to the Associate Editor \ref{reply:E1:3} sufficiently addresses this comment.  As additional clarification and reference for the reviewer, we think that locomotion contact dynamics is often studied for a static environment. Furthermore a lumped model is often used, simplifying all contacts to a single point contact. Last but not least, quadrupedal locomotion addresses the problem of tracking a predefined gate rather than generating a dynamic trajectory whose goal is to change the environment state.
+
+\item\label{reply:R2:8} 
+\referee{Seven contributions in Introduction can be concisely summarised.}
+
+We thank the reviewer for this very productive feedback. This has been a shared concern and we refactored the contributions accordingly to better highlight what is new and unique in the presented work. The reviewer can refer to the extended answer to the Associate Editor \ref{reply:E1:2}.
+
+\item\label{reply:R2:9} 
+\referee{In relation to the previous comments, the demonstrated example tasks seem to be quite simple. These tasks could be planned and controlled with rather simple existing planners and controllers by segmenting the task into two parts: before and after contact. It would be great if more complex or challenging scenarios can be chosen to demonstrate the necessity of the proposed control framework. }
+
+We thank the reviewer for the opportunity to highlight this aspect. Indeed the presented task hides a relatively big complexity. The extended answer to the Associate Editor \ref{reply:E1:4} describes our argument. To this end, we share an additional experiment that should convince the reviewers about the potential of the proposed framework.
+
+
+\item\label{reply:R2:10} 
+\referee{It is usually difficult to compare the proposed method with other existing ones. In this paper, the comparison is conducted with only the proposed methods. However, if it is not easy to compare with others, it is suggested to explain why other methods would not work or they are
+less efficient, compared to the proposed control framework, especially for the chosen example scenarios.
+}
+
+We totally agree with the Reviewer's comment. The complexity of the task, of the software and hardware deployed makes a fair and complete comparison a challenging problem. We improved the task description as well as the qualitative comparison with other methods in the introduction section. The Reviewer can find an extended answer in \ref{reply:ext:contributions} and \ref{reply:ext:task_description}.
+
+\item\label{reply:R2:11} 
+\referee{The reviewer wonders how to interpolate the input sequence for FILTER-QP (1000 Hz) since the input sequence from the sampling-based control is generated at 100 Hz.}
+
+We realized that these implementation details were missing and added them in \version{2} of the manuscript. The sampling-based controller outputs a discretized 1 second horizon trajectory at ca. 100 Hz. The trajectory is discretized using a discretization time interval of 0.015 seconds, resulting in 66 steps. The low-level controller then extracts a joint velocity reference from the joint velocity reference trajectory at the frequency of 1KHz. In particular, it oversamples the joint velocity reference linearly interpolating between subsequent timesteps. The joint reference values are then filtered using the FILTER-QP and then converted to joint torque commands using equation \eqref{reply:eq:tau_rob}. This more detailed explanation has been added in Section VI.A.
+
+\item\label{reply:R2:12} 
+\referee{In experimental evaluation, the reviewer thinks that the average stage cost may be an ambiguous metric to show the validity of the proposed framework because the cost is the sum of various objectives and their different weighting terms.}
+
+We agree with the reviewer. In practice for such a task, we care about task completion rather than the average encountered cost, which in this case is rather a proxy to the constraints violation as they contribute to the total cost. In fact, in the rest of the paper we do not actually make any consideration on the base of the average task execution cost. Figure 8 (Section VI) has been updated removing the first plot. Also we do not list the average cost as an evaluation metric in Section VI anymore. Instead, we keep the cumulative joint and cartesian limits violation as well as the dissipated power.   
+
+\item\label{reply:R2:13} 
+\referee{In the experiments of target reaching and collision avoidance, the weakness of the naive controller is clearly shown. In Fig. 10, when is the failure case of the FILTER-QP? It seems that the violation score is not zero.}
+
+We thank the reviewer for appreciating the experiment and pointing out that a non-zero violation is observed. We should have stressed this aspect more in \version{1} of the manuscript. Note that the FILTER-QP is implemented using soft constraints. The complexity of the safety requirements makes it impractical to implement all the constraints as hard constraints as the problem would often be infeasible when close to the limits. Also the kinematic constraints are derived based on the assumption that the velocity is perfectly followed as it is often the case in Passivity literature (eq. 38). In reality, the robot is torque controlled and velocity is not perfectly tracked. We address this practical problem with more conservative limits, allowing us to cope with a small amount of constraints violation. We have appended a rigorous derivation (see Appendix \ref{app:slack}) showing that an upper bounds on the slack variables imply forward-invariance of a larger set. Therefore starting with a more conservative safe set is a practical way of addressing this problem, without adding complexity to the original QP. These considerations have been added to \version{2}, improving the technical quality of our work.
+
+\item\label{reply:R2:14} 
+\referee{In robust interaction and real experiment, the results clearly show the safe interaction between the robot and the door. However, it is not a normal situation that the door is tied with a rope. For example, the door with stiffness seems more natural setup, which requires a high interaction force to open it.}
+
+We agree with the reviewer that usually articulations are less challenging than in the situation depicted in the experiment. Nevertheless, in preliminary and simulated experiments, we observed that such situations would not highlight the contributions of safety and passivity. With a rope, we bring interaction to the limit case of extreme force applied to the articulation. This is a sort of worst case interaction scenario that definitely challenges our method more than a high-stiffness or friction-articulation. Also this situation might happen when a joint is stuck (stiction, wear, rust) and more force is required than usual.
+
+\item\label{reply:R2:15} 
+\referee{In Eq. (14), the subscript `l' should start from zero.}
+
+We have integrated the Reviewer's comment in \version{2}.
+
+\item\label{reply:R2:16} 
+\referee{In Eq. (15), the subscript letter of the denominator should be different from `l' for clarity.}
+
+We have integrated the Reviewer's comment in \version{2}.
+
+\item\label{reply:R2:17} 
+\referee{In Fig 2., there is  typo: an high-level -> a high-level.}
+
+We have integrated the Reviewer's comment in \version{2}.
+
+\item\label{reply:R2:18} 
+\referee{In the constraints in (21), $\dot{h} \geq - \gamma h$}
+
+We have integrated the Reviewer's comment in \version{2}.
+
+\item\label{reply:R2:19} 
+\referee{In Sec. V. D, please state any reason to select the Savitzky-Golay filter.}
+
+We follow the same procedure as in \cite{williams_information-theoretic_2018}. There it is shown that we keep optimality when smoothing the new input using a local polynomial. This can be either done by solving an optimization problem or more easily using the Savitzky-Golay filter. A clarification has been added in the corresponding section. 
+
+\item\label{reply:R2:20} 
+\referee{Section IV: For the feedback loop, the inner loop is generally faster than the outer loop. In this paper, the way that the term is used may confuse readers. They may be named differently from inner and outer loop to avoid confusion.}
+
+We thank the Reviewer for expressing this point of confusion. We have accidentally swapped \emph{inner} with \emph{outer} loop. As also detailed in \ref{reply:ext:inner_outer}, we have now fixed the nomenclature convention in the \version{2} of the manuscript.
+
+\item\label{reply:R2:21} 
+\referee{In Fig. 11(b), 13(b), Y-axis should be plotted with minus sign.}
+
+The figures (b) show the evolution of the energy in the tank when the passivity is not enforced. In this case, more energy than the one originally stored in the tank is demanded during the task. Then, the energy in the tank would be completely consumed up to the tank singularity at zero. In order to better show the overall demanded energy, we instead plot the cumulative energy flow. As non passive actions are demanded, the plot shows a negative energy, thus more than the energy initially stored in the tank is required.
+
+\item\label{reply:R2:22} 
+\referee{In Appendix A, Shouldn't the equation above Eq. (59) be changed from the equality sign to proportionality sign?}
+
+In Eq.(59) numerator and denominator share the same proportionality constant, hence this cancels out.
+
+\end{enumerate}
+
+\clearpage
+\bigskip
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% REFEREE 2 %%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+\hspace*{-25pt} \textbf{\large Comments by Referee \# 3}
+%%
+
+\begin{enumerate}[label={[R3:\,\arabic{enumi}]}]
+
+\item\label{reply:R3:0}
+\referee{This paper presents a novel interaction control framework composed of sampling-based policy update, QP-based trajectory filtering using control barrier functions, and passivity preservation via a virtual energy tank. The main objective of the extension with control barrier functions is to guarantee that the filtered input sequence fulfills safety-critical and passivity constraints. A passivity analysis is conducted w.r.t. the closed-loop dynamics in joint space, with an energy tank augmentation. Different variants of the proposed control framework are implemented in simulations and experiments with a 10-DOF mobile manipulator and real-world application scenarios. The paper also provides valuable insights of the practical implementation. The paper
+is well written and appropriately cites previous works. The topic addressed could have a high impact, especially in the research area of physical robot-environment interaction. However, I have several comments regarding the current form of the manuscript, which, in my opinion, should be sufficiently addressed by the authors.}
+
+We would like to thank the Reviewer for the kind words and the interest in the topic. We also hope that our work could help the community to advance in this exciting research area. We thank the Reviewer for the time devoted to a careful reading of our work and comments that definitely helped us to improve the technical and presentation quality of the manuscript in \version{2}.
+
+\item\label{reply:R3:1} 
+\referee{The contributions of the paper needs to be summarized more clearly at the end of Sec. I. For example, a review of theoretical background should not be counted as contributions if it is not a review paper.}
+
+Other reviewers and the editor touched upon the same concern. We have revised the contributions as better explained in the extended answer to the Associate Editor \ref{reply:ext:contributions}.
+
+\item\label{reply:R3:2} 
+\referee{The authors should explain why different formulations of motor commands, i. e. (57) and (53), are used for the sampling procedure and the lower-level controller, respectively. The motor command (57) used in the sampling procedure would not be able to achieve any stability of
+the equilibrium points, i. e. the desired robot joint positions and velocities, even when all safety-related constraints are satisfied. }
+
+We thank the Reviewer for pointing out this inconsistency. This has been a common concern and therefore we have extensively addressed it in the extended answer to the Associate Editor \ref{reply:ext:equations}. Note that \eqref{reply:eq:tau_rob} is a stable low-level control law, while \eqref{reply:eq:tau_sim} is used only inside the physics engine to produce reference trajectories. After the Reviewers' comments, we have better explained the differences between the two equations in \version{2} of the manuscript and refactored the presentation accordingly.
+
+\referee{Could this cause a mismatch between the simulated rollouts and the real responses of the system?}
+
+The Reviewer is right. Nevertheless, we care about the closed-loop joint velocity dynamics. When both closed loop dynamics are close, the specific low-level controller deployed is not that important. Nevertheless, when we really want to zero any discrepancy, it is a matter of finding the trade-off between accuracy and practicality of the approach. Note that discrepancy comes also in other different forms, such as error in the model and numerical integration in simulation. These additional considerations and an explanation of why these aspects do not ultimately limit the approach have been added to \version{2} of the manuscript and in the extended reply to the Associate Editor \ref{reply:ext:equations}.
+
+\item\label{reply:R3:5} 
+\referee{Applying (53) into (2) will not result in the derivative of the storage function shown in (77), because the control law in (53) does not contain a feedback-feedforward compensation term for the inertial response: $\massMatrix \ddconfigRobotDesired$.}
+
+We thank the Reviewer for the nice catch. We in fact have this compensation term, but it was missing in the equations. The \version{2} now contains the corrected equations.
+
+\item\label{reply:R3:6} 
+\referee{It is unclear if the presented scheme could provide continuous input signals for the desired joint accelerations.}
+
+The control law does not ensure a smooth acceleration signal. While in our framework we smooth the desired velocity reference using a Savitzky-Golay filter, this does not necessarily mean that accelerations are also smooth. Especially between two optimization steps of the receding horizon, the velocity can still change in a non-smooth way. A smooth interpolation of the acceleration reference between two reference generation steps is an engineering problem that we want to address in the second iteration of the algorithm. Notice that this aspect does not affect the theoretical results presented in the manuscript. 
+
+\item\label{reply:R3:7} 
+\referee{The simulation and experiment results are obtained using different variants of the proposed framework by the authors. One would expect that the alternative with the full implementation of the trajectory filtering block should provide the best performance at the expense of increased computational complexities}
+
+We do not fully understand the Reviewer’s concern. In the evaluation we show that the full framework is the one that performs the best. Nevertheless, the growth of the computational complexity did not play an important role.
+
+\item\label{reply:R3:8} 
+\referee{However, no quantitative comparisons with other works in the literature are provided in the manuscript. Since both the stochastic controller and the sequential FILTER-QP are performed in a receding horizon manner, it would be highly beneficial if the authors could include results of state-of-the-art MPC-based methods for comparison. For example, the method proposed in the paper below:}
+
+We thank the Reviewer for providing additional state-of-the-art references for a more in-depth comparison. We have added the suggested works to our literature review in \version{2}. We hope that the Reviewer finds all necessary answers in the extended reply to the Associate Editor \ref{reply:ext:comparison}.
+
+\item\label{reply:R3:9} 
+\referee{Several safety-related constraints, such as joint position limits, arm reach limits, and self-collision avoidance, are handled in both policy update and trajectory filtering. Is it necessary for the presented framework to have these redundant considerations of constraints in multiple optimization procedures? Could it be possible to only encode the task-related costs (target reaching and object manipulation) in the policy update?}
+
+We agree with the Reviewer on the fact that constraints are considered in multiple stages of the optimization, thus leading to the above question. We argue that if the controller would not be aware of the constraints (through additional cost function terms), it can plan trajectories that violate the constraints. Adding these cost terms helps to prevent this problem. Nevertheless, this is not a formal guarantee of safety and we deploy a QP to enforce motion constraints. Secondly, if the cost function does not consider such constraints, the sampled trajectories would not agree with the solution provided by the QP. In turn this means that the Reference Generation would not exploit the filtered trajectories, as they are “less” optimal based on a purely task related perspective (cost function). Instead, when constraints are added to the cost during trajectory sampling, if sampling is stuck in a region of large constraints violation (as in the obstacle avoidance example in Fig.9, Section VI), then it can really exploit the filtered solution which is fed back from the Sequential-FILTER-QP as a better “hint” towards the optimal trajectory.
+
+\item\label{reply:R3:10} 
+\referee{Besides the joint position and velocity constraints, optimization-based control schemes are often required to take joint torque limits into account during optimization. Can the presented scheme also handle this type of constraints?}
+
+Indeed torque constraints are not considered in the current work. This has not been a problem during simulated and real experiments, but we see that this can be a limitation to be aware of. In any case, we can indirectly avoid violating torque constraint limits, considering two cases:
+\begin{itemize}
+    \item \textbf{free motion:} when the robot is not interacting with the environment, the produced torque is a function of the PI gains and velocity profile. By limiting the velocity and acceleration (through smoothing, e.g using the SavGol filter) and tuning the gains, one can ensure good tracking. In practice then the torque never exceeds its limits.
+    \item \textbf{interaction:} during interaction we can have large tracking errors. Passivity ensures that the system composed of the tank, the robot and the environment is bounded. As the environment is passive, this implies that the robot energy is bounded by the tank energy. If we also upper bound the tank energy (set a maximum limit on the tank energy) the robot energy is also bounded. Namely
+    \begin{equation*}
+    S_{robot} = \frac{1}{2} \dconfigRobotError^T \massMatrix \dconfigRobotError + \frac{1}{2}\configRobotError^T \matr{K}_P \configRobotError < S_{robot_{max}}
+    \end{equation*}
+    It follows that the error will also be bounded and the same consideration as in the previous point can be applied to practically ensure that torque does not exceed the limits.
+\end{itemize}
+Overall we do not directly address torque constraints violation but we argue that practically it is possible to tune the controller to avoid hitting the limits.
+
+\item\label{reply:R3:11} 
+\referee{The authors stated in Sec. IV that the proposed FILTER-QP is "non-invasive". However, it will indeed modify the original control command (sequence) if safety constraints are to be violated. In fact, "minimally invasive" is more often used to describe the behaviour of CBF-QP, see e. g. \cite{ames2019control} cited in the manuscript.}
+
+We have integrated the Reviewer's comment in \version{2} and updated it to “minimally invasive”.
+
+\item\label{reply:R3:12} 
+\referee{What is the difference between the FILTER-QP defined in (41) and the standard CBF-QP, for example, the one defined in \cite{ames2019control}? If there is no major difference between them, it might be better to use the standard name to avoid any misunderstandings.}
+
+
+We are aware that the QP is often referenced as CBF-QP. Often different works present some modifications, in our case, in contrast to \cite{ames2019control}, we add slack variables to allow feasibility at all times. We like to call this step safety filter as in \cite{wabersich2021predictive} to highlight the fact that we are not optimising for performance but rather safety. We think that this terminology will be adopted more and more in the future when referencing these types of methods.
+
+\item\label{reply:R3:13} 
+\referee{In a cascade control scheme, the outer loop generates the setpoint used by the inner loop as input, while the inner loop usually adopts a higher sampling rate than the outer loop. Therefore, shouldn't the input sequence generation be called as the outer loop, and the low-level tracking control as the inner loop?}
+
+We totally agree with the Reviewer. A complete answer has been provided to the Associate Editor. See \ref{reply:ext:inner_outer}.
+
+\item\label{reply:R3:14} 
+\referee{In Fig. 7 and in the simulation part of the provided video, the robot manipulator is detached from the mobile base.}
+
+The figure and part of the video show our simulation. The URDF does not contain the stand mesh but the robot is statically fixed to the base with the same geometry as the real robot.
+
+\item\label{reply:R3:15} 
+\referee{Based on the metric defined in (58), the stochastic controller  actually has the least dissipated power, as shown in Fig. 8 (bottom). Perhaps the power values shown there are computed with an opposite sign?}
+
+The Reviewer is correct. We have now reversed the sign of the last plot in Fig.8.
+
+\end{enumerate}
+
+
+\clearpage
+\bigskip
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% REFEREE 3 %%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+\hspace*{-25pt} \textbf{\large Comments by Referee \# 5}
+%%
+
+\begin{enumerate}[label={[R5:\,\arabic{enumi}]}]
+
+\item\label{reply:R5:0}
+\referee{This paper describes a control framework for interaction control of a mobile manipulator. Overall the paper is well motivated and the literature review is well detailed. The problem you propose to address is of great interest.  However there are concerns about the paper regarding the scientific contribution as well as the form of the paper.}
+
+The authors thank the Reviewer for appreciating our work and the detailed comments that helped to address some critical and confusing parts of the manuscript. We incorporated all the Reviewer's feedback in \version{2}.
+
+\item\label{reply:R5:1} 
+\referee{In the literature review, you introduce sampling-based method by detailing the interest of using it comparing with MPC. At the same time, you mention that the sampling-based method do not formally guarantee stability, this is why you propose to use energy tanks to prove and ensure the stability of the system. You mention Section I.B that the main contribution « is a formally proven stable and robust receding.. ». Could you clarify what is the main contribution of the paper? Is it the proof of stability with energy tanks or the development of a control framework using sampling-based control stable by design thanks to energy tanks ?}
+
+The Reviewer comment is well aligned with the same concern from other Reviewers and the Associate Editor. For this reason we provide a unified unique extended answer to the Associate Editor \ref{reply:ext:contributions}.
+
+\item\label{reply:R5:2} 
+\referee{Section III should be shortened and a part of it put in the appendix.}
+
+We have considered this option but after an initial draft we concluded that the current form better fits the paper flow. We believe the content of Section III is necessary for the reader to understand the role of the CBF and energy tank and to fully appreciate their inclusion in the sambling-based control framework. A good understanding of the deployed control methods is critical since their combination in a novel framework is the core contribution of our work. While this was not sufficiently highlighted in \version{1} of the paper we tried to summarise and restate our contributions to highlight this aspect of our work. This refactored form should help to better follow the paper layout.
+
+
+\item\label{reply:R5:3} 
+\referee{Section IV, when you introduce the control framework, is confusing. Figure 2 is presented with the blocks sequential FILTER-QP and FILTER-QP. While you are describing these two blocks as a «  cascaded control architecture »	 you entitled these inner and outer loops « FILTER-xx ». }
+
+We agree with the Reviewer, and we realize that the high-level presentation of the framework could be refactored to better adhere to standard conventions and improve its clarity. This common concern among Reviewers finds an extended answer in \ref{reply:ext:inner_outer}. We incorporated the suggested changes in \version{2} of the manuscript.
+
+
+\item\label{reply:R5:4} 
+\referee{It is unclear to me what represents these blocks. Does it represent a filtering of data or QP under constraints that computes in real-time the control vector subject to constraints ? It is
+inapropriate to call these FILTER. It is confusing for readers. I think cascaded control architecture with sequential QP controller and QP controller is clearer. 
+}
+
+We hope that the previous clarification partially answers this question. The implemented changes should match more closely with the conventional naming convention. We are aware that the deployed QP is referenced as CBF-QP. Often different works present some modifications, in our case, in contrast to \cite{ames2019control}, we add slack variables to allow feasibility at all times. We like to call this step safety filter as in \cite{wabersich2021predictive} to highlight the fact that we are not optimising for performance but rather safety. We think that this terminology will be adopted more and more in the future when referencing these types of methods.
+
+\item\label{reply:R5:5} 
+\referee{You could provide two additional figures with Figure 2 detailing the green and blue blocks. For your information Fig. 2 on the paper and on the video are not exactly the same please, correct it. }
+
+We answer this comment in the following reply \ref{reply:R5:6}.
+
+\item\label{reply:R5:6} 
+\referee{At the end of section IV. It would be a good addition to express or draw the control framework in a whole. Indeed, the green and blue blocks from Figure 2 do not seem to be detailed with equations in Section IV (is it Figure 5 in Section V?). }
+
+Indeed Figure 5 is a detailed explanation of the blue and green blocks of Figure 2 in \version{1}. We agree that Figure 2 is neither detailed enough nor general and therefore can confuse the reader. We have simplified the diagram and referenced Figure 5 as a detailed explanation of what is exactly happening in the Reference Generation block. The modified captions now also contain a cross-reference that allows the reader to navigate between the two plots and facilitate the reader's understanding of how they relate to each other.
+
+\item\label{reply:R5:7} 
+\referee{Section IV.D, the barrier functions seems to be computed by using the forward kinematics in (38). Could you clarify what you are controlling in the task space ? position of the end-effector only or position and orientation ? }
+
+The barrier functions are deployed to only enforce Cartesian position constraints on certain robot frames, i.e the end-effector or link frames for self-collision avoidance. In Sec. IV, D (second paragraph) we state that:
+“In the following we treat the safety requirements associated to robot frames and denote with $\vect{p}_\mathcal{A} \in \nR{3}$ the position of a generic robot frame A computed through forward kinematics.”, i.e. the end-effector position or links' frames.
+
+\item\label{reply:R5:8} 
+\referee{Theorem 1 is ok. However, the main contribution in my view regards the practical aspects of the implementation of the passivity constraint. You should include these parts together to explain the theoretical proof and the practical implementation.  The practical implementation would deserve to be expanded. }
+
+The Reviewer's point here is not fully clear to us, however, we interpret this comment as: the practical implementation of the passivity constraint is one of the main contributions and therefore the details of the implementation deserve to be expanded. We also believe that the practical implementation is an important point, which is why we have better highlighted it as one of the three contributions of our work. We introduced a tuning parameter $\alpha$ to avoid chattering, thus improving controller behaviour. We thought that a proper explanation would have helped the reader to understand why this adaptation would work. To this end we provide a theoretical interpretation of its influence on the passivity constraint. We think that this aspect more naturally belongs to \sect V, which is meant as a guideline for a practical implementation (not often found in similar literature) and therefore compartmentalise this contribution.
+
+\item\label{reply:R5:9} 
+\referee{In Section VII.B, you mention the method is highly sensitive to model mismatches. In the case of door opening experiment, the application is very challenging. Indeed, the Instantaneous Center of Rotation of the door is rigidly attached with a revolute joint to the robotic hand through the handle. The smallest error in modeling or positioning (position of the mobile manipulator) generates very important internal forces (between handle and robotic arm). It is therefore better to have a control scheme that cancels these internal forces or to reduce them such as the admittance control. In your case the energy tank plays the role of the admittance control by reducing the internal force. It would be interesting to compare theoretically the benefit of your method with respect to the one based on admittance controller in the task space (admittance control including classical QP and constraints for inverse kinematic control) for instance.}
+
+We thank the Reviewer for this interesting food for thought. A traditional admittance controller could indeed be used as a trajectory tracking controller, where the end-effector trajectory is extracted from the sampling-based controller. This can be a complementary approach to the one proposed in this work. Nevertheless, as the stochastic controller already samples in joint space (to generate a task-space motion that is feasible and that naturally satisfies joint limits constraints) it is more natural to use a low-level joint controller. Compliance is then achieved by a means of torque-based joint control. Furthermore this method better exploits the full robot redundancy, with respect to an admittance framework for which an extra redundancy resolution module should be added.
+
+\item\label{reply:R5:10} 
+\referee{The video is very nice and the experiments are convincing. The video is clearer than a part of Section IV. }
+
+We thank  the Reviewer for the kind words and appreciating the video accompanying the paper. We hope that the additions to \version{2} improve the clarity of Section IV.
+
+\item\label{reply:R5:11} 
+\referee{few typos: 
+- eq. 3, the objective metric h is not the same function as h (ZBF) used in eq. 19. Please don't use the same name for two different functions.  
+}
+
+We have integrated the Reviewer's comment in \version{2}.
+
+\item\label{reply:R5:12} 
+\referee{-Section V.C below the Figure 4 « In order to gain a better , consider the the worst.."}
+
+We have integrated the Reviewer's comment in \version{2}.
+
+\end{enumerate}
+
+\clearpage
+\bigskip
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% REFEREE 4 %%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+\hspace*{-25pt} \textbf{\large Comments by Referee \# 7}
+%%
+
+
+\begin{enumerate}[label={[R7:\,\arabic{enumi}]}]
+
+\item\label{reply:R7:0}
+\referee{The submitted work introduces a control framework for nonprehensile manipulation of articulated objects. In a first phase, the robot control is generated by maximizing the task success over a fixed number of simulated robot trajectories in a receding-horizon fashion.
+The task success is evaluated with a cost function, which includes target reaching, collision and self-collision avoidance, joint-position limits, arm reach (very similar to manipulability), object manipulation and power minimization. The object manipulation cost is manually activated once the end-effector is in contact with the object to be manipulated. To further ensure that the optimized control sequence, and hence the sampled trajectory, hardly satisfies the above-mentioned control objectives, it is filtered through the so-called FILTER-QP, a quadratic program that incorporates the control objectives as constraints (joint limits, self collision, arm reach) , in the form of Zeroing Barrier Functions (ZBF). To further ensure the passivity of the
+system, and hence the stability, an Energy Tank is added as ZBF. Finally, the control input is refined by repeating the FILTER-QP sequentially, for a fixed number of simulation steps, that takes as input the filtered control sequence, resulting as the output of the previous optimization step.  To test the framework, first, a simulated experiment compared the performances, in terms of 4 different objectives (stage cost, joint limits and self collision violation, dissipated power), of the proposed controller ($\Pi_{IO}$) with a controller version without the Sequential FILTER-QP ($\Pi_{I}$), with a controller version without FILTER-QP ($\Pi_{O}$) and with a controller without both filters ($\Pi_{N}$), with 4 tasks (opening a door with different kinematic constraints). The results
+showed that $\Pi_{I}$ and $\Pi_{IO}$ outperformed the other controllers. 
+Second, the collision avoidance capabilities are evaluated to substantially understand the differences between $\Pi_{I}$ and $\Pi_{IO}$ with a straight free motion constrained by a sphere between the initial and the desired pose of the robot. In such a situation, the $\Pi_{IO}$ policy is
+beneficial in avoiding to violate the Cartesian limits. Finally, also the passivity of the system is evaluated, with both a simulated and a real-world experiment. In these experiments only $\Pi_{N}$
+and $\Pi_{IO}$ are compared, in terms of system energy, with an opening a door task, with a rope that prevents the full opening of the door. The results showed that, when the rope is cut, the $\Pi_{IO}$ policy prevents the robot from exerting high forces at the end-effector.}
+
+
+We appreciate the Reviewer's detailed understanding of our manuscript, and thank them for their diligent reading and supportive comments regarding our technical content and presentation. We agree with the Reviewer that the presentation of \version{1} had room for improvement and we believe that we have addressed these concerns in \version{2}.
+
+\item\label{reply:R7:1} 
+\referee{The presented method is based on a wide number of existing theories in the area of robot control (sampling-based control, QP, ZBF, Energy Tanks) and are nicely exploited in a very interesting and promising framework. What is not clear is what is the goal of the proposed
+controller? Which problems try to overcome? Is it the lack of stability guarantees of sampling-based methods? As stated by the manuscript, the work combines theories from other works present in the literature. Which is also the contribution to the State of the Art? It is a common practice to clearly state the contributions to the State of the Art. 
+Unfortunately, the list in Sec I-B enumerates the content of the paper, more than the contributions. Among the points of this list, which ones could be listed as contributions to the State of the Art? If the contribution consists mainly in the integration of different theories,
+I am not sure whether, due to the elevated standards of the journal, this is sufficient.
+}
+
+We think that the Reviewer’s concerns are mainly about the goal and contribution of the proposed work. We agree that a common source of confusion is the quite long contribution list that we have summarised in the new version. The Reviewer can refer to the extended answer provided to the Associated Editor \ref{reply:ext:contributions}.
+
+
+\item\label{reply:R7:2} 
+\referee{The experimental results section is lacking. First of all, there is no comparison with a different method from the literature for the non-prehensile manipulation of articulated objects. The 4 different policies ($\Pi_{N}$, $\Pi_{O}$, $\Pi_{I}$, $\Pi_{IO}$) are variants of the same control method. Moreover these haven't been compared in a real-world experiment in terms of performance, but only in terms of passivity. Still this point is strongly related to the previous one, since the way the
+framework should be evaluated is strongly connected to the main contributions of the manuscript.  
+}
+
+We see the Reviewer's concern. We tried to address them in the following replies: \ref{reply:ext:comparison} and \ref{reply:ext:task_description}.
+
+
+\item\label{reply:R7:3} 
+\referee{Experiment 2 (collision avoidance) does not present any object manipulation. }
+
+With Experiment 2 (collision avoidance), our goal is to show that a filtering of the sampled trajectory, thanks to the Sequential FILTER-QP, allows an improved reactive behaviour, while sampling is not sufficient because of drastic changes in the cost landscape. This situation was highlighted more easily during an obstacle avoidance task rather than in a manipulation task, hence the experiment.
+
+\item\label{reply:R7:4} 
+\referee{Which realistic situation in the nonprehensile manipulation does this experiment want to replicate?}
+
+All the experiments (manipulation of household furniture) hopefully show that this is a realistic and relevant problem and that indeed non-prehensile manipulation is sufficient. With non-prehensile manipulation we can manipulate articulated objects without imposing hard kinematic constraints between the manipulator and manipulated object. This is purely a design choice that does not sacrifice the capabilities of the controller but rather increases the control envelope and allows for more dynamic behaviour.
+
+
+\item\label{reply:R7:5} 
+\referee{The real-world experiments present few simplifications that might greatly change the performance of the presented framework, for example the use of the motion tracking system to estimate the door displacement. Since the controller's goal is to maximize the success,
+and the success in these tasks is related to the perception of the system in achieving the task, what would happen in case such values are not sufficiently precise to represent the task success, for instance if the value of door displacement is not always accurate. 
+}
+
+We are very aware of this limitation such that to this end, we dedicated a complete section (VII. Method Limitation and Future Work) to extensively discuss these aspects. We argue that the framework, as with any other model-based controller is sensitive to noise and model inaccuracy. Consider as an example, the task geometry: the finger and the handle are ca. 1cm wide. This implies that if the error in the joint estimate is of a few degrees, the internal controller's model corresponds to the robot hand being on the wrong side of the handle. We do not address state and model estimation in this work, which constitute on their own big research areas and are outside of the scope of this work. As a side note, we are currently working on how to cope with model inaccuracies and bad state estimation, for example feeding back the uncertainty from a traditional state estimator. Last but not least, we are also working on using a perception system that informs the robot where interaction is likely to be successful, therefore relying on more local information (similar to visual servoing). Preliminary results are encouraging and show that we can devise a more robust method that builds on top of what we presented in the current work.
+
+
+\item\label{reply:R7:6} 
+\referee{The brief description in Sec VII-A is not sufficient to evaluate the method performances.}
+
+The goal in our paper is not to thoroughly evaluate the robustness of the method to model mismatches. This is a problem which on its own deserves a dedicated study. Nevertheless, we highlight the fact that this problem is non-negligible as, qualitatively, a small error (>1cm in the handle position) would make the controller fail. As a matter of fact we are working on projects that address this particular problem (see answer above).
+
+
+\item\label{reply:R7:7} 
+\referee{Moreover, the real-world experiments are focused in evaluating the performance of the energy tank in ensuring the passivity of the system. Of course this has been implemented within the presented framework. Nevertheless, an evaluation of the performance of the controller should
+be compared with another controller that features an energy tank or that at least it is passive.}
+
+As previously mentioned, the goal of this work is to present a new framework. It is not clear to the authors what the outcome of such a comparison would be. On a different note, a traditional admittance controller could indeed be used as a trajectory tracking controller, where the end-effector trajectory is extracted from the sampling-based controller. This can be a complementary approach to the one proposed in this work. Nevertheless, as the stochastic controller already samples in joint space (to generate task-space motion that is feasible and that naturally satisfies joint limits constraints) it is more natural to use a low-level joint controller. Compliance is then achieved by a means of torque-based joint control. Furthermore this method better exploits the full robot redundancy, with respect to an admittance framework for which an extra redundancy resolution module should be added.
+
+\item\label{reply:R7:8} 
+\referee{The proposed method enumerates a large number of different theories that are combined together. Nevertheless, the organization of the contents makes the paper very complex to follow. The theoretical contributions are too fragmented, split between different sections, that stops the narration too often and forbid the reader to easily understand how the components are linked together.}
+
+We think that perhaps the confusion was because the contributions of the paper were not stated clearly upfront. With the reworked contributions list to serve as a guide for the reader, the narration should be more linear. In Section I we introduce the state of the art and the motivation and in Section II the problem is mathematically formalised. Section III provides background as we believe that the reader should know which available theory we use instead of jumping to other papers if they are not really in the field. On the other hand, the novel elements of the algorithmic design, which are unique to our work, are described in Section IV. Section V finally describes the implementation considerations, which would be useful for practitioners aiming to deploy this on a real system, etc., therefore it naturally makes up an independent section. We conclude with experiments and future work in Section VI and VII, following a very common storytelling flow. In light of the new contributions list the flow goes from motivation and background to approach and finally evaluation. In connection with \ref{reply:R7:11} we think that the way we named section and subsection in the Control Method section was not optimal. Thanks to the Reviewer's suggestion, we have refactored these sections and titles to better adhere to the content and improve the storytelling.
+
+
+\item\label{reply:R7:9} 
+\referee{For instance, the grasping strategy is not explained  in the introduction and methodology sections, it is briefly mentioned in Sec IV-C (section that mentions) and becomes clear only in Sec VII-C.}
+
+We thank the Reviewer for highlighting this potential gap. Since grasping is not a focus of the current work, we simplify the manipulation problem into a non-prehensile manipulation task, where the robot hand allows for interaction via a hooking strategy. This strategy is autonomously found by the controller, sampling interaction trajectories. A more detailed discussion of the grasping strategy might mislead the readers, shifting their focus on a detail which is not important in our work. Nevertheless, we have added a small sentence in the Introduction section which states up-front that we are using a single hook finger design for non-prehensile manipulation.
+
+\item\label{reply:R7:10} 
+\referee{The result is a lack of cohesion of the different sections, also in the theoretical sections where similar formulas are used in different sections and the difference is not explained (for example eq. (57) vs eq. (53) ) .}
+
+The authors hope that the modifications to \version{2}, incorporating all feedback from Reviewers and the Associate Editor improved the quality and cohesion of the manuscript. In the extended answer to the Associate Editor \ref{reply:ext:equations} we explain the confusion between equation \eqref{reply:eq:tau_sim} and \eqref{reply:eq:tau_rob}. We refactored the paper to present them in a different and more logical order and pushed the motivations for a separate low-level control law in the \emph{Reference Generation} to the Practical Aspects Section V . Also, thanks to the next comment \ref{reply:R7:11}, the Reviewer gave us the opportunity to rework some misleading section titles, making the narration clearer. We believe that \version{2} greatly improves in cohesion and presentation quality.
+
+
+\item\label{reply:R7:11} 
+\referee{Also, often, the titles of sections/subsections are misleading.}
+
+We partially agree with the Reviewer comment. We think that this concern is especially true for the titles and presentation of Section IV (\emph{Control Method}). Based on the Reviewers' comments we reformulated titles and section presentation to avoid some confusion. While other sections are named after what they describe (e.g III.A \textit{Sampling Based Control} explains the sampling-based control theory, V.B \textit{Likelihood mapping} describes details about the likelihood computation), we realized that these subsections where named after the theory deployed for a specific component, rather than the component described therein. \fig 2 has been updated and simplified such that each block corresponds 1:1 to a subsection in the Control Method. This should allow the reader to better relate components to each other. With a better distinction between Reference Generation and Reference Tracking components, we differentiate better the sections and in particular we renamed all the subsection of \sect IV (\emph{Control Method}):
+\begin{itemize}
+    \item \emph{Sampling Based Control} $\to$ \emph{Reference Generation} 
+    \begin{itemize}
+        \item \emph{Cost Shaping} has been removed
+        \item \emph{Cost Scheduling} $\to$ subsection of \emph{Reference Generation}
+    \end{itemize}
+    \item \emph{Barrier Functions} $\to$ \emph{Safety Constraints}
+    \item \emph{Energy Tank} $\to$ \emph{System Stability}
+\end{itemize}
+
+
+\item\label{reply:R7:12} 
+\referee{... the title of the paper is not representative of the subject of the paper, a more detailed title might help the reader to understand the content.}
+
+We agree with the Reviewer that the title might be too generic. We modified the title to better match the content of the paper: “Robust Sampling-Based Control of Mobile Manipulators for Interaction with Articulated Objects” in \version{2} of the manuscript. 
+
+\item\label{reply:R7:13} 
+\referee{Sec I-A The structure of the Related Works section results in a list of different methods. A more detailed explanation of the methods, highlighting pros and cons, and links between topics is required. For example, a paper that presents CBF and passivity theory is already present in the literature. How are the two topics exploited? Moreover, which are the SoA limitations that brought to the development of this new approach?}
+
+We partially agree with the Reviewer on this point. As a matter of fact, we have included additional literature and better explained the differences with similar methods (MPC) as suggested by other Reviewers as well (see \ref{reply:ext:comparison}). This addition should highlight even more the limitations of other current approaches, extending similar considerations already present in \version{1}. On the other hand, most have appreciated the current layout and completeness of the literature review. Given the nature of our work, which combines multiple theories, an extensive review of all the related works would deserve a review paper on its own, thus we decide to just point to the most recent works that serve as foundation for the presented method.
+
+
+\item\label{reply:R7:14} 
+\referee{Sec IV is quite confusing. First of all, the links between the components should be explicitly described, with particular attention to the inputs/outputs and a brief description of what it does. Second, the usage of the  sequentially and point-wise terms does not really help to understand how the controller works. In both cases, adding the mathematical symbols within the description might help. Moreover, there is no need to introduce the different policies $\Pi$ in this section.Since their existence is needed only in the experimental section, I suggest moving it from this section to Sec IV.}
+
+We thank the Reviewer for this insightful comment. We agree and therefore refactored the presentation, \fig 2 and section titles to improve on this aspect. We partially addressed this comment in replies \ref{reply:R7:9} and \ref{reply:R7:11}. Furthermore, we are of the same opinion that the presentation of the multiple variations of the framework ($\Pi_*$) can be moved to the experimental section. We have implemented this change as well in \version{2}.
+
+
+\item\label{reply:R7:15} 
+\referee{Sec IV-A. From the content of this subsection, it is not clear what exactly the sampling-based control is and which is the relation with Sec III-A since it shares the same title. My guess is that it is the name of the whole framework presented in fig. 2. If this is the case, the title and the content of the subsection, that present the low-level kinematic controller used to convert joint torques into joint velocities (\eqref{reply:eq:tau_sim}).
+}
+
+We think that this concern is strongly related to the previous comments and that should have already been addressed with the previous replies and implemented changes.
+
+\item\label{reply:R7:16} 
+\referee{A short description of the low-level controller is needed. It looks like the mixture of an inverse dynamics control (since gravity and other velocity-dependent components are compensated) and a proportional controller, since the torque dynamics is proportional to the velocity
+error. Which are the advantages of such a low-level controller, compared to a PD controller with gravity compensation and to an inverse dynamics controller?
+}
+
+The Reviewer has touched upon a topic that was of main concern for other Reviewers as well. For this reason, we provide a unified extended answer to the Associate Editor \ref{reply:ext:equations}. We stress that these considerations are now also part of \version{2} of the manuscript.
+
+\item\label{reply:R7:17} 
+\referee{Sec IV-D,  adding the slack variables implies a relaxation of the constraints. How is it ensured that the value of such variables is reasonably low? As a matter of fact, finding a trade-off solution to this problem, balancing between the constraints and the goal, might eventually bring the solution far from the goal and eventually not satisfying the control constraints. Is there any theoretical guarantee of that? The results in the experimental section might not be sufficient to ensure the goodness of this step. In my opinion, from a theoretical point of view, this relaxation goes against the purpose of the FILTER-QP, that, as it is mentioned, should sanitize the input sequence.
+}
+
+The Reviewer is correct: using slack variables implies a relaxation of the problem that can potentially cause safety constraints to not be fulfilled. Nevertheless, if the constraints would be implemented as hard constraints, the problem might become unfeasible at the constraint boundary and therefore the approach would be impractical. One can see slack variables as a way to define safety in a larger set than the one for which the hard constraint is originally implemented. We have justified our argument with a rigorous
+derivation (see \ref{app:slack}) showing that one can add upper bounds on the slack variables to imply forward-invariance on this larger set and also added a more concise remark in \version{2} of the manuscript. Starting with a more conservative safe set is a practical way of addressing this problem without adding complexity to the original QP. Finally, this relaxation could be useful in extreme cases when the robot is completely outside of the safe set (e.g jump in the odometry or relocalization). Consider for example the case where the robot base is outside of a predefined working space. This implementation of the motion constraints will produce an input that moves the base back to the safe set rather than dramatically failing.
+
+\item\label{reply:R7:18} 
+\referee{Sec IV-E. The controller in equation (53) does not match with the previously mentioned  controller in equation (57). Which is the relationship between the two? 
+}
+
+We refer the Reviewer to our previous answer to the Associate Editor \ref{reply:ext:equations}.
+
+\item\label{reply:R7:19} 
+\referee{$\matr{K}_D$ and $\matr{K}_I$ gain matrices should be introduced in the text. Is the $\matr{K}_D$ gain matrix the same in the two equations?}
+
+We have incorporated the Reviewer's feedback and introduced the matrices in the text. $\matr{K}_D$ in both equations refers to the gains of the velocity error. As explained previously, $\matr{K}_I$ is a new integral term which is introduced to account for imperfect compensation of non-linear and gravity terms on the real robot.
+
+\item\label{reply:R7:20} 
+\referee{Later then, in equation (46) a new matrix, $\matr{K}_P$ appears. Is it a typo?}
+
+Thanks to the Reviewer comment we simplified the notation in \version{2}. We originally wanted to use a different symbol for the energy formulation. As it turns out in the Appendix, we then choose $\matr{K}_P$ to be equal to $\matr{K}_I$, which is the same gain matrix of the integral term used in the low-level control law. We have now changed $\matr{K}_P$ with $\matr{K}_I$ so that no new symbols are introduced, hoping to make it clearer (the change is also reflected in the Appendix).
+
+\item\label{reply:R7:21} 
+\referee{Then, in eq. (47) $\matr{K}_D$ comes back again. }
+
+The Reviewer can follow Appendix B, equation (77).
+
+
+\item\label{reply:R7:22} 
+\referee{Eq. (51) Which time instant does sigma (in the integration interval) represent? It has not been introduced before. }
+
+It represents the current terminal integration time $t$. We wanted to follow the convention that the integration interval and the integration variable should have different signs. We have changed $\int\limits^{\sigma}_0 (\cdot) dt$ to $\int\limits^{t}_0 (\cdot) d\tau$ in order to be more explicit and adhere to the usual naming convention adopted in similar literature.
+
+
+\item\label{reply:R7:23} 
+\referee{Appendix B the equations do not match with the rest of the paper: in eq (2) $\robotCoriolis$ is used, in eq (53) $\coriolis$ and $\vect{g}(\vect{q})$ appears. I assume, by its definition,$\robotCoriolis = \coriolis + \vect{g}(\vect{q})$. 
+}
+
+We explain the meaning of the terms in section II. However we simplified the notation complexity without introducing a new variable and instead splitting $\vect{b}$ into $\coriolis \dconfigRobot$ and $\vect{g}(\vect{q})$ in equation (2).
+
+\item\label{reply:R7:24} 
+\referee{R7.11.2 By plugging (53) in (2) shouldn't the two terms cancel? 
+}
+
+The control law in (53) (\version{2}) contains $\coriolis \dconfigRobotDesired$ and not $\coriolis \dconfigRobot$, hence the two terms do not cancel-out. This particular form of the control law allows us to obtain the passivity result derived in the Appendix of the manuscript.
+
+\item\label{reply:R7:25} 
+\referee{Why in (77) Also, $\coriolis$ is still present? Further simplifications that are exploited in the computations, such as $\ddconfigRobot = 0$ and  $\massMatrix \ddconfigRobot = \massMatrix \ddconfigRobotError$, should be mentioned and properly discussed. 
+}
+
+Thank to the Reviewer's comment and a second Reviewer catch, we realized that the term $\massMatrix \ddconfigRobotDesired$ was missing in the equation (53), in \version{2}. The derivation in the Appendix should then be correct without the mentioned simplifications.
+
+\item\label{reply:R7:26} 
+\referee{Eq. (50) is important to show that in the overall system the energy does not increase, but where does the $\leq$ 0 come from? 
+}
+
+We thank the Reviewer for pointing out this doubt. The condition mentioned in the comment is the definition of an autonomous passive system, see \cite{willems1972dissipative}. Given the proposed equation and control design, this condition holds true, hence, the system composed of a combination of robot, environment and virtual energy tank is autonomously passive, namely no internal energy is created. 
+
+
+\item\label{reply:R7:27} 
+\referee{Also equation (51) is fundamental, showing that the maximum energy of the system is bounded by the quantity of energy in the tank, how is this used in the control framework? 
+}
+
+
+In order for the passivity condition mentioned in comment \ref{reply:R7:26} to be valid we are relying on the silent assumption that the robot is able to exchange energy with the tank at any time. The fact that the tank energy is a positive definite quantity means that it cannot store negative energy, or equivalently, that it can exchange a finite amount of energy and no more. Therefore we need to ensure that it is never completely depleted, imposing constraints (51) which can be read as a validity condition. We have reworked this section to better highlight these aspects and hopefully improved its clarity.
+
+
+\item\label{reply:R7:28} 
+\referee{It is also not clear how (50) is connected to (51). Only later, in Sec V-C, it is implicitly mentioned that the energy tank limit has been added in the framework as ZBF.
+}
+
+The Reviewer can refer to our previous reply \ref{reply:R7:27}.
+
+
+\item\label{reply:R7:29} 
+\referee{As already mentioned, the paper requires a re-organization of the contents to make it less fragmented and more coherent. Also a revision of the titles of (sub)-sections is required.
+}
+
+We hope that the integration of all previous comments properly addresses the Reviewer concern in the reworked \version{2} of the manuscript.
+
+
+\item\label{reply:R7:30} 
+\referee{Fig 2 should be clarified. The inner and outer loop are difficult to distinguish. The dark green color can't be distinguished from the black. Also the label with rates it is difficult to link to the correct loop. Maybe a proper color code (highlighting the whole loop) might clarify it. 
+}
+
+We agree with the Reviewer that the original version of Fig.2 was neither detailed nor simple enough to clearly identify all the presented components. We have simplified the figure further to better distinguish the high-level functional blocks of the framework. This change should now better highlight the difference between the reference generation and tracking modules. We do not use color codes anymore on the arrows, which should also help to simplify the overall figure and understanding. The caption has a reference to Fig.5 which expands the \emph{Outer Loop} and shows its internal working.
+
+\item\label{reply:R7:31} 
+\referee{The video  is clear and helps to understand the content of the paper.}
+
+We thank the Reviewer for appreciating the accompanying video.
+
+\item\label{reply:R7:32} 
+\referee{The youtube video at the link of the abstract is not available. 
+}
+
+The link is now available.
+
+\item\label{reply:R7:33} 
+\referee{Sec III-A Often the exponential function is used as the success likelihood function. How realistic is this assumption? Can you give evidence?}
+
+It is purely a design choice that fulfills the ordering property: namely a trajectory with higher cost is mapped to a lower probability than a trajectory with lower cost. In fact, we state that any monotonic decreasing function can potentially be used to map cost to pseudo-success likelihood. Furthermore, the exponential function has the interesting interpretation of being related to the free-energy of the system and to the JHB optimality equation as shown in great detail in \cite{theodorou_nonlinear_2015}.  
+
+\item\label{reply:R7:34} 
+\referee{Sec III-A $J(X_t,U_t)$ is introduced first in eq.(10) but it is not defined in the text.}
+
+We thank the Reviewer for this catch. While $J(X_t, U_t)$ is already defined in equation (4) in \version{1}, we have also added it in text in \version{2}.
+
+\item\label{reply:R7:35} 
+\referee{Sec IV-B In paragraph a) Target reaching, could you provide an intuitive explanation of why the logarithm mapping is used? intuitively, as $T \rightarrow T^*$, $T-T^* \rightarrow 0$, $\log(T-T^*) \rightarrow $ ?
+}
+
+Informally speaking the Reviewer can think of a zero pose error corresponding to an identity transform:  $T - T^* = T^{-1} * T = I$. Then $\log(I)=0$, namely if the two frames coincide the twist that moves $T$ to $T^*$ is the zero twist vector. See \cite{blanco2010tutorial} (also referenced in the paper).
+
+
+\item\label{reply:R7:36} 
+\referee{In paragraph b) Collision avoidance: if gamma is equal to zero in contact-free motion, how is it used to avoid collisions?
+}
+
+We agree with the Reviewer that the description is in fact confusing. We should have said that when we desire contact-free motion, we assign non-zero weight to this term, so that if we collide, the trajectory will be assigned a larger cost. This clarification has been added to \version{2}.
+
+
+\item\label{reply:R7:37} 
+\referee{In paragraph c) In eq. (31), it is not clear how the indicator function works with vectors. Does it return a vector with 0 and 1 as values or a single value? }
+
+We have modified the definition in equation (28) (Section IV, B) to also hold for vector values and updated equation (31) to use the inner product accordingly. 
+
+
+
+\item\label{reply:R7:38} 
+\referee{Sec V-E. It is not clear how the CAD model in fig. 6a is simplified to obtain models in 6b-6c.
+}
+
+The simplification process is now better explained. The real robot hand collision mesh looks like the mesh in figure 6b but the original ones provided with the robot library are like figure 6a, which is therefore an over-simplification based on a convex hull approximation. We note that we are way more efficient using primitive collision shapes, such as boxes. Therefore we redesign a completely new robot hand for non prehensile manipulation which has fewer primitives shapes (3 vs 9 boxes) and also matches the actual hand mounted on the robot (as visible in \fig 1).
+
+
+\item\label{reply:R7:39} 
+\referee{Sec VI. It is not clear why not compensating gravity in simulated experiments should reduce the sim-to-real gap.}
+
+We agree with the Reviewer. Indeed we cannot really estimate how bad gravity compensation is in real life (at least, we did not do that). We realized that the imperfect gravity compensation was an implementation detail of a first iteration of the algorithm but that it was not part of the final deployed method anymore. In the reviewed version we have updated the description and removed this unimportant detail.
+
+\end{enumerate}
+
+\appendix
+\input{reply_appendix}
+
+% \bibliographystyle{unsrt}
+\bibliography{references}
+
+\end{document}

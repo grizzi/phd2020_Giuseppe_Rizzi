@@ -1,0 +1,85 @@
+\section{Slack Variables Bounds} \label{app:slack}
+\subsection{Introduction}
+We use slack variables to soften the Zeroing Barrier Function constraints in our optimization problem. The hard constraint has the form
+\begin{equation} \label{eq:zbf-const}
+    \dot{\tilde{h}}(\vect{q}) > -\gamma \tilde{h}(\vect{q})
+\end{equation}
+We defined a softened constraint
+\begin{equation} \label{eq:zbf-const-soft}
+    \dot{h}(\vect{q}) > -\gamma h(\vect{q}) + \delta
+\end{equation}
+where $h$ is a ZBF defined on a shrunken set and $\delta$ is a slack variable. In particular, let $\Delta \geq 0$ be a positive scalar defining the amount of shrinkage and let $\mathcal{C}(\Delta) \subset \mathcal{C}$ be the shrunken forward invariant set, with $\mathcal{C} = \mathcal{C}(\Delta)|_{\Delta=0}$. We want to find a bound on $\delta$ such that when \eqref{eq:zbf-const-soft} is satisfied, then \eqref{eq:zbf-const} is also valid. In other words we want to prove that a soft constraint on the set $\mathcal{C}(\Delta)$ implies a hard constraint on $\mathcal{C}$. We are only interested to the following particular ZBF constraints (used in the paper):
+\begin{align}
+    \tilde{h}_{l} &= \frac{(q^+ - q)(q - q^-)}{(q^+ - q^-)} \label{eq:joint-limits}\\
+    \tilde{h}_{c} &= \frac{1}{2}(||\vect{p}_{i} - \vect{p}_{j}||^2 - d^2) \label{eq:cart-limits}
+\end{align}
+where we reduced the notation complexity with respect to the original formulation. 
+
+\begin{theorem}
+The sets $\mathcal{C}$ defined by \eqref{eq:joint-limits} and \eqref{eq:cart-limits} are control invariant iff equation \eqref{eq:zbf-const-soft} is satisfied and $\delta < \delta(\Delta)$, with $\delta(\Delta)$ a positive monotonic function of $\Delta$. 
+\end{theorem}
+
+\begin{proof}
+We will start with the constraint in \eqref{eq:joint-limits}. We can construct a shrunken invariant set defining more conservative joint limits $\bar{q}^+ = q^+ - \Delta$ and $\bar{q}^- = q^- + \Delta$ with $\Delta > 0$. Then the ZBF reads,
+\begin{align}
+    \dot{\tilde{h}}(q) = \frac{d}{dt} \left(\frac{(\qun + \Delta - q)(q - \qln + \Delta)}{(\qun - \qln + 2\Delta)}\right) \\
+    > -\gamma \frac{(\qun + \Delta - q)(q - \qln + \Delta)}{(\qun - \qln + 2\Delta)}
+\end{align}
+Choosing $\gamma=1$ we develop the LHS and RHS separately,
+\begin{align}
+    \frac{d}{dt} \left((\qun + \Delta - q)(q - \qln + \Delta)\right) 
+    &= \dot{q}(\qun - q)  -\dot{q}(q - \qln) + \dot{q}\Delta - \dot{q}\Delta \\
+    &= \dot{q}(\qun - q)  -\dot{q}(q - \qln)\\
+    &= \dot{h}(q)
+\end{align}
+Going to the RHS, 
+\begin{align}
+   (\qun + \Delta - q)(q - \qln + \Delta) 
+   &= (\qun - q)(q - \qln) + \Delta(q - \qln) + \Delta(\qun - q) + \Delta^2 \\
+   &= (\qun - q)(q - \qln)+ \Delta(\qun - \qln ) + \Delta^2 \\
+   &= h(q) + \Delta(\qun - \qln ) + \Delta^2
+\end{align}
+where we denoted with $h$ a new ZBF valid for the shrunken joint limits. Putting things together we have
+\begin{align}
+    \dot{\tilde{h}}(q) = \dot{h}(q)
+    &> -h(q) - \Delta(\qun - \qln ) - \Delta^2 \\
+    &= -h(q) + \delta(\Delta)
+\end{align}
+The safety margin $\Delta$ defines a ZBF $h$ which when satisfied up to a slack variable $\delta({\Delta})$ implies that the original ZBF constraint in \eqref{eq:joint-limits} is also satisfied iff
+\begin{equation*}
+    \delta > -\Delta(\qun - \qln ) - \Delta^2 = -\Delta (q^+ - q^-) - 3\Delta^2
+\end{equation*}
+
+We now move to the simpler constraints in \eqref{eq:cart-limits}. Again, we choose $\gamma=1$ and define a shrunken Cartesian limit, such that $\bar{d} = d - \Delta$. Then the ZBF constraint in \eqref{eq:cart-limits} reads as,
+\begin{equation}
+    \dot{\tilde{h}}_c(\vect{q}) = \frac{d}{dt}\left( \frac{1}{2} ||\vect{p}_{i} - \vect{p}_{j}||^2 - (\bar{d}+ 
+    \Delta)^2\right) > \frac{1}{2} ||\vect{p}_{i} - \vect{p}_{j}||^2 - (\bar{d}+ 
+    \Delta)^2
+\end{equation}
+Again, we develop the LHS and RHS separately,
+\begin{align} \label{eq:lhs-cart}
+     \frac{d}{dt}\left( \frac{1}{2} ||\vect{p}_{i} - \vect{p}_{j}||^2 - (\bar{d}+ 
+    \Delta)^2\right) &= \frac{d}{dt}\left( \frac{1}{2} ||\vect{p}_{i} - \vect{p}_{j}||^2 - \bar{d}^2\right) \\
+    &= \dot{h}(\vect{q})
+\end{align}
+and,
+\begin{align} \label{eq:rhs-cart}
+    \frac{1}{2} ||\vect{p}_{i} - \vect{p}_{j}||^2 - (\bar{d}+ 
+    \Delta)^2 &= \frac{1}{2} ||\vect{p}_{i} - \vect{p}_{j}||^2 - \bar{d}^2- 
+    \Delta^2 - 2\Delta\bar{d} \\
+    &= h(\vect{q}) - \Delta^2 - 2\Delta\bar{d} 
+\end{align}
+Putting \ref{eq:lhs-cart} and \ref{eq:rhs-cart} together we obtain:
+\begin{align}
+    \dot{\tilde{h}}(\vect{q}) = \dot{h}(\vect{q}) &> -\tilde{h}(\vect{q}) - \Delta^2 - 2\Delta\bar{d} \\ 
+    &= -h(\vect{q}) + \delta(\Delta)
+\end{align}
+Again an upper bound on the slack variable applied to a shrunken ZBF $h$ implies forward invariance of the original set as long as
+\begin{equation}
+    \delta > -\Delta^2 - 2\Delta\bar{d} = -2\Delta d + \Delta^2
+\end{equation}
+Note that the same results hold for the reach constraint as the two constraints have essentially the same form.
+\end{proof}
+
+\subsection{Conclusion}
+Even though we have not directly addressed these bounds on the slack variables in the presented work, we have shown that slack variables actually make the original set control invariant if we use a modified ZBF defined on a shrunken set  $\mathcal{C}(\Delta)$ and we additionally enforce an upper bound $\delta(\Delta)$, where $\Delta$ takes a different meaning according to the specific constraint. 
