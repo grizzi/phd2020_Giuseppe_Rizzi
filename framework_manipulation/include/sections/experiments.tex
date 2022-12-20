@@ -27,7 +27,7 @@ The simulation experiments are conducted on a dynamic manipulator model as descr
   
 \begin{figure}[t]
 \centering
-  \includegraphics[width=0.7\columnwidth]{figures/mosaics/articulated_objects_sim_2x2_labeled.pdf}
+  \includegraphics[width=0.7\columnwidth]{figures/articulated_objects_sim_2x2_labeled.pdf}
   \caption{The four articulated objects used in our simulation evaluations. From left to right: \textit{shelf}, \textit{dishwasher}, \textit{microwave} and \textit{drawer}. \add{A red arrow shows the expected end effector trajectory to perform the task.}} \label{fig:object_manipulation}
 \end{figure}
 
@@ -79,28 +79,28 @@ Overall, the simulated experiments confirm the validity of the full framework (a
 % \hfill
 % \fi
 \begin{subfigure}{1\columnwidth}
-    \includegraphics[width=\linewidth]{figures/methods_comparison/legend.pdf}
+    \includegraphics[width=\linewidth]{figures/legend.pdf}
 \end{subfigure}%
 \hfill
 \begin{subfigure}{\columnwidth}
-    \includegraphics[width=\linewidth]{figures/methods_comparison/object_types.pdf}
-\end{subfigure}%
-\hfill
-\hspace*{-0.2cm}
-\vspace*{0.1cm}
-\begin{subfigure}{\columnwidth}
-    \includegraphics[width=\linewidth]{figures/methods_comparison/joint_limits.pdf}
+    \includegraphics[width=\linewidth]{figures/object_types.pdf}
 \end{subfigure}%
 \hfill
 \hspace*{-0.2cm}
 \vspace*{0.1cm}
 \begin{subfigure}{\columnwidth}
-    \includegraphics[width=\linewidth]{figures/methods_comparison/self_collision.pdf}
+    \includegraphics[width=\linewidth]{figures/joint_limits.pdf}
+\end{subfigure}%
+\hfill
+\hspace*{-0.2cm}
+\vspace*{0.1cm}
+\begin{subfigure}{\columnwidth}
+    \includegraphics[width=\linewidth]{figures/self_collision.pdf}
 \end{subfigure} %\label{fig:self_collision_violation}
 \hspace*{-0.2cm} 
 \vspace*{0.1cm}
 \begin{subfigure}{\columnwidth}
-    \includegraphics[width=\linewidth]{figures/methods_comparison/dissipated_power.pdf}
+    \includegraphics[width=\linewidth]{figures/dissipated_power.pdf}
 \end{subfigure}
 \hfill
 \caption{Comparison between the different control methods. Note that The self-collision barplot has a data point at $3.4$ in the $\Pi_{N}$ method for the \textit{dishwasher} case, which is far outside the plot range.}\label{fig:methods_comparison}
@@ -118,12 +118,12 @@ While the first issue can be addressed by tuning the cost with a trial-and-error
 \begin{figure}[t]
 \centering
 \begin{subfigure}{0.48\columnwidth}
-    \includegraphics[width=\linewidth]{figures/obstacle_avoidance/rollouts_no_filter_labeled.pdf}
+    \includegraphics[width=\linewidth]{figures/rollouts_no_filter_labeled.pdf}
     \caption{Example rollout of $\Pi_{N}$}
 \end{subfigure}%
 \hfill
 \begin{subfigure}{0.48\columnwidth}
-    \includegraphics[width=\linewidth]{figures/obstacle_avoidance/rollouts_filter_labeled.pdf}
+    \includegraphics[width=\linewidth]{figures/rollouts_filter_labeled.pdf}
     \caption{Example rollout of $\Pi_{IO}$}
 \end{subfigure}%
 \hfill
@@ -133,14 +133,14 @@ While the first issue can be addressed by tuning the cost with a trial-and-error
 We repeat the simulation for 10 runs for each of the methods. The results are summarized in \fig \ref{fig:obstacle_avoidance}. As expected, $\Pi_{IO}$ attains the best performance. We further observe that the presence of a FILTER-QP in the inner loop additionally improves robustness as it enforces constraints during the open-loop execution of the optimized trajectory received by the stochastic controller. 
 \begin{figure}[t]
 \begin{subfigure}{1\columnwidth}
-    \includegraphics[width=\linewidth]{figures/methods_comparison/legend.pdf}
+    \includegraphics[width=\linewidth]{figures/legend.pdf}
 \end{subfigure}%
 \hfill
 
 \begin{subfigure}{1\columnwidth}
     \centering
     \hspace*{-0.2cm} 
-    \includegraphics[width=0.6\columnwidth]{figures/obstacle_avoidance/obstacle_avoidance_test_no_legend.pdf}
+    \includegraphics[width=0.6\columnwidth]{figures/obstacle_avoidance_test_no_legend.pdf}
 \end{subfigure}
 \caption{Cumulative Cartesian limits violation for the target reaching and obstacle avoidance task. \ctrlOuter already outperforms $\Pi_{N}$ and \ctrlInner. A further small performance boost is achieved by $\Pi_{IO}$.}
  \label{fig:obstacle_avoidance}
@@ -158,12 +158,12 @@ From the results in \fig \ref{fig:tank_comparison}, we note that when using $\Pi
 \centering
 \begin{subfigure}{\columnwidth}
 \centering
-    \includegraphics[width=0.8\linewidth]{figures/fix_experiment/wrench_with_without_tank.pdf}
+    \includegraphics[width=0.8\linewidth]{figures/wrench_with_without_tank.pdf}
     \caption{The  \textcolor{orange}{\textbf{orange}} shaded area shows the time interval when the object is fixed. Note that this might vary for each experiment as the object reaches the prescribed position at different time points.}
 \end{subfigure}
 \begin{subfigure}{\columnwidth}
 \centering
-    \includegraphics[width=0.8\linewidth]{figures/fix_experiment/energy_with_without_tank.pdf}
+    \includegraphics[width=0.8\linewidth]{figures/energy_with_without_tank.pdf}
     \caption{The energy of the tank when the filter is deployed (\textcolor{red}{\textbf{red}} curve) is always above the prescribed minimum, while it drastically drops in the other case. The plotted energy is computed integrating the dissipated power during interaction.}
 \end{subfigure}
 \hfill
@@ -172,7 +172,7 @@ From the results in \fig \ref{fig:tank_comparison}, we note that when using $\Pi
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.8\columnwidth]{figures/fix_experiment/passivity_coefficient_comparison.pdf}
+\includegraphics[width=0.8\columnwidth]{figures/passivity_coefficient_comparison.pdf}
 \caption{In this figure we show the chattering effect happening when the constraints are enforced with $\alpha = 1/dt = 1000$. In contrast, a lower $\alpha$ greatly alleviates this issue.}\label{fig:tank_as_zbf}
 \end{figure}
 
@@ -189,13 +189,13 @@ The wrench norm and the evolution of the energy in the tank during the experimen
 % \hspace*{-0.0cm} 
 \begin{subfigure}{\columnwidth}
 \centering
-    \includegraphics[width=0.7\linewidth]{figures/hardware_experiments/wrench_norm.pdf}
+    \includegraphics[width=0.7\linewidth]{figures/wrench_norm.pdf}
     \caption{Wrench norm during the door opening experiment. We measure an average wrench of 68 N and 34 N for the $\Pi_{N}$ and $\Pi_{IO}$ methods respectively. The sharp wrench drop corresponds to the time when the rope breaks and energy is suddenly released. The two time series have been aligned to facilitate visualization.}
 \end{subfigure}
 % \hspace*{-0.2cm} 
 \begin{subfigure}{\columnwidth}
 \centering
-    \includegraphics[width=0.7\linewidth]{figures/hardware_experiments/energy_tank.pdf}
+    \includegraphics[width=0.7\linewidth]{figures/energy_tank.pdf}
     \caption{Evolution of the tank energy over time during the door opening experiment. The zoomed plot shows that energy is recovered when the object is released.}
 \end{subfigure}
     \caption{The figures show that when passivity is enforced, the controller is able to limit the overall interaction wrench. This experiment is also reported in the accompanying video.}

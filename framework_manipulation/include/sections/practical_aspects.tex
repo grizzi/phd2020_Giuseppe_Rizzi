@@ -59,7 +59,7 @@ As the sampled control is not sufficiently smooth for a practical application, w
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{figures/schemes/receding_horizon2.pdf}
+    \includegraphics[width=\columnwidth]{figures/receding_horizon2.pdf}
     \vspace{0.1cm}
     \caption{The figure shows the implementation of the receding horizon scheme \add{(\emph{Reference Generation}, see \fig\ref{fig:block_scheme})}. Variables depicted in \textcolor{blue}{\textbf{blue}} and \textcolor{darkgreen}{\textbf{dark green}} represent the information available at the new optimization step and from the previous iteration, respectively. All the previous samples and the nominal trajectory are shifted by $ t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. \addSecond{The Sequential-QP block, highlighted in \textcolor{purple}{\textbf{purple}}, is optional and deployed by different variants of the method}}
     \label{fig:receding_horizon}
@@ -71,17 +71,17 @@ A large proportion of simulation time is spent on collision detection. We reduce
 \begin{figure}[t]
 \centering
 \begin{subfigure}{0.3\columnwidth}
-    \includegraphics[width=\linewidth]{figures/hardware/mesh_cropped.pdf}
+    \includegraphics[width=\linewidth]{figures/mesh_cropped.pdf}
     \caption{Original mesh}\label{fig:original_mesh}
 \end{subfigure}%
 \hfill
 \begin{subfigure}{0.3\columnwidth}
-    \includegraphics[width=\linewidth]{figures/hardware/doulbe_simple_cropped.pdf}
+    \includegraphics[width=\linewidth]{figures/doulbe_simple_cropped.pdf}
     \caption{Two fingers}\label{fig:two_fingers}
 \end{subfigure}%
 \hfill
 \begin{subfigure}{0.3\columnwidth}
-    \includegraphics[width=\linewidth]{figures/hardware/single_hook_cropped.pdf}
+    \includegraphics[width=\linewidth]{figures/single_hook_cropped.pdf}
     \caption{Hook finger}\label{fig:hook_finger}
 \end{subfigure}
 
