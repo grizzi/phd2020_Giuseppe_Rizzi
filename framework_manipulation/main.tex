@@ -32,9 +32,11 @@
 }
 
 
-\author{Giuseppe Rizzi, Jen Jen Chung,~\IEEEmembership{Member,~IEEE}, Abel Gawel, Lionel Ott, Marco Tognon, and Roland Siegwart,~\IEEEmembership{Fellow,~IEEE}% <-this % stops a space
+\author{Giuseppe Rizzi$^1$, Jen Jen Chung$^2$,~\IEEEmembership{Member,~IEEE}, Abel Gawel$^3$, Lionel Ott$^1$, Marco Tognon$^1$,~\IEEEmembership{Member,~IEEE}, and Roland Siegwart$^1$,~\IEEEmembership{Fellow,~IEEE}% <-this % stops a space
 \thanks{This work was supported by the European Union H2020 program under project PILOTING No H2020-ICT-2019-2 871542 and project HERON under grant agreement No 955356.}
-\thanks{The authors are with the Autonomous Systems Lab, ETH Z\"urich, Z\"urich 8092, Switzerland. {\tt\small\{grizzi; chungj; gawela; mtognon; lioott; rsiegwart\}@ethz.ch}}%
+\thanks{$^1$ Autonomous Systems Lab, ETH Z\"urich, Z\"urich 8092, Switzerland. {\tt\small\{grizzi\}@ethz.ch}}%
+\thanks{$^2$ School of ITEE, The University of Queensland, Australia.}%
+\thanks{$^3$ Huawei Technologies, Z\"urich, Switzerland.}%
 }
 
 % The paper headers                                                                                  
@@ -56,7 +58,9 @@
 \begin{abstract}
 
 In this work we investigate and deploy sampling-based control techniques for the challenging task of mobile manipulation \add{of articulated objects.} By their nature, manipulation tasks necessitate environment interactions which require the handling of non-differentiable switching contact dynamics. These dynamics represent a strong limitation for traditional gradient-based optimization methods such as Model Predictive Control (MPC) and Differential Dynamic Programming (DDP) \add{which often rely on heuristics for trajectory generation.} \emph{Sampling-based} techniques alleviate these constraints but do not ensure \add{robots' stability and input/state constraints either.} On the other hand, real-world applications in human environments require safety and robustness to unexpected events. For this reason, we propose a novel framework for safe robotic manipulation of movable \add{articulated} objects. \add{The framework} combines sampling-based control together with \emph{Control Barrier Functions} and \emph{Passivity Theory} that, thanks to formal stability guarantees, enhance the safety and robustness of the method. 
-\add{We also provide the practical insights that} enables robust deployment of stochastic control using a conventional CPU. We deploy the algorithm on a 10-DOF mobile manipulator robot. Finally, we open-source our generic and multi-threaded implementation.
+\add{We also provide the practical insights that} enable robust deployment of stochastic control using a conventional CPU. We deploy the algorithm on a 10-DOF mobile manipulator robot. 
+%\add{A video of the experiments can be found  \href{https://youtu.be/Q1AohXmsLs4}{here}}.
+Finally, we open-source our generic and multi-threaded implementation.
 \end{abstract}
 
 
@@ -113,14 +117,14 @@ is a PhD student in the Autonomous System Lab at ETH Zürich. He received a B.Sc
 \end{IEEEbiography}
 
 \begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{figures/biographies/jjchung.jpg}}]{Jen Jen Chung}
-(Member, IEEE) is a Senior Researcher in the Autonomous Systems Lab (ASL) at ETH Zürich. Her current research interests include perception and learning for mobile manipulation, algorithms for robot navigation through crowds, informative path planning and adaptive sampling. Prior to working at ASL, Jen Jen was a postdoctoral scholar at Oregon State University researching multiagent learning methods and she completed her Ph.D. on information-based exploration-exploitation strategies for autonomous soaring platforms at the Australian Centre for Field Robotics in the University of Sydney. She received her Ph.D. (2014) and B.E. (2010) from the University of Sydney.
+(Member, IEEE) is an Associate Professor in Mechatronics within the School of Information Technology and Electrical Engineering at The University of Queensland. Her current research interests include perception, planning and learning for robotic mobile manipulation, algorithms for robot navigation through human crowds, informative path planning and adaptive sampling. Prior to working at UQ, Jen Jen was a Senior Researcher in the Autonomous Systems Lab (ASL) at ETH Zürich from 2018-2022 and was a postdoctoral scholar at Oregon State University researching multiagent learning methods from 2014-2017. She completed her Ph.D. on information-based exploration-exploitation strategies for autonomous soaring platforms at the Australian Centre for Field Robotics in the University of Sydney. She received her Ph.D. (2014) and B.E. (2010) from the University of Sydney.
 \end{IEEEbiography}
 \vspace{-1cm}
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{figures/biographies/gawela.jpg}}]{Abel Gawel} is currently a Senior Researcher in Computer Vision and Machine Learning with the Huawei European Research Center. Before that he was a Senior Scientist at the Autonomous Systems Lab of ETH Zurich. He received the PhD from ETH Zurich in 2018 and was a visiting Postdoctoral Fellow in the CRI group at NTU Singapore in 2019. His research interests include SLAM, high-accuracy localization, object recognition, and semantic scene understanding with application in construction robotics, industrial inspection, and search and rescue robotics. Prior to joining ETH in 2014, he worked for Bosch Corporate Research and the BMW group.
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{figures/biographies/gawela.jpg}}]{Abel Gawel} is currently a Principal Researcher in Computer Vision and Machine Learning with the Huawei European Research Center. Before that he was a Senior Scientist at the Autonomous Systems Lab of ETH Zurich. He received the PhD from ETH Zurich in 2018 and was a visiting Postdoctoral Fellow in the CRI group at NTU Singapore in 2019. His research interests include SLAM, high-accuracy localization, object recognition, and semantic scene understanding with application in construction robotics, industrial inspection, and search and rescue robotics. Prior to joining ETH in 2014, he worked for Bosch Corporate Research and the BMW group.
 \end{IEEEbiography}
 \vspace{-1cm}
 \begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{figures/biographies/2020_Marco_Tognon_3.jpg}}]{Marco Tognon}
-(S'15-M'18) is a postdoctoral researcher in the Autonomous System Lab (ASL) at ETH Zurich, Switzerland.
+(S'15-M'18) from November 2022 is a tenuered researcher at INRIA Rennes, France, in the Rainbow team. Before he was a postdoctoral researcher in the Autonomous System Lab (ASL) at ETH Zurich, Switzerland.
 He received the Ph.D.~degree in Robotics in 2018, from INSA Toulouse, France, developing his thesis at LAAS-CNRS.
 His thesis has been awarded with three prizes. 
 He received the M.Sc. degree in automation engineering in 2014, from the University of Padua, Italy, with a master thesis carried out at MPI for Biological Cybernetics, T\"ubingen, Germany.

@@ -1,0 +1,485 @@
+\documentclass[10pt]{article}
+\usepackage{graphicx,color}
+\usepackage{amsmath,amssymb,mathrsfs}
+\usepackage{mathtools}
+\usepackage{graphicx,subfig}
+\usepackage{amsthm}
+
+\newcommand{\qln}{\bar{q}^-}
+\newcommand{\qun}{\bar{q}^+}
+
+%\usepackage[hidelinks]{hyperref}
+%\usepackage{bibentry}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\renewcommand{\baselinestretch}{1.02} %1.05
+\parskip = \medskipamount
+
+\usepackage{vmargin}
+\setpapersize{USletter}
+\setmarginsrb{2.25cm}{2.25cm}{2.25cm}{2.25cm}
+                 {12pt}{20pt}{12pt}{36pt}
+
+\renewcommand{\theenumi}{(\roman{enumi})}
+\renewcommand{\labelenumi}{\theenumi}
+
+
+% Reference to external documents
+
+%\usepackage{xspace}
+%\usepackage{xr}
+%\IfFileExists{./build/main.pdf}{%
+%	\externaldocument[paper-]{./../build/main}
+%	}
+%{%
+%	\externaldocument[paper-]{./main}
+%	}
+	
+%%% HELPER CODE FOR DEALING WITH EXTERNAL REFERENCES
+\usepackage{xr}
+\makeatletter
+\newcommand*{\addFileDependency}[1]{
+  \typeout{(#1)}
+  \@addtofilelist{#1}
+  \IfFileExists{#1}{}{\typeout{No file #1.}}
+}
+\makeatother
+
+\newcommand*{\myexternaldocument}[1]{
+    \externaldocument{#1}
+    \addFileDependency{#1.tex}
+    \addFileDependency{#1.aux}
+}
+%%% END HELPER CODE
+
+% put all the external documents here!
+\myexternaldocument{main}
+
+
+
+% -----------------My Packages----------------------------------------
+
+\usepackage{paralist}
+\usepackage[inline]{enumitem}
+\graphicspath{{images/}}
+\usepackage{bm}
+\usepackage{multicol}
+\usepackage{hyperref}
+
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+%%% Todos and comments
+\definecolor{mygreen}{rgb}{.4,.4,0}
+\newcommand{\todo}[1]{\par\noindent{\color{mygreen}\raggedright\textsc{#1}\par\marginpar{\Large$\star\star$}}}
+\newcommand{\margin}[1]{\marginpar{\color{blue}\tiny\ttfamily#1}}
+
+\newcommand{\referee}[1]{\;
+  \begin{minipage}[t]{.95\textwidth}
+    ``{\small\color{red} \textsc{#1}}''
+  \end{minipage}\medskip
+  }
+
+\newcommand{\refereebit}[1]{\; ``{\small\color{blue} \textsc{#1}}'' }
+
+\usepackage{color}
+\usepackage[dvipsnames]{xcolor}
+
+
+\usepackage{cleveref}
+
+% For the replay
+\newcommand{\version}[1]{\textit{version #1}}
+\renewcommand{\theequation}{R.\arabic{equation}}
+\renewcommand\thefigure{R.\arabic{figure}}
+\renewcommand\thetable{R.\arabic{table}}
+
+
+
+
+
+% My commands --------------------------------------------------------
+
+%% revision commands
+\newenvironment{version2}{\color{blue}}{\ignorespacesafterend}
+\newcommand{\versionTwo}[1]{{\color{blue} #1}}
+
+
+% For the replay
+%\newcommand{\version}[1]{\textit{version #1}}
+\renewcommand{\theequation}{R.\arabic{equation}}
+\newcommand{\modification}[1]{\textit{``#1''}}
+
+
+% ---------- New Symbols and Commands -------------------------
+\input{include/symbol_definition}
+
+
+%% Document info
+\newcommand{\journal}{IEEE Transactions on Robotics}
+\newcommand{\journalRef}{IEEE T-RO 22-0352}
+\newcommand{\editor}{Prof. Eiichi Yoshida}
+\newcommand{\editorEmail}{e.yoshida@aist.go.jp}
+\newcommand{\paperTitle}{Robust Sampling-based Control of Mobile Manipulators for Interaction with Articulated Objects}
+\newcommand{\paperStatus}{Revise and resubmit}
+\newcommand{\paperStatusAbr}{[STATUS-ABBREVIATION]}
+\newcommand{\versionNum}{version 2}
+
+
+% ====================================================================
+\begin{document}
+
+%\nobibliography{alias,Main,New,FB}
+\bibliographystyle{apalike}
+
+
+\pagestyle{myheadings}
+\thispagestyle{empty}
+
+\markright{Re: \journalRef: {\sl Robust Sampling-based Control of Mobile Manipulators for Interaction with \ldots}}
+
+\headsep 0.5cm
+
+\bigskip\bigskip
+
+	
+\noindent{\editor\\
+Editor \\
+\journal \\
+{email: \texttt{\editorEmail}}}
+
+\bigskip\bigskip
+
+\begin{flushright}
+
+  
+  Giuseppe Rizzi \\
+  email: \texttt{grizzi@ethz.ch} \\
+  \vspace{1em}
+  
+  Jen Jen Chung\\
+  email: \texttt{jenjen.chung@mavt.ethz.ch} \\
+  \vspace{1em}
+ 
+  Abel Roman Gawel\\
+  email: \texttt{abel.gawel@mavt.ethz.ch} \\
+  \vspace{1em}
+ 
+  Lionel Ott\\
+  email: \texttt{lionel.ott@mavt.ethz.ch} \\
+  \vspace{1em}
+ 
+  Marco Tognon\\
+  email: \texttt{mtognon@ethz.ch} \\
+  \vspace{1em}
+  
+  Roland Siegwart\\
+  email: \texttt{rsiegwart@ethz.ch} \\
+  \vspace{1em}
+  Autonomous Systems Lab, ETH Zurich, 8092 Switzerland \\
+  
+\end{flushright}
+
+\vspace*{2cm}
+
+\noindent
+Zurich, \today%%
+\medskip
+
+\noindent \textbf{\journalRef, \versionNum: \paperStatus. {\sl \paperTitle}}
+
+\bigskip
+
+
+%%%%%%%%%%%%%%%%%%%%%%%% First Page %%%%%%%%%%%%%%%%%%%%%%%%
+
+\noindent
+Dear \editor,
+
+\noindent
+Please find enclosed the revision of our manuscript \journalRef{} submitted
+as a regular paper to the \textit{\journal}.
+
+\noindent
+We would like to thank you, the associate editor, and the reviewers for the patience and effort in reviewing our paper. We appreciated the thoughtful and
+constructive comments on how to improve the paper. In the following pages, we provide detailed replies and a list of the changes that have been made in the revised version according to the associate editor requests and to the reviewers' observations.
+
+\noindent
+We look forward to hearing from you.\\
+Sincerely yours,
+
+%\vspace*{0.25cm}
+
+%\hspace*{0cm} 
+\begin{flushright}
+Giuseppe Rizzi, Jen Jen Chung, Abel Roman Gawel, Lionel Ott, Marco Tognon, Roland Siegwart
+\end{flushright}
+\clearpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% Statement of revision %%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%\setcounter{page}{1}
+%\parindent=0pt
+%
+%\begin{center}
+%  {\bf \LARGE Statement of Changes and Revision}
+%\end{center}
+%\bigskip
+%
+%We would like to thank the reviewers and the Editor for their thoughtful and constructive remarks. Following these comments, we
+%modified the manuscript in a revised version that we hope is now in a better shape.
+%
+%%\todo{To be modified}
+%
+%The major changes we made in the revised version are the following:
+%\begin{enumerate}
+%\item \red{TODO}
+%\end{enumerate}
+%
+%Additionally, we have made a number of minor changes in the text
+%(typos, wordings, etc) and we have also updated the bibliography.
+%
+%In the following, we provide a detailed account of the actions undertaken
+%and answers given in relation to comments and suggestions made by the
+%Editor and the Referees. 
+%
+%\clearpage
+%\bigskip
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% Editor %%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcounter{saveenum}
+%% \setcounter{saveenum}{\value{enumi}}
+%% \setcounter{enumi}{\value{saveenum}}
+
+\bigskip
+\hspace*{-25pt} \textbf{\large Comments of the Associate Editor}
+
+\begin{enumerate}[label={[E:\,\arabic{enumi}]}]
+
+\item\label{reply:E1:1}
+\referee{
+On the basis of the reviewers' ratings and comments, your paper is
+conditionally accepted to the IEEE Transactions on Robotics. The authors could convince three of the four reviewers with their contribution. The authors have to address mainly R2’s remaining comments. All of them are no critical issues, but including them will further improve the quality and readability of the manuscript.
+}
+
+\answerReady{We deeply thank the Associate Editor for this opportunity to show our research effort and to improve the existing manuscript incorporating the valuable feedback of all reviewers. We have further adapted the manuscript to also include the suggestions of Reviewer 2, while providing answers to further doubts to all reviewers. For further details, the Associate Editor can go through the Reviewer's 2 replies. As in the first resubmission, the updated text is highlighted in blue.}
+
+\end{enumerate}
+
+\hspace*{-25pt} \textbf{\large Comments by Referee \# 1}
+\begin{enumerate}[label={[R1:\,\arabic{enumi}]}]
+
+\item\label{reply:R1:1}
+\referee{The author's reply has comprehensively answered the reviewer's previous comments, and the revised manuscript has been sufficiently improved, together with an additional real-robot experiment considering human-robot interaction. In the reviewer's opinion, the manuscript is well-suited to T-RO.}
+
+\answerReady{We thank the reviewer for appreciating the author’s efforts put in this new submission of the manuscript.}
+
+\end{enumerate}
+
+\hspace*{-25pt} \textbf{\large Comments by Referee \# 2}
+\begin{enumerate}[label={[R2:\,\arabic{enumi}]}]
+
+\item\label{reply:R2:1}
+\referee{The updated title is very good for understanding the content of the paper. Accordingly, the abstract is well updated for explaining their work. However, the conclusion is not updated. It would be nice if the authors also can take a look at the conclusion. In this revised version, the contributions are now summarized into three. Although the last one is greatly appreciated, the efficient open-source implementation, it may be difficult to be considered as a scientific contribution. Also, as the authors mentioned in Section VII, there are many practical aspects to be considered. The reviewer doubts that open source can be easily used by other people.}
+
+\answerReady{We agree with the reviewer on this aspect. Although the open source implementation is mentioned in the paper we see the difficulty in adopting implementations that are not “production-ready”. Nevertheless, we believe that the open source implementation can greatly boost the adoption of the algorithm as practitioners and researchers in the same field can build on top of the existing code-base. For this reason we would like to keep this mention in the manuscript.}
+
+\item\label{reply:R2:2}
+\referee{In Introduction. B. Contributions well explains contributions. It seems
+that the numerated contribution is redundant, so not needed.}
+
+\answerReady{In retrospect we agree with the Reviewer. The numerated list has been removed in the new version of the manuscript and cohesively merged with the previous paragraph.} 
+
+\item\label{reply:R2:3}
+\referee{In the experiments, the comparison is among its own methods, a kind of an ablation study. However, it would be nicer if the authors explicitly mention why the proposed approach could not be (fairly?) compared with other existing approaches. This kind of explanation would make the contribution of the paper more understandable to the readers.}
+
+\answerReady{In the updated version of the manuscript we make this aspect more clear and explicit. In particular, we write:
+"Note that the goal of this section is to evaluate the validity of the framework. Nonetheless, similar experiments could be conducted with a combination of an admittance control scheme. However, a stochastic controller already samples in joint space, thus optimizing for the all DoF, while also accounting for constraints violation. An admittance controller would instead require and extra redundancy resolution module."}
+
+\item\label{reply:R2:4}
+\referee{Section V and VII provide very good and practical information. However,
+some of them seem to be redundant. Please check if some of them can be merged.}
+
+\answerReady{After a careful read of the pointed sections, only a small amount of text could be shortened at the cost of reduced clarity and understandability of the content. Therefore, the authors decided to not further shorten sections V and VII.}
+
+\item\label{reply:R2:5}
+\referee{Algorithm 1, which is the sequential filter QP, includes filter QP.
+However, in Figure 2, sequential filter QP and filter QP are separately
+represented. This creates confusion.}
+
+\answerReady{The authors think that Figure 2 is already a pretty simplified representation of the algorithm. Indeed the Filter QP is used for enforcing at high rate the safety requirements, and thus it is a separate block even though the same problem is solved in a sequential manner in the outer control loop.}
+
+\item\label{reply:R2:6}
+\referee{It would be nice if the relation between Figure 5 and Figure 2 are
+clarified. In the caption of Figure 5, the sequential filter QP is
+optional. Is it??}
+
+\answerReady{The Reviewer is correct. We already mention that the schemes in figure 5 are a visual of the internals of the Reference Generation block in figure 2. In the updated caption in Fig. 5 we state: "The Sequential-QP block, highlighted in \textcolor{purple}{\textbf{purple}}, is optional and deployed by different variants of the method.".}
+
+\item\label{reply:R2:7}
+\referee{In the caption of Figure 5, $\Pi_O$, $\Pi_{IO}$ are mentioned, but they are introduced in Section VI later.}
+
+\answerReady{We have removed this premature reference as the figure can be well understood without mentioning this later notation.}
+
+\item\label{reply:R2:8}
+\referee{Figure 9 is not easy to understand. What is the obstacle? The whole red
+sphere? In Figure 9(a) the robot is stuck?}
+
+\answerReady{Thanks for the valuable feedback. We have improved the caption to help the reader understand the figure and the experiment that it represents.}
+
+\item\label{reply:R2:9}
+\referee{In (29), $T-T^*=0$ if they are the same?}
+
+No, this is not the case, as the difference must be interpreted in the SE3 space. Therefore when two poses are the same $T-T^*$ is the identity transformation and the log is the null motion vector. Informally the logarithmic mapping computes the linear and angular velocity that integrated over the unit time, bring $T$ on $T^*$. 
+
+\item\label{reply:R2:10}
+\referee{In Figure 11 (a) (b) and Figure 13 (b), the vertical axis always has
+positive values above and below zero.}
+
+\answerReady{This should not be the case, maybe the uploaded version got corrupted at some point. Please check that the new one is not corrupted and if so that is not intended.}
+
+\item\label{reply:R2:11}
+\referee{In the low-level controller (Eq. (53)), the integral term of joint
+velocity error is included. The integral term seems good in terms of
+tacking, but the reviewer wonders if it has a trade-off in terms of the
+interaction even though the constraint Eq. (52) is enforced.}
+
+\answerReady{The reviewer correctly points to a known problem, which is a reduction of stability margin. In practical terms, this means that there is a larger energy flow between the controlled system and the tank that can be therefore easily depleted. Consequently one must correctly tune the energy budget stored in the tank.}
+
+\item\label{reply:R2:12}
+\referee{In Fig. 7 and in the simulation part of the provided video,
+the robot manipulator is detached from the mobile base. The URDF does not contain the stand mesh but the robot is statically fixed to the base with the same geometry as the real robot. It would be nicer for the readers if this fact is mentioned or the connecting part is also illustrated.}
+
+\answerReady{The authors realize that this is a common point of confusion for many viewers. We have included a label explaining that the visualization is only a simulation artifact.}
+
+\item\label{reply:R2:13}
+\referee{The authors answered "... A traditional admittance controller
+could indeed be used as a trajectory tracking controller, where the
+end-effector trajectory is extracted from the sampling-based
+controller. This can be a complementary approach to the one proposed in
+this work”. These comments would be very helpful for the readers to
+understand the contributions of the paper. It would be good to consider
+adding this kind of comment somewhere in the paper.}
+
+\answerReady{We thank the reviewer for this opportunity to improve the paper. We have already addressed this comment in the answer to \ref{reply:R2:3}.}
+
+\end{enumerate}
+
+\hspace*{-25pt} \textbf{\large Comments by Referee \# 3}
+\begin{enumerate}[label={[R3:\,\arabic{enumi}]}]
+
+\item\label{reply:R3:1}
+\referee{Dear authors, thanks for the detailed response. The paper methodology now is considerably more clear and cohesive. However, the main general concerns from the first review remain to be properly addressed. With respect to the new contribution list, as already mentioned in the first review, the presented method is based on a wide number of existing theories in the area of robot control. The so-called sampling based control exploited in the work is strongly inspired by [13, 14, 15]. A similar method was published by the authors in [Brunner et al. 2022]. The usage of ZBF with QP formulation is taken from [20], while the addition of the energy tank was introduced already in [23]. Also the formal stability proof through energy tanks is a quite common practice. The novelty consists in the integration of such theories in a unified framework, which might not be sufficient to ensure publication in this high-quality journal. [Brunner et al. 2022] M. Brunner, G. Rizzi, M. Studiger, R. Siegwart and M. Tognon, "A Planning-and-Control Framework for Aerial Manipulation of Articulated Objects," in IEEE Robotics and Automation Letters, 2022, doi: 10.1109/LRA.2022.3191178.}
+
+\answerReady{We thank the Reviewer for the challenging feedback. We believe that unifying many theories is at the basis of robotics and that it's a non-trivial part of research progress. Robotics as a multi-disciplinary field, is highly characterized by combining multiple theories and find the "right" interfaces between them. Indeed, the paper mentioned in the comment is a follow-up of the current work, which proves the validity of the framework and the developed practical solution to the manipulation of articulated object. It further proves the applicability of the method to even more complex and dynamic systems, namely, omni-directional drones.} 
+
+\item\label{reply:R3:2}
+\referee{Also, as stated by the authors by themselves, the practical insights
+are crucial to make the system working and I personally appreciate the
+presence in the paper. In my opinion, due to the integration nature of
+the work, they belong to the methodology. Moreover, I believe that,
+behind many literature study papers (if not all of them), practical
+aspects are fundamental for the correct implementation of the presented
+approach but in theoretical-oriented works they’re not considered as a
+major contribution per se.}
+
+\answerReady{We thank the Reviewer for appreciating the author's effort in the Practical Aspects section. In the author's opinion, the fact that practical aspects are not considered a major contribution per sé is not necessarily good and to be considered correct practice. Robotics, differently from many other disciplines, is applied science and the practical aspect should cover whenever possible, a non secondary role.}
+
+\item\label{reply:R3:3}
+\referee{The open source availability of the code is noteworthy. To the best
+of the reviewer's understanding, it provides the executables used by
+the authors to run the experiments only with the proposed hardware (but
+no documentation on how to run them). To be suitable as a contribution
+for the robotics community, I expected to find a well-documented open
+source library that can be exploited with different hardware, such as
+robots, controllers etc, with demos and examples. Only in this way
+other researchers are going to be motivated to test and use your code.}
+
+\answerReady{The authors must disagree with the Reviewer comment. In particular, the provided code contains examples, demos and documentation that should guide the practitioner in the adoption and deployment of the algorithm. On the other hand, it is clear that this is not production code, and that therefore is must be taken "as is", and that modification might be required in order to fulfill the user's specific needs.}
+
+\item\label{reply:R3:4}
+\referee{The comments on the experimental section remain mainly unaddressed.
+In particular, the real-world experiments still do not suffice to show
+the advantages of the proposed framework with respect to other SoA
+approaches.}
+
+\answerReady{We are sorry to hear that our additional efforts still do not meet the Reviewer's requirements. The authors believe that the current experimental section shows the validity of the framework and that no further experiments are required.}
+
+\item\label{reply:R3:5}
+\referee{
+It is unchallengeable the fact that it is often tough to
+find a metric to compare the method with with any other already in the
+literature, but it is an intrinsic part of the process of evaluation of
+a theory/method. The underlying problem is that if you could not
+compare your method to others in the literature, future contributions
+will also not be able to compare to yours. 
+}
+
+\answerReady{As already explained in the previous answers, the energy and know-how required for this comparison goes outside the scope of the work and misses its intent, which is to show a novel method which combines multiple theories. As such, there is no 1-1 comparison with other methods and it is not clear what we could deduce from such a non trivial and arguable comparison.}
+
+\item\label{reply:R3:6}
+\referee{It would be commendable if the authors could start to devote some energy from this work. The authors might take inspiration from some relevant EU projects, such as BRICS (https://cordis.europa.eu/project/id/231940 and its benchmark for mobile manipulation) and EUROBENCH (https://eurobench2020.eu/ and its founded projects), and the robosuite framework (https://robosuite.ai/)}
+
+\answerReady{Thanks for pointing out these resources, we were not aware of them. The Reviewer should understand that the adoption of these practices is far from reality and that these tools are in a live development stage and often not easy to use or well documented as stated in the project description. Nevertheless we are happy to see that the research community has been working on this issue and we will keep up to date with the mentioned and similar approaches and deploy them in our research as soon as they reach the right maturity level.}
+
+\item\label{reply:R3:7}
+\referee{Still the presence of non-realistic simplifications, such as the
+motion tracking system in the experiments and the manual activation of
+certain penalties in the cost function, strongly limit the impact of
+the proposed framework in real-world scenarios. Due to the presence of
+technical and practical aspects in the paper, a greater attention (than
+a brief discussion on methods limitations) should be paid on problems
+such as the robustness of the approach and the applicability to real
+world scenarios.
+}
+
+\answerReady{We believe that the proposed framework is a sufficient contribution to the community. We also believe that understanding its limitations lays the foundation for future contributions. This is especially true, since we do not limit ourselves to list such limitations but to also hint to possible solutions. These, for sake of time and scope, can not be included and developed for a journal publication. Instead, we are working to these in parallel projects that could be opened to the community soon, thus revealing the incremental nature of our work.} 
+
+\item\label{reply:R3:8}
+\referee{Finally, I'd like to give some advice to the authors to ease the
+reviewer's job in future reviewers' responses. When a sentence/section
+is added in the paper due to a reviewer comment, I suggest the authors
+include it also in the reviewers reply, under the reviewer comment, so
+it appears immediately how such comment has been addressed in the
+paper. Also, in the newly submitted paper, together with the blue
+highlighted additions, also the cut parts (for instance highlighted in
+red) sometimes are useful. }
+
+\answerReady{We thank the Reviewer for its feedback. We considered adding strike-through parts to highlight what was deleted or changed but because of the refactoring of sections and paper structure, we realized that such visual help was eventually hindering a better understanding of the applied changes. Nevertheless we will keep the Reviewer's feedback in mind for this and future rebuttal processes.}
+
+\end{enumerate}
+
+\hspace*{-25pt} \textbf{\large Comments by Referee \# 3}
+\begin{enumerate}[label={[R4:\,\arabic{enumi}]}]
+
+\item\label{reply:R4:1}
+\referee{The quality of the article has been improved. The contribution is now
+clear as well as its positioning in relation to the literature review.
+No additional comments to make.
+}
+
+\answerReady{We thank the Reviewer for appreciating the author’s efforts put in this new submission of the manuscript.}
+
+\end{enumerate}
+
+\appendix
+
+% \bibliography{references}
+
+\end{document}

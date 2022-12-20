@@ -67,7 +67,7 @@
 \newcommand{\ddconfigRobot}{\ddot{\vect{q}}} % Robot configuration
 \newcommand{\robotDoF}{n_q} % Robot dof
 \newcommand{\massMatrix}{\matr{M}(\configRobot)}
-\newcommand{\coriolis}{\matr{C}(\configRobot, \dconfigRobot)}
+\newcommand{\coriolis}{\matr{C}_r(\configRobot, \dconfigRobot)}
 \newcommand{\error}[1]{\tilde{#1}}
 \newcommand{\desired}[1]{#1^*}
 \newcommand{\configRobotError}{\error{\vect{q}}} % Robot configuration
@@ -140,8 +140,12 @@
 
 \ifreview
 %\newcommand{\remove}[1]{\sout{#1}}
-\newcommand{\remove}[1]{\sout{}}
-\newcommand{\add}[1]{\color{blue}{#1} \color{black}}
+\newcommand{\remove}[1]{\color{red}{#1} \color{black}}
+\newcommand{\add}[1]{#1}
+% \newcommand{\addSecond}[1]{\color{blue}{#1} \color{black}}
+\newcommand{\addSecond}[1]{#1}
+
+\newcommand{\answerReady}[1]{#1}
 
 \newcommand{\final}[1]{ 
 \begin{minipage}[t]{0.95\textwidth}

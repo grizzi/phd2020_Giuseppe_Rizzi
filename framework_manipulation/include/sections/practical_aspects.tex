@@ -61,7 +61,7 @@ As the sampled control is not sufficiently smooth for a practical application, w
     \centering
     \includegraphics[width=\columnwidth]{figures/schemes/receding_horizon2.pdf}
     \vspace{0.1cm}
-    \caption{The figure shows the implementation of the receding horizon scheme \add{(\emph{Reference Generation}, see \fig\ref{fig:block_scheme})}. Variables depicted in \textcolor{blue}{\textbf{blue}} and \textcolor{darkgreen}{\textbf{dark green}} represent the information available at the new optimization step and from the previous iteration, respectively. All the previous samples and the nominal trajectory are shifted by $ t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. The Sequential-QP block, highlighted in \textcolor{purple}{\textbf{purple}}, is optional and deployed by methods \ctrlOuter and $\Pi_{IO}$.}
+    \caption{The figure shows the implementation of the receding horizon scheme \add{(\emph{Reference Generation}, see \fig\ref{fig:block_scheme})}. Variables depicted in \textcolor{blue}{\textbf{blue}} and \textcolor{darkgreen}{\textbf{dark green}} represent the information available at the new optimization step and from the previous iteration, respectively. All the previous samples and the nominal trajectory are shifted by $ t - t^-$. The $K$ best input sequences (according to their weights) are reused and concatenated to a batch of $N-K$ fresh samples to perform new rollouts. \addSecond{The Sequential-QP block, highlighted in \textcolor{purple}{\textbf{purple}}, is optional and deployed by different variants of the method}}
     \label{fig:receding_horizon}
 \end{figure}
 
@@ -85,7 +85,7 @@ A large proportion of simulation time is spent on collision detection. We reduce
     \caption{Hook finger}\label{fig:hook_finger}
 \end{subfigure}
 
-\caption{Original collision meshes (a) provided by the robot manufacturer are often approximated by convex hulls, which are inaccurate while also more complex representations. \add{The mesh in (b) is an exact collision shape for the original gripper made of simple box primitives. We reduce the end-effector complexity by designing a simple single-finger gripper (c) made of only 2 boxes obtaining}\remove{In contrast, a simplified mesh (shown in (b) and (c)) can bring more accuracy as well as} a computational performance gain in terms of simulation rate.\label{fig:1}}
+\caption{Original collision meshes (a) provided by the robot manufacturer are often approximated by convex hulls, which are inaccurate while also more complex representations. \add{The mesh in (b) is an exact collision shape for the original gripper made of simple box primitives. We reduce the end-effector complexity by designing a simple single-finger gripper (c) made of only 2 boxes obtaining} a computational performance gain in terms of simulation rate.\label{fig:1}}
 
 \end{figure}
 
@@ -97,7 +97,7 @@ Crucial to the overall performance is the accuracy of the simulation environment
 
 \add{A big bottleneck of the proposed approach is the computation required to forward simulate multiple samples of the system dynamics in the physics engine. The time complexity is linear in the number of rollouts, the time steps, and horizon. In order to keep a sufficiently long horizon (1s) and a good amount of samples, we increase the time discretization for forward integrating the simulated dynamics. However, simulators suffer instability issues when the time steps are large \cite{erez2015simulation}. A direct implementation of \eqref{eq:low-level-control} in the physics engine would often cause instability during the 1 second time horizon. Fortunately, the efficient simulator provides an internal PD controller \cite{raisim_pd} that allows it to track joint position and velocities with big time steps (0.015 seconds in this work) without suffering instability. The control law is then a simple P velocity controller with compensation of Coriolis and gravity terms:}
 \begin{equation} \label{eq:cmd_sim}
-    \vect{\tau}_{cmd} = \coriolis \dconfigRobot + \vect{g}(\configRobot) - \matr{K}_{D} \dconfigRobotError,
+    \vect{\tau}_{cmd} = \coriolis \dconfigRobot + \vect{g}_r(\configRobot) - \matr{K}_{D} \dconfigRobotError,
 \end{equation}
 \add{with an appropriate choice of the positive-definite diagonal gain matrix $\matr{K}_{D} \in \nR{\robotDoF\times\robotDoF}$.}
 
